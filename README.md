@@ -12,17 +12,6 @@ Screen Shots:
 
 ![alarm_home](https://user-images.githubusercontent.com/142340/29889460-9f615642-8d9a-11e7-99a6-1a49529dd580.png)
 
-![alarm_weather](https://user-images.githubusercontent.com/142340/29889463-9f64e550-8d9a-11e7-8d06-cbb046588875.png)
-
-![alarm_arm](https://user-images.githubusercontent.com/142340/29889458-9f33509e-8d9a-11e7-8bdf-aaad28d94328.png)
-
-![alarm_pending](https://user-images.githubusercontent.com/142340/29889461-9f62d238-8d9a-11e7-9a0f-77baf385d812.png)
-
-![alarm_disarm](https://user-images.githubusercontent.com/142340/29889459-9f557980-8d9a-11e7-996e-dcbfd54d44cc.png)
-
-![alarm_triggered](https://user-images.githubusercontent.com/142340/29889462-9f6422dc-8d9a-11e7-923a-06cfcd6acff7.png)
-
-
 # Hardware
 
 - Raspberry Pi 3 and SD Card.
@@ -88,11 +77,41 @@ $ adb shell setprop persist.sys.timezone "America/Denver"
 - If you choose to get weather updates, enter your [DarkSky API key](https://darksky.net/dev) and your latitude and longitude location. You can get your lat/lon by using maps.google.com and copy them from the url (they look like -34.6156624,-58.5035102).
 - To use a screen saver other than the digital clock, turn this feature on in the screen saver settings. Optionally you can load other Instagram images by changing the Instagram profile name.  
 
-# Notes
+Alarm Application Setup 
+When you first start the application you will be asked to go to the setting screen and enter your pin code. You also need to enter the MQTT information that you configured in Home Assistant for your MQTT service. Be sure you adjust the time intervals to match those set in the Home Assistant MQTT alarm control panel. 
 
-- At this time there is an issue dimming the brightness of the backlight for the display. So for now I have included a screen saver feature as a short-term fix until the bug is addressed by the Android Things development team. 
-- There have been multiple display issues using Android Things 0.5.0 and 0.5.1, therefore this application runs best under 0.4.1.
-- It's important that the alarm control panel settings reflect the settings of those used in the alarm control panel component. Initially the hardware control panel is set to the default settings of the alarm control panel component. There are settings options to match those used in the manual alarm panel.
+alarm_settings.png
+
+The application should then connect to your MQTT broker. 
+Whenever the state of the alarm control panel in  in Home Assistant chances, the alarm control panel will reflect those changes.  You need to enter you pin code whenever you want to disarm the alarm or if the alarm has been triggered.  
+
+![alarm_disarm](https://user-images.githubusercontent.com/142340/29889459-9f557980-8d9a-11e7-996e-dcbfd54d44cc.png)
+
+![alarm_triggered](https://user-images.githubusercontent.com/142340/29889462-9f6422dc-8d9a-11e7-923a-06cfcd6acff7.png)
+
+To set the alarm just select the main icon on the alarm screen and then select Arm Home or Arm Away options.
+
+![alarm_arm](https://user-images.githubusercontent.com/142340/29889458-9f33509e-8d9a-11e7-8bdf-aaad28d94328.png)
+
+A small countdown will appear to indicate the time remaining before the alarm is activated. 
+
+![alarm_pending](https://user-images.githubusercontent.com/142340/29889461-9f62d238-8d9a-11e7-9a0f-77baf385d812.png)
+
+If you choose to get weather updates, enter your DarkSky API key and current latitude and longitude in the weather setting screen. You can get your lat/lon by using maps.google.com and copy them from the url (they look like -34.6156624,-58.5035102).
+
+![alarm_weather](https://user-images.githubusercontent.com/142340/29889463-9f64e550-8d9a-11e7-8d06-cbb046588875.png)
+
+To use a screen saver other than the digital clock, turn this feature on in the screen saver settings. Optionally you can load other Instagram images by changing the Instagram profile name.  
+
+# Notes 
+
+I have also made a version of the same software that runs on Android Tablets which can be found on [Google Play] (https://play.google.com/store/apps/details?id=com.thanksmister.iot.mqtt.alarmpanel).
+
+At this time there is an issue dimming the brightness of the backlight for the display. So for now I have included a screen saver feature as a short-term fix until the bug is addressed by the Android Things development team.  I will update the application once I can use the screen dimming feature for Android Things.
+
+There have been multiple display issues using Android Things 0.5.0 and 0.5.1, therefore this application runs best under Android Things 0.4.1. 
+
+It's important that the alarm control panel settings reflect the settings of those used in the alarm control panel component. Initially the hardware control panel is set to the default settings of the alarm control panel component. There are settings options to match those used in the manual alarm panel. 
 
 # Acknowledgements
 
