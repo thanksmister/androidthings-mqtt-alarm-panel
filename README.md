@@ -2,11 +2,11 @@
 
 This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component. This project was built using a Raspberry Pi 3 using Android Things and a 7" Touchscreen Display.
 
+Alarm Panel Video: https://youtu.be/xspCZoRIBNQ
+
 The hardware alarm panel acts as an interface for Home Assistant's manual alarm control panel component. You can set the alarm state to away or home, or disarm the alarm using a code. In addition it has some nice features such as weather forecast and screen saver mode.
 
 MQTT allows for communication between the hardware alarm panel and the manual alarm panel. The hardware alarm panel interface will reflect the current state of the manual alarm control panel component and vice versa. However, Home Assistanat is responsible for triggering the alarm through automation and sensor states.
-
-Alarm Panel Video: https://youtu.be/xspCZoRIBNQ
 
 Screen Shots:
 
