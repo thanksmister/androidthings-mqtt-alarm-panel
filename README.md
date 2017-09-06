@@ -43,9 +43,17 @@ Screen Shots:
 
 # Raspberry PI Setup
 
-- Make sure you properly setup the RPi3 with the 7" Touchscreen Display.
-- Connect the buzzer as shown in the [sampel diagram](https://github.com/androidthings/drivers-samples/tree/master/pwmspeaker).
-- Setup your RPi3 to use [Android Things 0.4.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Be sure to setup network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use both. 
+Make sure you properly setup the RPi3 with the 7" Touchscreen Display.  You won't need any special software setup if you use the The Raspberry Pi Foundation 7" Touchscreen as it's compatible with Android Things. Other compatible touch screens may require additional configuration for Android Things. There are two options for installing the setting up your RPi 3 and installing the application. 
+
+- (1) The first is to set up your RPi3 to use [Android Things 0.4.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Clone the repository and compile the APK using Android Studio, then side load the APK file onto your device running Android Things Preview 0.4.1 using the ADB tool. 
+
+- (2) The second option is to download the latest build from the [release](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/releases/) section on Github which includes both the Android Things Preview 0.4.1 and the APK file for the MQTT control panel application. This also allows for future OTA updates.
+
+ * Unzip the file to get the 'iot_rpi3.img'.
+ * Burn image to an SD card using a tool like [Etcher](https://etcher.io/).
+ * Insert the SD card into RPi3 and boot.  
+
+- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use both. 
 
 ```
 # Use the adb tool to connect over ethernet to the device
@@ -71,31 +79,21 @@ $ adb shell date 123112002017.00
 # Set the time zone to US Mountain Time
 $ adb shell setprop persist.sys.timezone "America/Denver"
 ```
-
-# Installation
-
-The build includes both Android Things Preview 0.4.1 and the APK file for the MQTT control panel application and allows for OTA updates.
-
-- Download the latest build from the [release](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/releases/) section. 
-- Unzip the file to get the 'iot_rpi3.img'.
-- Burn image to an SD card using a tool like [Etcher](https://etcher.io/).
-- Insert the SD card into RPi3 and boot.  
-
-Alternatively you can clone the repository and compile the APK using Andoid Studio, then side load the APK file onto your device running Android Things Preview 0.4.1 using the ADB tool. 
+- Optionally connect the buzzer as shown in the [sampel diagram](https://github.com/androidthings/drivers-samples/tree/master/pwmspeaker).
 
 # Alarm Setup
 
 - Under the settings (gear icon) enter the MQTT information that you configured in Home Assistant for your MQTT service.
 - Be sure you adjust the time intervals to match those set (other than defaults) in the Home Assistant MQTT alarm control panel.
-- If you choose to get weather updates, enter your [DarkSky API key](https://darksky.net/dev) and location (lat/lon which you can get from maps.google.com) in the weather setting screen.
-- To use a screen saver other than the digital clock, turn this feature on in the screen saver settings. Optionally you can load other Instagram images by change the Instagram profile name in the settings. 
+- If you choose to get weather updates, enter your [DarkSky API key](https://darksky.net/dev) and your latitude and longitude location. You can get your lat/lon by using maps.google.com and copy them from the url (they look like -34.6156624,-58.5035102).
+- To use a screen saver other than the digital clock, turn this feature on in the screen saver settings. Optionally you can load other Instagram images by changing the Instagram profile name.  
 
 # Notes
 
-- At this time there is an issue dimming the brighness of the backlight for the display. So for now I have included a screen saver feature as a short-term fix until the bug is addressed by the Android Things development team.
+- At this time there is an issue dimming the brightness of the backlight for the display. So for now I have included a screen saver feature as a short-term fix until the bug is addressed by the Android Things development team. 
 - There have been multiple display issues using Android Things 0.5.0 and 0.5.1, therefore this application runs best under 0.4.1.
 - It's important that the alarm control panel settings reflect the settings of those used in the alarm control panel component. Initially the hardware control panel is set to the default settings of the alarm control panel component. There are settings options to match those used in the manual alarm panel.
 
 # Acknowledgements
 
-Special thanks to Colin O'Dell who's work on the Home Assistant Manual Alarm Control Panel component and his [MQTT Alarm Panel](https://github.com/colinodell/mqtt-control-panel) helped make this project possible.
+Special thanks to Colin O'Dell whose work on the Home Assistant Manual Alarm Control Panel component and his [MQTT Alarm Panel](https://github.com/colinodell/mqtt-control-panel) helped make this project possible.
