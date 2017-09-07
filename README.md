@@ -4,7 +4,7 @@ This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual
 
 - Alarm Panel Video: https://youtu.be/xspCZoRIBNQ
 - Instructions to build your own: https://www.hackster.io/thanksmister/mqtt-alarm-control-panel-for-home-assistant-a206cc
-- Android Tablet version on Google Play: https://play.google.com/store/apps/details?id=com.thanksmister.iot.mqtt.alarmpanel
+- Android Tablet: https://github.com/thanksmister/android-mqtt-alarm-panel
 
 The hardware alarm panel acts as an interface for Home Assistant's manual alarm control panel component. You can set the alarm state to away or home, or disarm the alarm using a code. In addition it has some nice features such as weather forecast and screen saver mode.
 
