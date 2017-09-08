@@ -44,6 +44,14 @@ public class AlarmTriggeredView extends BaseAlarmView {
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(handler != null) {
+            handler.removeCallbacks(delayRunnable);
+        }
+    }
+    
+    @Override
     protected void reset() {
         codeComplete = false;
         enteredCode = "";
@@ -85,10 +93,14 @@ public class AlarmTriggeredView extends BaseAlarmView {
     private void validateCode(String validateCode) {
         int codeInt = Integer.parseInt(validateCode);
         if(codeInt == code) {
-            listener.onComplete(code);
+            if(listener != null) {
+                listener.onComplete(code);
+            }
         } else {
             reset();
-            listener.onError();
+            if(listener != null) {
+                listener.onError();
+            }
         }
     }
 }

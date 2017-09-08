@@ -22,18 +22,11 @@ import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.TextView;
 
-import com.google.android.things.contrib.driver.pwmspeaker.Speaker;
-import com.thanksmister.iot.mqtt.alarmpanel.BoardDefaults;
 import com.thanksmister.iot.mqtt.alarmpanel.R;
 
-import java.io.IOException;
-
 import butterknife.Bind;
-
-import static android.content.ContentValues.TAG;
 
 public class AlarmCodeView extends BaseAlarmView {
 
@@ -60,10 +53,21 @@ public class AlarmCodeView extends BaseAlarmView {
 
     @Override
     protected void onCancel() {
-        listener.onCancel();
+        handler.removeCallbacks(delayRunnable);
+        if(listener != null) {
+            listener.onCancel();
+        }
         codeComplete = false;
         enteredCode = "";
         showFilledPins(0);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(handler != null) {
+            handler.removeCallbacks(delayRunnable);
+        }
     }
 
     @Override
@@ -91,7 +95,9 @@ public class AlarmCodeView extends BaseAlarmView {
         @Override
         public void run() {
             handler.removeCallbacks(delayRunnable);
-            listener.onComplete(getEnteredCode());
+            if(listener != null) {
+                listener.onComplete(getEnteredCode());
+            }
         }
     };
 
