@@ -110,14 +110,13 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
             getSupportFragmentManager().beginTransaction().replace(R.id.controlContainer, controlsFragment, FRAGMENT_CONTROLS).commit();
             getSupportFragmentManager().beginTransaction().replace(R.id.informationContainer, informationFragment, FRAGMENT_INFORMATION).commit();
         }
-
-        makeMqttConnection();
     }
     
     @Override
     public void onResume() {
         super.onResume();
         resetInactivityTimer();
+        makeMqttConnection();
     }
 
     @Override
