@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
             Intent intent = SettingsActivity.createStartIntent(MainActivity.this);
             startActivity(intent);
         } else {
-            showAlarmDisableDialog(true);
+            showAlarmDisableDialog(false);
         }
     }
 
