@@ -20,7 +20,6 @@ package com.thanksmister.iot.mqtt.alarmpanel;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -31,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.TextView;
 
 import com.thanksmister.iot.mqtt.alarmpanel.data.stores.StoreManager;
@@ -221,14 +219,8 @@ abstract public class BaseActivity extends AppCompatActivity {
 
     public void showExtendedForecastDialog(Daily daily) {
         hideDialog();
-        Rect displayRectangle = new Rect();
-        Window window = getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-        
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_extended_forecast, null, false);
-        view.setMinimumWidth((int)(displayRectangle.width() * 0.7f));
-        //view.setMinimumHeight((int)(displayRectangle.height() * 0.7f));
         final ExtendedForecastView  extendedForecastView = view.findViewById(R.id.extendedForecastView);
         extendedForecastView.setExtendedForecast(daily, getConfiguration().getWeatherUnits());
         dialog = new AlertDialog.Builder(BaseActivity.this)
@@ -247,13 +239,8 @@ abstract public class BaseActivity extends AppCompatActivity {
     public void showScreenSaver() {
         if(screenSaverDialog != null && screenSaverDialog.isShowing()) return;
         inactivityHandler.removeCallbacks(inactivityCallback);
-        Rect displayRectangle = new Rect();
-        Window window = getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_screen_saver, null, false);
-        //view.setMinimumWidth((int)(displayRectangle.width() * 1f));
-        //view.setMinimumHeight((int)(displayRectangle.height() * 1f));
         final ScreenSaverView screenSaverView = view.findViewById(R.id.screenSaverView);
         screenSaverView.setScreenSaver(BaseActivity.this, getConfiguration().showScreenSaverModule(), 
                 getConfiguration().getImageSource(), getConfiguration().getImageFitScreen(), 
