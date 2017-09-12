@@ -20,16 +20,19 @@ package com.thanksmister.iot.mqtt.alarmpanel;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.thanksmister.iot.mqtt.alarmpanel.data.stores.StoreManager;
@@ -187,19 +190,33 @@ abstract public class BaseActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         return item.getItemId() == android.R.id.home;
     }
-    
+
     public void showArmOptionsDialog(ArmOptionsView.ViewListener armListener) {
         hideDialog();
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_alarm_options, null, false);
-        final ArmOptionsView optionsView = (ArmOptionsView) view.findViewById(R.id.armOptionsView);
+        Rect displayRectangle = new Rect();
+        Window window = getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+        int density= getResources().getDisplayMetrics().densityDpi;
+        if(density == DisplayMetrics.DENSITY_TV ) {
+            view.setMinimumWidth((int) (displayRectangle.width() * 0.6f));
+            view.setMinimumHeight((int) (displayRectangle.height() * 0.7f));
+        } else if (density == DisplayMetrics.DENSITY_MEDIUM) {
+            view.setMinimumWidth((int) (displayRectangle.width() * 0.5f));
+            view.setMinimumHeight((int) (displayRectangle.height() * 0.6f));
+        } else {
+            view.setMinimumWidth((int)(displayRectangle.width() * 0.7f));
+            view.setMinimumHeight((int)(displayRectangle.height() * 0.8f));
+        }
+        final ArmOptionsView optionsView = view.findViewById(R.id.armOptionsView);
         optionsView.setListener(armListener);
         dialog = new AlertDialog.Builder(BaseActivity.this)
                 .setCancelable(true)
                 .setView(view)
                 .show();
     }
-    
+
     public void showAlarmDisableDialog(AlarmDisableView.ViewListener alarmCodeListener, int code, boolean beep) {
         hideDialog();
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -221,6 +238,18 @@ abstract public class BaseActivity extends AppCompatActivity {
         hideDialog();
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_extended_forecast, null, false);
+        Rect displayRectangle = new Rect();
+        Window window = getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+        view.setMinimumWidth((int)(displayRectangle.width() * 0.7f));
+
+        int density= getResources().getDisplayMetrics().densityDpi;
+        if(density == DisplayMetrics.DENSITY_TV ) {
+        } else if (density == DisplayMetrics.DENSITY_MEDIUM) {
+            view.setMinimumHeight((int) (displayRectangle.height() * 0.6f));
+        } else {
+            view.setMinimumHeight((int)(displayRectangle.height() * 0.8f));
+        }
         final ExtendedForecastView  extendedForecastView = view.findViewById(R.id.extendedForecastView);
         extendedForecastView.setExtendedForecast(daily, getConfiguration().getWeatherUnits());
         dialog = new AlertDialog.Builder(BaseActivity.this)
@@ -228,7 +257,7 @@ abstract public class BaseActivity extends AppCompatActivity {
                 .setView(view)
                 .show();
     }
-    
+
     public void closeScreenSaver() {
         if(screenSaverDialog != null) {
             screenSaverDialog.dismiss();
@@ -242,8 +271,8 @@ abstract public class BaseActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_screen_saver, null, false);
         final ScreenSaverView screenSaverView = view.findViewById(R.id.screenSaverView);
-        screenSaverView.setScreenSaver(BaseActivity.this, getConfiguration().showScreenSaverModule(), 
-                getConfiguration().getImageSource(), getConfiguration().getImageFitScreen(), 
+        screenSaverView.setScreenSaver(BaseActivity.this, getConfiguration().showScreenSaverModule(),
+                getConfiguration().getImageSource(), getConfiguration().getImageFitScreen(),
                 getConfiguration().getImageRotation());
         screenSaverView.setOnClickListener(new View.OnClickListener() {
             @Override

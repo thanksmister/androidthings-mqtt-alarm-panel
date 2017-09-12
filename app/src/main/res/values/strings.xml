@@ -86,14 +86,15 @@
     <string name="text_system">SYSTEM</string>
     <string name="text_disarmed">DISARMED</string>
     <string name="dialog_alarm_triggered">ENTER CODE TO DISMISS</string>
-    <string name="dialog_first_time">Since this is your first time, please setup your MQTT and Alarm information.</string>
+    <string name="dialog_first_time">Since this is your first time, please setup your MQTT and Alarm information. The default alarm code is 1234.</string>
     <string name="text_alarm_pending">ALARM PENDING</string>
     <string name="text_f">°F</string>
     <string name="text_c">°C</string>
     <string name="text_temperature">%1$s %2$s</string>
     <string name="text_temperature_range">H%1$s°  L%2$s°</string>
     <string name="error_mqtt_connection">The MQTT client connection wasn\'t established or was closed unexpectedly. Will try to reconnect.</string>
-    <string name="text_alarm">Alarm</string>
+    <string name="text_alarm">ALARM</string>
+    <string name="string_device_location">Device location</string>
+    <string name="string_location_services_disabled">Your location services are disabled, would you like to enable it?</string>
 
-    
 </resources>

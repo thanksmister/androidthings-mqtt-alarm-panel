@@ -53,13 +53,16 @@ public class AlarmCodeView extends BaseAlarmView {
 
     @Override
     protected void onCancel() {
-        handler.removeCallbacks(delayRunnable);
-        if(listener != null) {
-            listener.onCancel();
-        }
         codeComplete = false;
         enteredCode = "";
         showFilledPins(0);
+
+        if(handler != null) {
+            handler.removeCallbacks(delayRunnable);
+        }
+        if(listener != null) {
+            listener.onCancel();
+        }
     }
 
     @Override
@@ -94,7 +97,9 @@ public class AlarmCodeView extends BaseAlarmView {
     private Runnable delayRunnable = new Runnable() {
         @Override
         public void run() {
-            handler.removeCallbacks(delayRunnable);
+            if(handler != null) {
+                handler.removeCallbacks(delayRunnable);
+            }
             if(listener != null) {
                 listener.onComplete(getEnteredCode());
             }

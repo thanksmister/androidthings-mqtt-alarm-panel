@@ -17,42 +17,56 @@
   ~   
   -->
 
-<com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmCodeView
+<com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmDisableView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/alarmCodeView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        xmlns:ProgressWheel="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/alarmDisableView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:padding="16dp"
         android:orientation="horizontal">
-    
-    <include layout="@layout/view_keypad"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_weight="2"/>
-    
-    <android.support.v4.widget.Space
-            android:layout_width="8dp"
-            android:layout_height="match_parent"/>
-    
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="16dp"
-            android:layout_weight="3">
 
-        <TextView
-                android:id="@+id/codeTitle"
-                style="@style/WizardPageTitle"
-                android:textSize="18sp"
-                android:textAllCaps="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                tools:text="Please enter the new alarm code."/>
+    <include layout="@layout/view_keypad"
+             android:layout_width="300dp"
+             android:layout_height="360dp"/>
+
+    <android.support.v4.widget.Space
+            android:layout_width="16dp"
+            android:layout_height="match_parent"/>
+
+    <RelativeLayout
+            android:layout_width="320dp"
+            android:layout_height="360dp"
+            android:orientation="vertical">
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/imageLayout"
+            android:gravity="center"
+            android:layout_alignParentTop="true"
+            android:padding="36dp">
+
+            <com.todddavies.components.progressbar.ProgressWheel
+                android:id="@+id/countDownProgressWheel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal|top"
+                android:layout_gravity="center_horizontal|top"
+                ProgressWheel:barColor="@color/green"
+                ProgressWheel:contourColor="@color/gray_color"
+                ProgressWheel:rimColor="@color/gray_color"
+                ProgressWheel:rimWidth="18dp"
+                ProgressWheel:barWidth="18dp"
+                ProgressWheel:textColor="@color/text"
+                ProgressWheel:textSize="32sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/imageLayout"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,33 +75,44 @@
                 android:gravity="center">
 
             <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:tint="@color/dark_gray"
                     android:id="@+id/pinCode1"
                     android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
-            
+
+            <View
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent"/>
 
             <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:tint="@color/dark_gray"
                     android:id="@+id/pinCode2"
                     android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
-            
+
+            <View
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent"/>
+
             <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:tint="@color/dark_gray"
                     android:id="@+id/pinCode3"
                     android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
 
+            <View
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent"/>
+
             <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:tint="@color/dark_gray"
                     android:id="@+id/pinCode4"
@@ -96,5 +121,5 @@
         </LinearLayout>
 
     </RelativeLayout>
-    
-</com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmCodeView>
+
+</com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmDisableView>

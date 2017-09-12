@@ -93,18 +93,19 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-        
+
         if(getConfiguration().isFirstTime()) {
             showAlertDialog(getString(R.string.dialog_first_time), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    getConfiguration().setAlarmCode(1234); // set default code
                     Intent intent = SettingsActivity.createStartIntent(MainActivity.this);
                     startActivity(intent);
                 }
             });
         }
-        
-       if (savedInstanceState == null) {
+
+        if (savedInstanceState == null) {
             ControlsFragment controlsFragment = ControlsFragment.newInstance();
             InformationFragment informationFragment = InformationFragment.newInstance();
             getSupportFragmentManager().beginTransaction().replace(R.id.controlContainer, controlsFragment, FRAGMENT_CONTROLS).commit();
@@ -293,7 +294,9 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         if(AlarmUtils.STATE_TRIGGERED.equals(state)) {
             stopDisconnectTimer(); // stop screen saver mode
             closeScreenSaver(); // close screen saver
-            triggeredView.setVisibility(View.VISIBLE);
+            if(triggeredView != null) {
+                triggeredView.setVisibility(View.VISIBLE);
+            }
             int code = getConfiguration().getAlarmCode();
             final AlarmTriggeredView disarmView = (AlarmTriggeredView) findViewById(R.id.alarmTriggeredView);
             disarmView.setCode(code);
@@ -313,7 +316,9 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
             });
         } else {
             resetInactivityTimer(); // restart screen saver
-            triggeredView.setVisibility(View.GONE);
+            if(triggeredView != null) {
+                triggeredView.setVisibility(View.GONE);
+            }
         }
     }
     

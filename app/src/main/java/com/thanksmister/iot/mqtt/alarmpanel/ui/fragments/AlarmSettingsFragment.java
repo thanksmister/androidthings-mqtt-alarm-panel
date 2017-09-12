@@ -241,15 +241,15 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
     }
     
     public void showAlarmCodeDialog() {
-        
+
         // store the default alarm code
         defaultCode = configuration.getAlarmCode();
-        
+
         hideAlarmCodeDialog();
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_alarm_code_set, null, false);
         final AlarmCodeView alarmCodeView = view.findViewById(R.id.alarmCodeView);
-       
+
         final TextView titleTextView = alarmCodeView.findViewById(R.id.codeTitle);
         if(confirmCode){
             titleTextView.setText(R.string.text_renter_alarm_code_title);
@@ -261,7 +261,7 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
                 Timber.d("Code: " + code);
                 Timber.d("defaultCode: " + defaultCode);
                 Timber.d("tempCode: " + tempCode);
-                
+
                 if(code == defaultCode) {
                     confirmCode = false;
                     hideAlarmCodeDialog();
@@ -293,22 +293,24 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
 
             @Override
             public void onCancel() {
-                confirmCode = false; 
+                confirmCode = false;
                 hideAlarmCodeDialog();
                 Toast.makeText(getActivity(), R.string.toast_code_unchanged, Toast.LENGTH_SHORT).show();
             }
         });
 
-        alarmCodeDialog = new AlertDialog.Builder(getActivity())
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        confirmCode = false;
-                        Toast.makeText(getActivity(), R.string.toast_code_unchanged, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setCancelable(true)
-                .setView(view)
-                .show();
+        if(isAdded()) {
+            alarmCodeDialog = new AlertDialog.Builder(getActivity())
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            confirmCode = false;
+                            Toast.makeText(getActivity(), R.string.toast_code_unchanged, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setCancelable(true)
+                    .setView(view)
+                    .show();
+        }
     }
 }

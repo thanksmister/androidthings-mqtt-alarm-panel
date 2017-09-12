@@ -249,7 +249,7 @@ abstract class BaseAlarmView extends LinearLayout {
 
     public SoundUtils getSoundUtils() {
         if(soundUtils == null) {
-            soundUtils = new SoundUtils();
+            soundUtils = new SoundUtils(getContext());
         }
 
         return soundUtils;
