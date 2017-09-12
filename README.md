@@ -58,7 +58,7 @@ adb shell am startservice \
     -e passphrase <Network_Passcode>
 ```
 
-- You probably also want to set the time and timezone of the device:
+- You probably also want to set the time and [timezone[(https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) of the device:
 
 ```
 # Reboot ADB into root mode
