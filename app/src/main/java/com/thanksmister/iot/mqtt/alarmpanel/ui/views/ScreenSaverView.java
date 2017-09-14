@@ -110,7 +110,7 @@ public class ScreenSaverView extends RelativeLayout {
         this.context = context;
         this.userName = userName;
         this.fitToScreen = fitToScreen;
-        this.rotationInterval = rotationIntervalMinutes*1000; // convert to milliseconds
+        this.rotationInterval = rotationIntervalMinutes*60*1000; // convert to milliseconds
 
         if(useImageScreenSaver && !TextUtils.isEmpty(userName) ) {
             screenSaverImage.setVisibility(View.VISIBLE);
