@@ -45,6 +45,8 @@ public class AlarmUtils {
     public static final String STATE_ARM_HOME = "armed_home";
     public static final String STATE_PENDING = "pending";
     public static final String STATE_TRIGGERED = "triggered";
+    public static final String STATE_ERROR = "error";
+    
     public static final int PENDING_TIME = 60;
     public static final int TRIGGER_TIME = 120;
     

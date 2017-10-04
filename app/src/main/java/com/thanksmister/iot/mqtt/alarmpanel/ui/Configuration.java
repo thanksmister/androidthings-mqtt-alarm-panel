@@ -19,6 +19,7 @@
 package com.thanksmister.iot.mqtt.alarmpanel.ui;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyRequest;
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils;
@@ -33,40 +34,46 @@ public class Configuration {
 
     private final DPreference sharedPreferences;
     private final Context context;
-    
-    public static final String PREF_FIRST_TIME = "pref_first_time";
-    public static final String PREF_ALARM_MODE = "pref_alarm_mode";
+
     public static final String PREF_USERNAME = "pref_username";
     public static final String PREF_COMMAND_TOPIC = "pref_command_topic";
     public static final String PREF_STATE_TOPIC = "pref_state_topic";
     public static final String PREF_TLS_CONNECTION = "pref_tls_connection";
     public static final String PREF_ALARM_CODE = "pref_alarm_code";
-    public static final String PREF_ARMED = "pref_armed";
     public static final String PREF_PASSWORD = "pref_password";
     public static final String PREF_PORT = "pref_port";
     public static final String PREF_CLIENT_ID = "pref_client_id";
     public static final String PREF_BROKER = "pref_broker";
     public static final String PREF_PENDING_TIME = "pref_pending_time";
     public static final String PREF_TRIGGER_TIME = "pref_trigger_time";
-
-    public static final String PREF_MODULE_WEATHER = "pref_module_weather";
-    public static final String PREF_WEATHER_UNITS = "pref_weather_units";
-    public static final String PREF_DARK_SKY_KEY = "pref_dark_sky_key";
-    public static final String PREF_LAT = "pref_weather_lat";
-    public static final String PREF_LON = "pref_weather_lon";
-
     public static final String PREF_ARM_HOME = "arm_home";
     public static final String PREF_ARM_HOME_PENDING = "arm_home_pending";
     public static final String PREF_ARM_PENDING = "arm_pending";
-    public static final String PREF_ARM_AWAY = "ARM_AWAY";
+    public static final String PREF_ARM_AWAY = "arm_away";
     public static final String PREF_ARM_AWAY_PENDING = "prefs_arm_away_pending";
-    public static final String PREF_DISARM = "DISARM";
-
+    public static final String PREF_DISARM = "disarm";
+    public static final String PREF_TRIGGERED = "triggered";
+    public static final String PREF_TRIGGERED_PENDING = "triggered_pending";
     public static final String PREF_MODULE_SAVER = "pref_module_saver";
+    public static final String PREF_MODULE_PHOTO_SAVER = "pref_module_saver_photo";
     public static final String PREF_IMAGE_SOURCE = "pref_image_source";
     public static final String PREF_IMAGE_FIT_SIZE = "pref_image_fit";
     public static final String PREF_IMAGE_ROTATION = "pref_image_rotation";
+    public static final String PREF_INACTIVITY_TIME = "pref_inactivity_time";
 
+    private static final String PREF_MODULE_WEATHER = "pref_module_weather";
+    private static final String PREF_WEATHER_UNITS = "pref_weather_units";
+    private static final String PREF_DARK_SKY_KEY = "pref_dark_sky_key";
+    private static final String PREF_LAT = "pref_weather_lat";
+    private static final String PREF_LON = "pref_weather_lon";
+    private static final String PREF_MODULE_HASS = "pref_module_hass";
+    private static final String PREF_HASS_WEB_URL = "pref_hass_web_url";
+    private static final String PREF_ARMED = "pref_armed";
+    private static final String PREF_FIRST_TIME = "pref_first_time";
+    private static final String PREF_ALARM_MODE = "pref_alarm_mode";
+    private static final String IS_DIRTY = "pref_is_dirty";
+
+    private final long INACTIVITY_TIMEOUT =  5 * 60 * 1000; // 5 min
     private final int ROTATE_TIME_IN_MINUTES = 30; // 30 minutes
 
     public Configuration(Context context, DPreference sharedPreferences) {
@@ -74,12 +81,50 @@ public class Configuration {
         this.context = context;
     }
 
+    public boolean hasConnectionCriteria() {
+        return (!TextUtils.isEmpty(getBroker()) && !TextUtils.isEmpty(getStateTopic()));
+    }
+
+    public boolean reconnectNeeded() {
+        boolean isDirty = this.sharedPreferences.getPrefBoolean(IS_DIRTY, false);
+        setIsDirty(false);
+        return isDirty;
+    }
+
+    public void setIsDirty(boolean value) {
+        this.sharedPreferences.setPrefBoolean(IS_DIRTY, value);
+    }
+
+    public boolean showHassModule(){
+        return sharedPreferences.getPrefBoolean(PREF_MODULE_HASS, false);
+    }
+
+    public void setShowHassModule(boolean value) {
+        this.sharedPreferences.setPrefBoolean(PREF_MODULE_HASS, value);
+    }
+
+    public String getHassUrl() {
+        return this.sharedPreferences.getPrefString(PREF_HASS_WEB_URL, null);
+    }
+
+    public void setHassUrl(String value) {
+        this.sharedPreferences.setPrefString(PREF_HASS_WEB_URL, value);
+    }
+
     public boolean showScreenSaverModule(){
-        return sharedPreferences.getPrefBoolean(PREF_MODULE_SAVER, false);
+        return sharedPreferences.getPrefBoolean(PREF_MODULE_SAVER, true);
     }
 
     public void setScreenSaverModule(boolean value) {
         this.sharedPreferences.setPrefBoolean(PREF_MODULE_SAVER, value);
+    }
+
+    public boolean showPhotoScreenSaver(){
+        return sharedPreferences.getPrefBoolean(PREF_MODULE_PHOTO_SAVER, false);
+    }
+
+    public void setPhotoScreenSaver(boolean value) {
+        this.sharedPreferences.setPrefBoolean(PREF_MODULE_PHOTO_SAVER, value);
     }
 
     public String getImageSource() {
@@ -96,6 +141,14 @@ public class Configuration {
 
     public int getImageRotation() {
         return this.sharedPreferences.getPrefInt(PREF_IMAGE_ROTATION, ROTATE_TIME_IN_MINUTES);
+    }
+
+    public void setInactivityTime(long value) {
+        this.sharedPreferences.setPrefLong(PREF_INACTIVITY_TIME, value);
+    }
+
+    public long getInactivityTime() {
+        return this.sharedPreferences.getPrefLong(PREF_INACTIVITY_TIME, INACTIVITY_TIMEOUT);
     }
 
     public boolean getImageFitScreen() {
@@ -137,7 +190,7 @@ public class Configuration {
     public String getLongitude() {
         return this.sharedPreferences.getPrefString(PREF_LON, null);
     }
-    
+
     public boolean getIsCelsius() {
         String units = getWeatherUnits();
         return DarkSkyRequest.UNITS_SI.equals(units);
@@ -158,13 +211,14 @@ public class Configuration {
     public void setDarkSkyKey(String value) {
         this.sharedPreferences.setPrefString(PREF_DARK_SKY_KEY, value);
     }
-    
+
     public String getUserName() {
         return this.sharedPreferences.getPrefString(PREF_USERNAME, null);
     }
 
     public void setUserName(String value) {
         this.sharedPreferences.setPrefString(PREF_USERNAME, value);
+        setIsDirty(true);
     }
 
     public String getPassword() {
@@ -173,6 +227,7 @@ public class Configuration {
 
     public void setPassword(String value) {
         this.sharedPreferences.setPrefString(PREF_PASSWORD, value);
+        setIsDirty(true);
     }
 
     public String getClientId() {
@@ -181,6 +236,7 @@ public class Configuration {
 
     public void setClientId(String value) {
         this.sharedPreferences.setPrefString(PREF_CLIENT_ID, value);
+        setIsDirty(true);
     }
 
     public int getPort() {
@@ -189,6 +245,7 @@ public class Configuration {
 
     public void setPort(int value) {
         this.sharedPreferences.setPrefInt(PREF_PORT, value);
+        setIsDirty(true);
     }
 
     public String getBroker() {
@@ -197,6 +254,7 @@ public class Configuration {
 
     public void setBroker(String value) {
         this.sharedPreferences.setPrefString(PREF_BROKER, value);
+        setIsDirty(true);
     }
 
     public int getPendingTime() {
@@ -221,16 +279,18 @@ public class Configuration {
 
     public void setCommandTopic(String value) {
         this.sharedPreferences.setPrefString(PREF_COMMAND_TOPIC, value);
+        setIsDirty(true);
     }
 
     public String getStateTopic() {
         return this.sharedPreferences.getPrefString(PREF_STATE_TOPIC, AlarmUtils.STATE_TOPIC);
     }
-
+    
     public void setStateTopic(String value) {
         this.sharedPreferences.setPrefString(PREF_STATE_TOPIC, value);
+        setIsDirty(true);
     }
-
+    
     public boolean getTlsConnection() {
         return this.sharedPreferences.getPrefBoolean(PREF_TLS_CONNECTION, false);
     }
@@ -256,19 +316,18 @@ public class Configuration {
     }
 
     public String getAlarmMode() {
-        return sharedPreferences.getPrefString(PREF_ALARM_MODE, PREF_DISARM);
+        return sharedPreferences.getPrefString(PREF_ALARM_MODE, PREF_DISARM).toLowerCase();
     }
-
-    // TODO guarantee mode is of one of three types
+    
     public void setAlarmMode(String mode) {
         sharedPreferences.setPrefString(PREF_ALARM_MODE, mode);
     }
-    
+
     /**
      * Reset the <code>SharedPreferences</code> and database
      */
     public void reset() {
-        sharedPreferences.removePreference(PREF_COMMAND_TOPIC);
+        sharedPreferences.removePreference(PREF_CLIENT_ID);
         sharedPreferences.removePreference(PREF_COMMAND_TOPIC);
         sharedPreferences.removePreference(PREF_TLS_CONNECTION);
         sharedPreferences.removePreference(PREF_USERNAME);
@@ -278,6 +337,24 @@ public class Configuration {
         sharedPreferences.removePreference(PREF_BROKER);
         sharedPreferences.removePreference(PREF_ALARM_MODE);
         sharedPreferences.removePreference(PREF_ARMED);
-        sharedPreferences.removePreference(PREF_ALARM_CODE);
+        sharedPreferences.removePreference(PREF_PENDING_TIME);
+        sharedPreferences.removePreference(PREF_TRIGGER_TIME);
+        sharedPreferences.removePreference(PREF_MODULE_SAVER);
+        sharedPreferences.removePreference(PREF_MODULE_PHOTO_SAVER);
+        sharedPreferences.removePreference(PREF_ARM_PENDING);
+        sharedPreferences.removePreference(PREF_IMAGE_SOURCE);
+        sharedPreferences.removePreference(PREF_IMAGE_FIT_SIZE);
+        sharedPreferences.removePreference(PREF_IMAGE_ROTATION);
+        sharedPreferences.removePreference(PREF_INACTIVITY_TIME);
+        sharedPreferences.removePreference(PREF_MODULE_WEATHER);
+        sharedPreferences.removePreference(PREF_WEATHER_UNITS);
+        sharedPreferences.removePreference(PREF_DARK_SKY_KEY);
+        sharedPreferences.removePreference(PREF_LAT);
+        sharedPreferences.removePreference(PREF_LON);
+        sharedPreferences.removePreference(PREF_MODULE_HASS);
+        sharedPreferences.removePreference(PREF_MODULE_HASS);
+        sharedPreferences.removePreference(PREF_HASS_WEB_URL);
+        sharedPreferences.removePreference(PREF_FIRST_TIME);
+        sharedPreferences.removePreference(PREF_ALARM_MODE);
     }
 }

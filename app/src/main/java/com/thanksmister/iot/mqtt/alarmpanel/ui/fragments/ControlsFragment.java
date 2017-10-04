@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity;
 import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment;
 import com.thanksmister.iot.mqtt.alarmpanel.R;
 import com.thanksmister.iot.mqtt.alarmpanel.data.database.model.SubscriptionModel;
@@ -56,6 +57,7 @@ import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_ARM_HOM
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_ARM_HOME_PENDING;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_ARM_PENDING;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_DISARM;
+import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_TRIGGERED_PENDING;
 
 public class ControlsFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -76,10 +78,23 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
  
     @OnClick(R.id.alarmView)
     public void armButtonClick() {
-        if(getConfiguration().getAlarmMode().equals(Configuration.PREF_DISARM)){
-            showArmOptionsDialog();
+        if(getConfiguration().hasConnectionCriteria()) {
+            if(getConfiguration().getAlarmMode().equals(Configuration.PREF_DISARM)){
+                showArmOptionsDialog();
+            } else {
+                int countDownTimeRemaining = alarmPendingView.getCountDownTimeRemaining();
+                if(countDownTimeRemaining > 0) {
+                    showAlarmDisableDialog(false, countDownTimeRemaining);
+                } else {
+                    if(getConfiguration().getPendingTime() == 0) {
+                        showAlarmDisableDialog(false, getConfiguration().getPendingTime());
+                    }
+                }
+            }
         } else {
-            showAlarmDisableDialog(false);
+            if(isAdded()) {
+                ((BaseActivity) getActivity()).showAlertDialog(getString(R.string.text_error_no_alarm_setup));
+            }
         }
     }
     
@@ -173,7 +188,6 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
         mListener = null;
     }
 
-    // TODO right now we are relying on the pending time from home assistant, maybe we should do this internally
     private void showArmOptionsDialog() {
         showArmOptionsDialog(new ArmOptionsView.ViewListener() {
             @Override
@@ -197,28 +211,26 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
      */
     @AlarmUtils.AlarmStates
     private void handleStateChange(String state) {
-
-        Timber.d("handleStateChange state: " + state);
-        Timber.d("handleStateChange mode: " + getConfiguration().getAlarmMode());
-
-        // hide any dialogs
-        hideDialog();
-
+        Timber.d("State: " + state);
         switch (state) {
             case AlarmUtils.STATE_ARM_AWAY:
+                hideDialog();
                 hideAlarmPendingView();
                 setArmedAwayView();
                 break;
             case AlarmUtils.STATE_ARM_HOME:
+                hideDialog();
                 hideAlarmPendingView();
                 setArmedHomeView();
                 break;
             case AlarmUtils.STATE_DISARM:
+                hideDialog();
                 hideAlarmPendingView();
                 setDisarmedView();
                 break;
             case AlarmUtils.STATE_PENDING:
-                if(getConfiguration().getAlarmMode().equals(Configuration.PREF_ARM_AWAY_PENDING) || getConfiguration().getAlarmMode().equals(PREF_ARM_HOME_PENDING)) {
+                if(getConfiguration().getAlarmMode().equals(Configuration.PREF_ARM_AWAY_PENDING)
+                        || getConfiguration().getAlarmMode().equals(PREF_ARM_HOME_PENDING)) {
                     if(PREF_ARM_HOME_PENDING.equals(getConfiguration().getAlarmMode())) {
                         alarmText.setText(R.string.text_arm_home);
                         alarmText.setTextColor(getResources().getColor(R.color.yellow));
@@ -228,17 +240,18 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
                         alarmText.setTextColor(getResources().getColor(R.color.red));
                         alarmButtonBackground.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_round_red));
                     }
-                } else if(getConfiguration().getAlarmMode().equals(Configuration.PREF_ARM_HOME) || getConfiguration().getAlarmMode().equals(PREF_ARM_AWAY)) {
-                    showAlarmDisableDialog(true);
-                }  else {
+                } else if(!getConfiguration().getAlarmMode().equals(Configuration.PREF_ARM_HOME)
+                        && !getConfiguration().getAlarmMode().equals(PREF_ARM_AWAY)
+                        && !getConfiguration().getAlarmMode().equals(PREF_TRIGGERED_PENDING)) {
                     setPendingView(PREF_ARM_PENDING);
                 }
                 break;
-            case AlarmUtils.STATE_TRIGGERED:
-                // handled in the main activity
+            case AlarmUtils.STATE_ERROR:
+                hideAlarmPendingView();
+                setDisarmedView();
                 break;
             default:
-                throw new IllegalStateException("Invalid state: " + state);
+                break;
         }
     }
 
@@ -290,9 +303,11 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
         alarmText.setTextColor(getResources().getColor(R.color.green));
         alarmButtonBackground.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_round_green));
     }
-    
+
     private void showAlarmPendingView() {
-        Timber.d("showAlarmPendingView");
+        if(alarmPendingLayout.isShown()) {
+            return;
+        }
         alarmPendingLayout.setVisibility(View.VISIBLE);
         alarmPendingView.setListener(new AlarmPendingView.ViewListener() {
             @Override
@@ -302,7 +317,7 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
         });
         alarmPendingView.startCountDown(getConfiguration().getPendingTime());
     }
-    
+
     private void hideAlarmPendingView() {
         alarmPendingLayout.setVisibility(View.GONE);
         alarmPendingView.stopCountDown();
@@ -311,7 +326,25 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
     /**
      * Shows a count down dialog before setting alarm to away
      */
-    private void showAlarmDisableDialog(boolean beep) {
+    public void showAlarmDisableDialog(boolean beep, int timeRemaining) {
+        showAlarmDisableDialog(new AlarmDisableView.ViewListener() {
+            @Override
+            public void onComplete(int pin) {
+                mListener.publishDisarmed();
+                hideDialog();
+            }
+            @Override
+            public void onError() {
+                Toast.makeText(getActivity(), R.string.toast_code_invalid, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onCancel() {
+                hideDialog();
+            }
+        }, getConfiguration().getAlarmCode(), beep, timeRemaining);
+    }
+    
+    /*private void showAlarmDisableDialog(boolean beep) {
         showAlarmDisableDialog(new AlarmDisableView.ViewListener() {
             @Override
             public void onComplete(int pin) {
@@ -329,7 +362,7 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
                 hideDialog();
             }
         }, getConfiguration().getAlarmCode(), beep);
-    }
+    }*/
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {

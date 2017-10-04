@@ -27,6 +27,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -34,8 +35,9 @@ import android.widget.LinearLayout;
 
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity;
 import com.thanksmister.iot.mqtt.alarmpanel.R;
-import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.ScreenSettingsFragment;
+import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.AboutFragment;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.AlarmSettingsFragment;
+import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.ScreenSettingsFragment;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.WeatherSettingsFragment;
 
 import butterknife.Bind;
@@ -43,10 +45,11 @@ import butterknife.ButterKnife;
 
 public class SettingsActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
     
-    private final int NUM_PAGES = 3;
+    private final int NUM_PAGES = 4;
 
     private int dotsCount;
     private ImageView[] dots;
+    private String[] settingTitles;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -58,6 +61,7 @@ public class SettingsActivity extends BaseActivity implements ViewPager.OnPageCh
     LinearLayout viewPagerIndicator;
     
     private PagerAdapter pagerAdapter;
+    private ActionBar actionBar;
     
     public static Intent createStartIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -78,7 +82,8 @@ public class SettingsActivity extends BaseActivity implements ViewPager.OnPageCh
                 getSupportActionBar().show();
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setDisplayShowHomeEnabled(true);
-                getSupportActionBar().setTitle(R.string.activity_settings_title);
+                getSupportActionBar().setTitle(R.string.text_alarm_settings);
+                actionBar = getSupportActionBar();
             }
         }
         
@@ -115,6 +120,7 @@ public class SettingsActivity extends BaseActivity implements ViewPager.OnPageCh
     private void setPageViewController() {
         dotsCount = pagerAdapter.getCount();
         dots = new ImageView[dotsCount];
+        settingTitles = getResources().getStringArray(R.array.settings_titles);
 
         for (int i = 0; i < dotsCount; i++) {
             dots[i] = new ImageView(this);
@@ -135,13 +141,17 @@ public class SettingsActivity extends BaseActivity implements ViewPager.OnPageCh
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
-    
+
     @Override
     public void onPageSelected(int position) {
         for (int i = 0; i < dotsCount; i++) {
             dots[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselecteditem_dot));
         }
         dots[position].setImageDrawable(getResources().getDrawable(R.drawable.selecteditem_dot));
+
+        if(actionBar != null) {
+            actionBar.setTitle(settingTitles[position]);
+        }
     }
     
     @Override
@@ -164,8 +174,10 @@ public class SettingsActivity extends BaseActivity implements ViewPager.OnPageCh
                     return new WeatherSettingsFragment();
                 case 2:
                     return new ScreenSettingsFragment();
+                case 3:
+                    return new AboutFragment();
                 default:
-                    return new AlarmSettingsFragment();
+                    return new AboutFragment();
             }
         }
 

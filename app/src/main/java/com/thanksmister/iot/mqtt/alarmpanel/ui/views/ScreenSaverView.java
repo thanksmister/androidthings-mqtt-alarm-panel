@@ -20,6 +20,7 @@ package com.thanksmister.iot.mqtt.alarmpanel.ui.views;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -48,13 +49,13 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 public class ScreenSaverView extends RelativeLayout {
-
+    
     @Bind(R.id.screenSaverImage)
     ImageView screenSaverImage;
 
     @Bind(R.id.screenSaverClock)
     TextView screenSaverClock;
-
+    
     private InstagramTask task;
     private String userName;
     private boolean fitToScreen;
@@ -65,6 +66,11 @@ public class ScreenSaverView extends RelativeLayout {
     private Context context;
     private String imageUrl;
     private long rotationInterval;
+    protected ViewListener listener;
+    
+    public interface ViewListener {
+        void onMotion();
+    }
 
     public ScreenSaverView(Context context) {
         super(context);
@@ -81,7 +87,7 @@ public class ScreenSaverView extends RelativeLayout {
         super.onFinishInflate();
         ButterKnife.bind(this);
     }
-
+    
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
@@ -99,19 +105,23 @@ public class ScreenSaverView extends RelativeLayout {
         if(rotationHandler != null) {
             rotationHandler.removeCallbacks(delayRotationRunnable);
         }
-
+        
         if(timeHandler != null) {
             timeHandler.removeCallbacks(timeRunnable);
         }
     }
 
-    public void setScreenSaver(Context context, boolean useImageScreenSaver, String userName, boolean fitToScreen,
+    public void setListener(@NonNull ScreenSaverView.ViewListener listener) {
+        this.listener = listener;
+    }
+    
+    public void setScreenSaver(Context context, boolean useImageScreenSaver, String userName, boolean fitToScreen, 
                                int rotationIntervalMinutes) {
         this.context = context;
         this.userName = userName;
         this.fitToScreen = fitToScreen;
-        this.rotationInterval = rotationIntervalMinutes*60*1000; // convert to milliseconds
-
+        this.rotationInterval = rotationIntervalMinutes*1000; // convert to milliseconds
+       
         if(useImageScreenSaver && !TextUtils.isEmpty(userName) ) {
             screenSaverImage.setVisibility(View.VISIBLE);
             screenSaverClock.setVisibility(View.GONE);
@@ -126,7 +136,7 @@ public class ScreenSaverView extends RelativeLayout {
             timeHandler.postDelayed(timeRunnable, 10);
         }
     }
-
+    
     private void startScreenSavor() {
         if(itemList == null || itemList.isEmpty()) {
             fetchMediaData();
@@ -183,7 +193,7 @@ public class ScreenSaverView extends RelativeLayout {
             rotationHandler.postDelayed(delayRotationRunnable, rotationInterval);
         }
     }
-
+    
     private void fetchMediaData() {
         if(task == null || task.isCancelled()) {
             final InstagramApi api = new InstagramApi();
@@ -196,13 +206,9 @@ public class ScreenSaverView extends RelativeLayout {
             });
             task.setOnCompleteListener(new InstagramTask.OnCompleteListener<Response<InstagramResponse>>() {
                 public void onComplete(Response<InstagramResponse> response) {
-                    Timber.d("Response: " + response);
-                    Timber.d("Response: " + response.code());
                     InstagramResponse instagramResponse = response.body();
-                    Timber.d("InstagramResponse: " + instagramResponse);
                     if (instagramResponse != null) {
                         itemList = instagramResponse.getItems();
-                        Timber.d("itemList: " + itemList.size());
                         startImageRotation();
                     }
                 }

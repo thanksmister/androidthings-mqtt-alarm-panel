@@ -19,67 +19,42 @@
 package com.thanksmister.iot.mqtt.alarmpanel.ui.views;
 
 import android.content.Context;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
+import android.widget.TextView;
 
 import com.thanksmister.iot.mqtt.alarmpanel.R;
-import com.todddavies.components.progressbar.ProgressWheel;
 
 import butterknife.Bind;
 
-public class AlarmDisableView extends BaseAlarmView {
+public class SettingsCodeView extends BaseAlarmView {
 
-    @Bind(R.id.countDownProgressWheel)
-    ProgressWheel countDownProgressWheel;
+    @Bind(R.id.codeTitle)
+    TextView codeTitle;
 
-    private int displaySeconds;
-    private CountDownTimer countDownTimer;
-
-    public AlarmDisableView(Context context) {
+    public SettingsCodeView(Context context) {
         super(context);
     }
 
-    public AlarmDisableView(Context context, AttributeSet attrs) {
+    public SettingsCodeView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        codeTitle.setText(R.string.text_settings_code_title);
+        buttonDel.setEnabled(false);
+        buttonDel.setVisibility(INVISIBLE);
     }
-
-    public void onCancel(){
-        codeComplete = false;
-        enteredCode = "";
-        showFilledPins(0);
+    
+    @Override
+    protected void onCancel() {
         if(listener != null) {
             listener.onCancel();
         }
-    }
-
-    public void startCountDown(int pendingTime) {
-        final int divideBy = 360/pendingTime;
-        countDownTimer = new CountDownTimer(pendingTime*1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                displaySeconds = (int) (millisUntilFinished / 1000);
-                Animation an = new RotateAnimation(0.0f, 90.0f, 250f, 273f);
-                an.setFillAfter(true);
-                countDownProgressWheel.setText(String.valueOf(displaySeconds));
-                countDownProgressWheel.setProgress(displaySeconds * divideBy);
-            }
-
-            @Override
-            public void onFinish() {
-                if(listener != null) {
-                    listener.onCancel();
-                }
-            }
-        }.start();
+        codeComplete = false;
+        enteredCode = "";
     }
 
     @Override
@@ -88,10 +63,10 @@ public class AlarmDisableView extends BaseAlarmView {
         if(handler != null) {
             handler.removeCallbacks(delayRunnable);
         }
-        if(countDownTimer != null) {
-            countDownTimer.cancel();
-            countDownTimer = null;
-        }
+    }
+
+    @Override
+    void reset() {
     }
 
     @Override
@@ -100,18 +75,13 @@ public class AlarmDisableView extends BaseAlarmView {
     }
 
     @Override
-    void reset() {
-    }
-
-    @Override
     protected void addPinCode(String code) {
-        if (codeComplete)
+        
+        if (codeComplete) 
             return;
 
         enteredCode += code;
-
-        showFilledPins(enteredCode.length());
-
+        
         if (enteredCode.length() == MAX_CODE_LENGTH) {
             codeComplete = true;
             handler = new Handler();
@@ -129,31 +99,17 @@ public class AlarmDisableView extends BaseAlarmView {
 
     @Override
     protected void removePinCode() {
-        if (codeComplete) {
-            return;
-        }
-
-        if (!TextUtils.isEmpty(enteredCode)) {
-            enteredCode = enteredCode.substring(0, enteredCode.length() - 1);
-        }
-
-        showFilledPins(enteredCode.length());
     }
 
     private void validateCode(String validateCode) {
         int codeInt = Integer.parseInt(validateCode);
         if(codeInt == code) {
-            if(countDownTimer != null) {
-                countDownTimer.cancel();
-                countDownTimer = null; 
-            }
             if(listener != null) {
                 listener.onComplete(code);
             }
         } else {
             codeComplete = false;
             enteredCode = "";
-            showFilledPins(0);
             if(listener != null) {
                 listener.onError();
             }

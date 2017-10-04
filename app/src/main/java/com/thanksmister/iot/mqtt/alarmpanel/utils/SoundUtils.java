@@ -1,20 +1,15 @@
 package com.thanksmister.iot.mqtt.alarmpanel.utils;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.os.Handler;
-import android.util.Log;
 
 import com.google.android.things.contrib.driver.pwmspeaker.Speaker;
 import com.thanksmister.iot.mqtt.alarmpanel.AlarmSounds;
 import com.thanksmister.iot.mqtt.alarmpanel.BoardDefaults;
-import com.thanksmister.iot.mqtt.alarmpanel.R;
 
 import java.io.IOException;
 
 import timber.log.Timber;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by michaelritchie on 8/25/17.
@@ -64,6 +59,7 @@ public class SoundUtils {
 
     public void playBuzzerOnButtonPress() {
 
+        destroyBuzzer();
         stopBuzzerRepeat(); // stop the buzzer if
         initSpeaker();
 

@@ -39,8 +39,6 @@ import com.thanksmister.iot.mqtt.alarmpanel.R;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmCodeView;
 
-import timber.log.Timber;
-
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_ALARM_CODE;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_BROKER;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_CLIENT_ID;
@@ -132,7 +130,7 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
         pendingPreference = (EditTextPreference) findPreference(PREF_PENDING_TIME);
         triggerPreference = (EditTextPreference) findPreference(PREF_TRIGGER_TIME);
         sslPreference = (CheckBoxPreference) findPreference(PREF_TLS_CONNECTION);
-        
+       
         if(isAdded()) {
             configuration = ((BaseActivity) getActivity()).getConfiguration();
         }
@@ -146,7 +144,7 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
         passwordPreference.setText(configuration.getPassword());
         pendingPreference.setText(String.valueOf(configuration.getPendingTime()));
         sslPreference.setChecked(configuration.getTlsConnection());
-
+       
         if(!TextUtils.isEmpty(configuration.getBroker())) {
             brokerPreference.setSummary(configuration.getBroker());
         }
@@ -166,7 +164,7 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
             userNamePreference.setSummary(configuration.getUserName());
         }
         if(!TextUtils.isEmpty(configuration.getPassword())) {
-            passwordPreference.setSummary(configuration.getPassword());
+            passwordPreference.setSummary(toStars(configuration.getPassword()));
         }
         pendingPreference.setSummary(getString(R.string.preference_summary_pending_time, String.valueOf(configuration.getPendingTime())));
         triggerPreference.setSummary(getString(R.string.preference_summary_trigger_time, String.valueOf(configuration.getTriggerTime())));
@@ -193,8 +191,12 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
                 break;
             case PREF_PORT:
                 value = portPreference.getText();
-                configuration.setPort(Integer.valueOf(value));
-                portPreference.setSummary(String.valueOf(value));
+                if (!TextUtils.isEmpty(value)) {
+                    configuration.setPort(Integer.valueOf(value));
+                    portPreference.setSummary(String.valueOf(value));
+                } else {
+                    portPreference.setText(String.valueOf(configuration.getPort()));
+                }
                 break;
             case PREF_COMMAND_TOPIC:
                 value = commandTopicPreference.getText();
@@ -214,23 +216,46 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
             case PREF_PASSWORD:
                 value = passwordPreference.getText();
                 configuration.setPassword(value);
-                passwordPreference.setSummary(value);
+                passwordPreference.setSummary(toStars(value));
                 break;
             case PREF_PENDING_TIME:
                 value = pendingPreference.getText();
-                configuration.setPendingTime(Integer.parseInt(value));
-                pendingPreference.setSummary(getString(R.string.preference_summary_pending_time, String.valueOf(configuration.getPendingTime())));
+                if (!TextUtils.isEmpty(value)) {
+                    int pendingTime = Integer.parseInt(value);
+                    configuration.setPendingTime(pendingTime);
+                    pendingPreference.setSummary(getString(R.string.preference_summary_pending_time, String.valueOf(configuration.getPendingTime())));
+                    if(pendingTime < 10) {
+                        if(isAdded()) {
+                            ((BaseActivity) getActivity()).showAlertDialog(getString(R.string.text_error_pending_time_low));
+                        }
+                    }
+                } else {
+                    pendingPreference.setText(String.valueOf(configuration.getPendingTime()));
+                }
                 break;
             case PREF_TRIGGER_TIME:
                 value = triggerPreference.getText();
-                configuration.setTriggerTime(Integer.parseInt(value));
-                triggerPreference.setSummary(getString(R.string.preference_summary_trigger_time, String.valueOf(configuration.getTriggerTime())));
+                if (!TextUtils.isEmpty(value)) {
+                    configuration.setTriggerTime(Integer.parseInt(value));
+                    triggerPreference.setSummary(getString(R.string.preference_summary_trigger_time, String.valueOf(configuration.getTriggerTime())));
+                } else {
+                    triggerPreference.setText(String.valueOf(configuration.getTriggerTime()));
+                }
                 break;
             case PREF_TLS_CONNECTION:
                 boolean checked = sslPreference.isChecked();
                 configuration.setTlsConnection(checked);
                 break;
         }
+    }
+
+    private String toStars(String text) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            sb.append('*');
+        }
+        text = sb.toString();
+        return text;
     }
 
     public void hideAlarmCodeDialog() {
@@ -241,15 +266,15 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
     }
     
     public void showAlarmCodeDialog() {
-
+        
         // store the default alarm code
         defaultCode = configuration.getAlarmCode();
-
+        
         hideAlarmCodeDialog();
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_alarm_code_set, null, false);
         final AlarmCodeView alarmCodeView = view.findViewById(R.id.alarmCodeView);
-
+       
         final TextView titleTextView = alarmCodeView.findViewById(R.id.codeTitle);
         if(confirmCode){
             titleTextView.setText(R.string.text_renter_alarm_code_title);
@@ -258,10 +283,6 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
         alarmCodeView.setListener(new AlarmCodeView.ViewListener() {
             @Override
             public void onComplete(int code) {
-                Timber.d("Code: " + code);
-                Timber.d("defaultCode: " + defaultCode);
-                Timber.d("tempCode: " + tempCode);
-
                 if(code == defaultCode) {
                     confirmCode = false;
                     hideAlarmCodeDialog();
@@ -293,24 +314,22 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
 
             @Override
             public void onCancel() {
-                confirmCode = false;
+                confirmCode = false; 
                 hideAlarmCodeDialog();
                 Toast.makeText(getActivity(), R.string.toast_code_unchanged, Toast.LENGTH_SHORT).show();
             }
         });
 
-        if(isAdded()) {
-            alarmCodeDialog = new AlertDialog.Builder(getActivity())
-                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            confirmCode = false;
-                            Toast.makeText(getActivity(), R.string.toast_code_unchanged, Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setCancelable(true)
-                    .setView(view)
-                    .show();
-        }
+        alarmCodeDialog = new AlertDialog.Builder(getActivity())
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        confirmCode = false;
+                        Toast.makeText(getActivity(), R.string.toast_code_unchanged, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setCancelable(true)
+                .setView(view)
+                .show();
     }
 }
