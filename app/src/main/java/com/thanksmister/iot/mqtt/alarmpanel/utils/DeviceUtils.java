@@ -18,13 +18,11 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.utils;
 
-import android.content.Context;
-import android.os.Build;
-import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 import timber.log.Timber;
 
@@ -33,25 +31,13 @@ public class DeviceUtils {
     private DeviceUtils(){
     }
     
-    public static String getDeviceIdHash(Context context) {
-        
+    public static String getUuIdHash() {
         String deviceId = null;
-
-        // get internal ANDROID_ID from device 
         try {
             Timber.d("Fetching Android ID");
-            deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+            deviceId = UUID.randomUUID().toString();
         } catch (Exception e) {
             Timber.e("ANDROID_ID Error: " + e.getMessage());
-        }
-
-        // if ANDROID_ID fails then get SERIAL id
-        if (deviceId == null) {
-            try {
-                deviceId = Build.SERIAL;
-            } catch (Exception e) {
-                Timber.e("Build.SERIAL Error: " + e.getMessage());
-            }
         }
         
         if(TextUtils.isEmpty(deviceId)) {
@@ -66,7 +52,7 @@ public class DeviceUtils {
         final String MD5 = "MD5";
         try {
             // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest
+            MessageDigest digest = MessageDigest
                     .getInstance(MD5);
             digest.update(s.getBytes());
             byte messageDigest[] = digest.digest();
@@ -84,6 +70,6 @@ public class DeviceUtils {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        return "";
+        return UUID.randomUUID().toString();
     }
 }

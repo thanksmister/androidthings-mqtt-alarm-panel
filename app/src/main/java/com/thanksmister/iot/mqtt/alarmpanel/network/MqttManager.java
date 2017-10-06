@@ -63,14 +63,6 @@ public class MqttManager {
      */
     public void destroyMqttConnection() {
         listener = null;
-        if(mqttAndroidClient != null &&  mqttAndroidClient.isConnected()) {
-            try {
-                mqttAndroidClient.disconnect();
-                mqttAndroidClient = null;
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public void makeMqttConnection(final Context context, final boolean tlsConnection, final String broker, final int port,
@@ -89,9 +81,10 @@ public class MqttManager {
 
         MqttConnectOptions mqttConnectOptions;
         if(!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)){
-            mqttConnectOptions = MqttUtils.getMqttConnectOptions(username, password);
+            //mqttConnectOptions = MqttUtils.getMqttConnectOptions(username, password);
+            mqttConnectOptions = MqttUtils.getMqttConnectOptions();
         } else {
-            mqttConnectOptions = MqttUtils.getMqttConnectOptions("homeassistant", "3355");
+            mqttConnectOptions = MqttUtils.getMqttConnectOptions();
         }
         mqttAndroidClient = MqttUtils.getMqttAndroidClient(context, serverUri, clientId, topic, new MqttCallbackExtended() {
             @Override
@@ -112,7 +105,7 @@ public class MqttManager {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Timber.i("Received Message : " + topic + " : " + new String(message.getPayload()));
+                Timber.i("Sent Message : " + topic + " : " + new String(message.getPayload()));
             }
 
             @Override
@@ -129,7 +122,9 @@ public class MqttManager {
                     disconnectedBufferOptions.setBufferSize(100);
                     disconnectedBufferOptions.setPersistBuffer(false);
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
-                    mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
+                    if(mqttAndroidClient != null) {
+                        mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
+                    }
                     subscribeToTopic(topic);
                 }
 
@@ -155,7 +150,7 @@ public class MqttManager {
                 mqttAndroidClient.subscribe(topic, 0, new IMqttMessageListener() {
                     @Override
                     public void messageArrived(final String topic, final MqttMessage message) throws Exception {
-                        Timber.i("Subscribe Message : " + topic + " : " + new String(message.getPayload()));
+                        Timber.i("Published Topic : " + topic + "  Payload" + new String(message.getPayload()));
                         if(listener != null) {
                             listener.subscriptionMessage(topic, new String(message.getPayload()), String.valueOf(message.getId()));
                         }
@@ -177,13 +172,13 @@ public class MqttManager {
                 MqttMessage message = new MqttMessage();
                 message.setPayload(publishMessage.getBytes());
                 mqttAndroidClient.publish(publishTopic, message);
-                Timber.d("Message Published: " + publishTopic);
+                Timber.d("Command Topic: " + publishTopic + " Payload: " + message);
                 if (!mqttAndroidClient.isConnected() && listener != null) {
                     listener.handleMqttDisconnected();
                     Timber.d("Unable to connect client.");
                 }
             } catch (MqttException e) {
-                Timber.e("Error Publishing: " + e.getMessage());
+                Timber.e("Error Sending Command: " + e.getMessage());
                 e.printStackTrace();
                 if(listener != null) {
                     listener.handleMqttException(e.getMessage());

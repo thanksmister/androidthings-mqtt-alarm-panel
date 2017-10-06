@@ -158,7 +158,8 @@
     <string name="text_error_no_alarm_setup">You are attempting to set the alarm but you haven\'t completed the MQTT setup.</string>
     <string name="text_error_pending_time_low">The pending time is the time you allow yourself to disarm the alarm or to exit before the alarm is set.  Please reconsider using a higher pending time.</string>
     <string name="text_error_mqtt_connection">Failed to connect using the following broker and port: %1$s</string>
-
+    <string name="progress_location">Acquiring location…</string>
+    
     <string-array name="settings_titles">
         <item>@string/text_alarm_settings</item>
         <item>@string/preference_title_weather_settings</item>
