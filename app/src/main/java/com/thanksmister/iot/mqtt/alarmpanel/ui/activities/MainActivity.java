@@ -33,6 +33,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.network.model.SubscriptionData;
 import com.thanksmister.iot.mqtt.alarmpanel.tasks.SubscriptionDataTask;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.ControlsFragment;
+import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmDisableView;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmTriggeredView;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.SettingsCodeView;
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils;
@@ -187,6 +188,7 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
                         || getConfiguration().getAlarmMode().equals(PREF_ARM_AWAY)) {
                     getConfiguration().setAlarmMode(PREF_TRIGGERED_PENDING);
                     awakenDeviceForAction();
+                    showAlarmDisableDialog(true, getConfiguration().getPendingTime());
                 } else {
                     awakenDeviceForAction();
                 }
@@ -252,7 +254,25 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         return dataTask;
     }
     
-    public void showSettingsCodeDialog() {
+    private void showAlarmDisableDialog(boolean beep, int timeRemaining) {
+        showAlarmDisableDialog(new AlarmDisableView.ViewListener() {
+            @Override
+            public void onComplete(int pin) {
+                publishDisarmed();
+                hideDialog();
+            }
+            @Override
+            public void onError() {
+                Toast.makeText(MainActivity.this, R.string.toast_code_invalid, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onCancel() {
+                hideDialog();
+            }
+        }, getConfiguration().getAlarmCode(), beep, timeRemaining);
+    }
+
+    private void showSettingsCodeDialog() {
         showSettingsCodeDialog(getConfiguration().getAlarmCode(), new SettingsCodeView.ViewListener() {
             @Override
             public void onComplete(int code) {
