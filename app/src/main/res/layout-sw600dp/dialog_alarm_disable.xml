@@ -25,6 +25,7 @@
         android:id="@+id/alarmDisableView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:padding="16dp"
         android:orientation="horizontal">
 
@@ -47,7 +48,7 @@
             android:layout_above="@+id/imageLayout"
             android:gravity="center"
             android:layout_alignParentTop="true"
-            android:padding="36dp">
+            android:padding="8dp">
 
             <com.todddavies.components.progressbar.ProgressWheel
                 android:id="@+id/countDownProgressWheel"

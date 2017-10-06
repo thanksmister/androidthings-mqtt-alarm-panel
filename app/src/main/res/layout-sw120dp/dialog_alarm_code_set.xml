@@ -24,11 +24,12 @@
         android:id="@+id/alarmCodeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
         android:padding="16dp"
         android:orientation="horizontal">
 
     <include layout="@layout/view_keypad"
-             android:layout_width="300dp"
+             android:layout_width="280dp"
              android:layout_height="360dp"/>
     
     <android.support.v4.widget.Space
@@ -36,7 +37,7 @@
             android:layout_height="match_parent"/>
     
     <RelativeLayout
-            android:layout_width="320dp"
+            android:layout_width="280dp"
             android:paddingTop="16dp"
             android:layout_height="360dp"
             android:orientation="vertical">

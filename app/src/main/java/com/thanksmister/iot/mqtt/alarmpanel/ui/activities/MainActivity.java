@@ -81,8 +81,6 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
 
         ButterKnife.bind(this);
 
-        getConfiguration().setFirstTime(true);
-     
         if(getConfiguration().isFirstTime()) {
             showAlertDialog(getString(R.string.dialog_first_time), new DialogInterface.OnClickListener() {
                 @Override
