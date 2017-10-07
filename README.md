@@ -6,6 +6,8 @@ This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual
 - Instructions to build your own: https://www.hackster.io/thanksmister/mqtt-alarm-control-panel-for-home-assistant-a206cc
 - Android Tablet: https://github.com/thanksmister/android-mqtt-alarm-panel
 
+![alarm_home](https://user-images.githubusercontent.com/142340/29889460-9f615642-8d9a-11e7-99a6-1a49529dd580.png)
+
 The alarm control panel acts as an interface for your own home alarm system and allows for two way communication using MQTT messaging.  You can set the alarm state to away or home, or disarm the alarm using a code.  Your home automation system will controls the sensors or automation that triggers the siren or notifies users of possible intrusion.  
 
 To use the application with Home Assistant, you need to use the [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component and have the MQTT service setup and configured. In the alarm control panel application you enter your MQTT broker address, port number, and credentials if necessary.   If you are using an automation system other than Home Assistant, you will need to use the same publish states and commands in your setup.
@@ -16,8 +18,6 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 - Command payloads: ARM_HOME, ARM_AWAY, DISARM
 - Publish topic: home/alarm
 - Publish payloads: disarmed, armed_away, armed_home, pending, triggered.
-
-![alarm_home](https://user-images.githubusercontent.com/142340/29889460-9f615642-8d9a-11e7-99a6-1a49529dd580.png)
 
 # Hardware
 
