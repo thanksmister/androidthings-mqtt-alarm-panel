@@ -1,14 +1,12 @@
 # Android Things Alarm Panel for Home Assistant
 
-This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component. However, the application can be used with any home automation platform that supports the MQTT messaging protocol such as OpenHab, Node-RED, SmartThings, and cloud-based MQTT services. This project was built using a Raspberry Pi 3 and a 7" Touchscreen display running Android Things.
+This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component. However, the application can be used with any home automation platform that supports the MQTT messaging protocol such as OpenHab, Node-RED, or a cloud-based MQTT services. This project was built using a Raspberry Pi 3 and a 7" Touchscreen display running Android Things.
 
 - Alarm Panel Video: https://youtu.be/xspCZoRIBNQ
 - Instructions to build your own: https://www.hackster.io/thanksmister/mqtt-alarm-control-panel-for-home-assistant-a206cc
 - Android Tablet: https://github.com/thanksmister/android-mqtt-alarm-panel
 
-The alarm control panel acts as an interface for your own home alarm system and allows for two way communication using MQTT messaging.  You can set the alarm state to away or home, or disarm the alarm using a code.  Your home automation system will controls the sensors or automation that triggers the siren or notifies users of possible intrusion. 
-
-The alarm control panel also some other nice features such as a weather forecast, a screensaver mode, and the ability to load your Home Assistant, HADashboard, or home automation web site.  
+The alarm control panel acts as an interface for your own home alarm system and allows for two way communication using MQTT messaging.  You can set the alarm state to away or home, or disarm the alarm using a code.  Your home automation system will controls the sensors or automation that triggers the siren or notifies users of possible intrusion.  
 
 To use the application with Home Assistant, you need to use the [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component and have the MQTT service setup and configured. In the alarm control panel application you enter your MQTT broker address, port number, and credentials if necessary.   If you are using an automation system other than Home Assistant, you will need to use the same publish states and commands in your setup.
 
