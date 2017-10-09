@@ -25,7 +25,7 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 - [7" Touchscreen Display for display](https://www.adafruit.com/product/2718).
 - [Piezo Buzzer](https://www.adafruit.com/product/160) for button feedback and sounds.
 
-# Software
+# Software to Build from Codebase (otherwise just install from release section)
 
 - [Android Things 0.4.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html)
 - Android Studio with Android SDK N or above.
@@ -45,11 +45,12 @@ Make sure you properly setup the RPi3 with the 7" Touchscreen Display.  You won'
 
 - (2) The second option is to download the latest build from the [release](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/releases/) section on Github which includes both the Android Things Preview 0.4.1 and the APK file for the MQTT control panel application. This also allows for future OTA updates.
 
- * Unzip the file to get the 'iot_rpi3.img'.
- * Burn image to an SD card using a tool like [Etcher](https://etcher.io/).
- * Insert the SD card into RPi3 and boot.  
+ * Download the latest release zip: MQTT_Alarm_Control_Panel_1.x.x.zip.
+ * Unzip the file to get the the image: iot_rpi3.img. 
+ * Burn the image to your SD card using a tool like Etcher. 
+ * Insert the SD card into RPi3 and boot.
 
-- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use both. 
+- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use WiFi and ethernet at the same time. 
 
 ```
 # Use the adb tool to connect over ethernet to the device
@@ -122,7 +123,7 @@ I have added this essential feature to the Alarm Control Panel application. The 
 
 I have also made a version of the same software that runs on Android devices which can be found on [Google Play] (https://play.google.com/store/apps/details?id=com.thanksmister.iot.mqtt.alarmpanel).
 
-At this time there is an issue dimming the brightness of the backlight for the display. So for now I have included a screen saver feature as a short-term fix until the bug is addressed by the Android Things development team.  I will update the application once I can use the screen dimming feature for Android Things.
+At this time there is an issue dimming the brightness of the backlight for the display. So for now I have included a screen saver feature as a short-term fix until the issue is addressed by the Android Things development team.  
 
 There have been multiple display issues using Android Things 0.5.0 and 0.5.1, therefore this application runs best under Android Things 0.4.1. 
 
