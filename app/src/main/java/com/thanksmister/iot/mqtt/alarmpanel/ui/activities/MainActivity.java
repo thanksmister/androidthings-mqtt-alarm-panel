@@ -81,11 +81,6 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-        
-        getConfiguration().setBroker("192.168.86.228");
-        getConfiguration().setPort(1883);
-        getConfiguration().setAlarmCode(3355);
-        getConfiguration().setFirstTime(false);
        
         if(getConfiguration().isFirstTime()) {
             showAlertDialog(getString(R.string.dialog_first_time), new DialogInterface.OnClickListener() {
