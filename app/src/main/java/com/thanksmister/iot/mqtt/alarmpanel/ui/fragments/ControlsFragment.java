@@ -82,14 +82,7 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
             if(getConfiguration().getAlarmMode().equals(Configuration.PREF_DISARM)){
                 showArmOptionsDialog();
             } else {
-                int countDownTimeRemaining = alarmPendingView.getCountDownTimeRemaining();
-                if(countDownTimeRemaining > 0) {
-                    showAlarmDisableDialog(false, countDownTimeRemaining);
-                } else {
-                    if(getConfiguration().getPendingTime() == 0) {
-                        showAlarmDisableDialog(false, getConfiguration().getPendingTime());
-                    }
-                }
+                showAlarmDisableDialog(false, Configuration.PREF_DISABLE_DIALOG_TIME);
             }
         } else {
             if(isAdded()) {
@@ -344,26 +337,6 @@ public class ControlsFragment extends BaseFragment implements LoaderManager.Load
         }, getConfiguration().getAlarmCode(), beep, timeRemaining);
     }
     
-    /*private void showAlarmDisableDialog(boolean beep) {
-        showAlarmDisableDialog(new AlarmDisableView.ViewListener() {
-            @Override
-            public void onComplete(int pin) {
-                mListener.publishDisarmed();
-                setDisarmedView();
-                hideAlarmPendingView();
-                hideDialog();
-            }
-            @Override
-            public void onError() {
-                Toast.makeText(getActivity(), R.string.toast_code_invalid, Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onCancel() {
-                hideDialog();
-            }
-        }, getConfiguration().getAlarmCode(), beep);
-    }*/
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         if(id == DATA_LOADER_ID) {

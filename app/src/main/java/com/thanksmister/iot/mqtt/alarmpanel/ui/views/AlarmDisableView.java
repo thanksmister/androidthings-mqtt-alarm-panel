@@ -62,24 +62,29 @@ public class AlarmDisableView extends BaseAlarmView {
     }
 
     public void startCountDown(int pendingTime) {
-        final int divideBy = 360/pendingTime;
-        countDownTimer = new CountDownTimer(pendingTime*1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                displaySeconds = (int) (millisUntilFinished / 1000);
-                Animation an = new RotateAnimation(0.0f, 90.0f, 250f, 273f);
-                an.setFillAfter(true);
-                countDownProgressWheel.setText(String.valueOf(displaySeconds));
-                countDownProgressWheel.setProgress(displaySeconds * divideBy);
-            }
-
-            @Override
-            public void onFinish() {
-                if(listener != null) {
-                    listener.onCancel();
+        if(pendingTime > 0) {
+            final int divideBy = 360/pendingTime;
+            countDownTimer = new CountDownTimer(pendingTime*1000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    displaySeconds = (int) (millisUntilFinished / 1000);
+                    Animation an = new RotateAnimation(0.0f, 90.0f, 250f, 273f);
+                    an.setFillAfter(true);
+                    countDownProgressWheel.setText(String.valueOf(displaySeconds));
+                    countDownProgressWheel.setProgress(displaySeconds * divideBy);
                 }
+                @Override
+                public void onFinish() {
+                    if(listener != null) {
+                        listener.onCancel();
+                    }
+                }
+            }.start();
+        } else{
+            if(listener != null) {
+                listener.onCancel();
             }
-        }.start();
+        }
     }
 
     @Override

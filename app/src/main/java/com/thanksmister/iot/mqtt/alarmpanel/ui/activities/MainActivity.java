@@ -81,7 +81,12 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-
+        
+        getConfiguration().setBroker("192.168.86.228");
+        getConfiguration().setPort(1883);
+        getConfiguration().setAlarmCode(3355);
+        getConfiguration().setFirstTime(false);
+       
         if(getConfiguration().isFirstTime()) {
             showAlertDialog(getString(R.string.dialog_first_time), new DialogInterface.OnClickListener() {
                 @Override
@@ -100,10 +105,8 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         resetInactivityTimer();
         if(mqttManager == null) {
             mqttManager = new MqttManager(this);
-            makeMqttConnection();
-        } else if (getConfiguration().reconnectNeeded()) {
-            makeMqttConnection();
         }
+        makeMqttConnection();
     }
 
     @Override
@@ -188,7 +191,9 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
                         || getConfiguration().getAlarmMode().equals(PREF_ARM_AWAY)) {
                     getConfiguration().setAlarmMode(PREF_TRIGGERED_PENDING);
                     awakenDeviceForAction();
-                    showAlarmDisableDialog(true, getConfiguration().getPendingTime());
+                    if(getConfiguration().getPendingTime() > 0) {
+                        showAlarmDisableDialog(true, getConfiguration().getPendingTime());
+                    }
                 } else {
                     awakenDeviceForAction();
                 }

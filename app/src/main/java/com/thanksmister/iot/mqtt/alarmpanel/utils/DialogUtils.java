@@ -94,7 +94,6 @@ public final class DialogUtils {
                 alarmCodeView.destroySoundUtils();
             }
         });
-        
         return disableDialog;
     }
 

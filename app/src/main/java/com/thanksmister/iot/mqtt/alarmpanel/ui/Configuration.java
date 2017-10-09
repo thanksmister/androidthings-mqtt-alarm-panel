@@ -73,6 +73,7 @@ public class Configuration {
     private static final String PREF_ALARM_MODE = "pref_alarm_mode";
     private static final String IS_DIRTY = "pref_is_dirty";
 
+    public static final int PREF_DISABLE_DIALOG_TIME = 30; // this isn't configurable
     private final long INACTIVITY_TIMEOUT =  5 * 60 * 1000; // 5 min
     private final int ROTATE_TIME_IN_MINUTES = 30; // 30 minutes
 
@@ -82,7 +83,7 @@ public class Configuration {
     }
 
     public boolean hasConnectionCriteria() {
-        return (!TextUtils.isEmpty(getBroker()) && !TextUtils.isEmpty(getStateTopic()));
+        return (!TextUtils.isEmpty(getBroker()));
     }
 
     public boolean reconnectNeeded() {

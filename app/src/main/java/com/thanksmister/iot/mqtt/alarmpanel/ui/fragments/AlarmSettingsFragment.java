@@ -46,7 +46,6 @@ import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_PENDING
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_PORT;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_STATE_TOPIC;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_TLS_CONNECTION;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_TRIGGER_TIME;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_USERNAME;
 
 public class AlarmSettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -59,7 +58,6 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
     private EditTextPreference userNamePreference;
     private EditTextPreference passwordPreference;
     private EditTextPreference pendingPreference;
-    private EditTextPreference triggerPreference;
     private CheckBoxPreference sslPreference;
     private Configuration configuration;
     private Dialog alarmCodeDialog;
@@ -126,7 +124,6 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
         userNamePreference = (EditTextPreference) findPreference(PREF_USERNAME);
         passwordPreference = (EditTextPreference) findPreference(PREF_PASSWORD);
         pendingPreference = (EditTextPreference) findPreference(PREF_PENDING_TIME);
-        triggerPreference = (EditTextPreference) findPreference(PREF_TRIGGER_TIME);
         sslPreference = (CheckBoxPreference) findPreference(PREF_TLS_CONNECTION);
        
         if(isAdded()) {
@@ -165,8 +162,7 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
             passwordPreference.setSummary(toStars(configuration.getPassword()));
         }
         pendingPreference.setSummary(getString(R.string.preference_summary_pending_time, String.valueOf(configuration.getPendingTime())));
-        triggerPreference.setSummary(getString(R.string.preference_summary_trigger_time, String.valueOf(configuration.getTriggerTime())));
-        
+      
         // the first time we need to set the alarm code
         if(configuration.isFirstTime()) {
             showAlarmCodeDialog();
@@ -179,32 +175,52 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
         switch (key) {
             case PREF_BROKER:
                 value = brokerPreference.getText();
-                configuration.setBroker(value);
-                brokerPreference.setSummary(value);
+                if (!TextUtils.isEmpty(value)) {
+                    configuration.setBroker(value);
+                    brokerPreference.setSummary(value);
+                } else if(isAdded()) {
+                    Toast.makeText(getActivity(), R.string.text_error_blank_entry, Toast.LENGTH_LONG).show();
+                }
                 break;
             case PREF_CLIENT_ID:
                 value = clientPreference.getText();
-                configuration.setClientId(value);
-                clientPreference.setSummary(value);
+                if (!TextUtils.isEmpty(value)) {
+                    configuration.setClientId(value);
+                    clientPreference.setSummary(value);
+                } else if(isAdded()) {
+                    Toast.makeText(getActivity(), R.string.text_error_blank_entry, Toast.LENGTH_LONG).show();
+                    clientPreference.setText(configuration.getClientId());
+                }
                 break;
             case PREF_PORT:
                 value = portPreference.getText();
-                if (!TextUtils.isEmpty(value)) {
+                if (value.matches("[0-9]+") && !TextUtils.isEmpty(value)) {
                     configuration.setPort(Integer.valueOf(value));
                     portPreference.setSummary(String.valueOf(value));
-                } else {
+                } else if(isAdded()) {
+                    Toast.makeText(getActivity(), R.string.text_error_only_numbers, Toast.LENGTH_LONG).show();
                     portPreference.setText(String.valueOf(configuration.getPort()));
                 }
                 break;
             case PREF_COMMAND_TOPIC:
                 value = commandTopicPreference.getText();
-                configuration.setCommandTopic(value);
-                commandTopicPreference.setSummary(value);
+                if (!TextUtils.isEmpty(value)) {
+                    configuration.setCommandTopic(value);
+                    commandTopicPreference.setSummary(value);
+                } else if(isAdded()) {
+                    Toast.makeText(getActivity(), R.string.text_error_blank_entry, Toast.LENGTH_LONG).show();
+                    commandTopicPreference.setText(configuration.getCommandTopic());
+                }
                 break;
             case PREF_STATE_TOPIC:
                 value = stateTopicPreference.getText();
-                configuration.setStateTopic(value);
-                stateTopicPreference.setSummary(value);
+                if (!TextUtils.isEmpty(value)) {
+                    configuration.setStateTopic(value);
+                    stateTopicPreference.setSummary(value);
+                }else if(isAdded()) {
+                    Toast.makeText(getActivity(), R.string.text_error_blank_entry, Toast.LENGTH_LONG).show();
+                    stateTopicPreference.setText(configuration.getStateTopic());
+                }
                 break;
             case PREF_USERNAME:
                 value = userNamePreference.getText();
@@ -218,26 +234,19 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
                 break;
             case PREF_PENDING_TIME:
                 value = pendingPreference.getText();
-                if (!TextUtils.isEmpty(value)) {
+                if (value.matches("[0-9]+") && !TextUtils.isEmpty(value)) {
                     int pendingTime = Integer.parseInt(value);
-                    configuration.setPendingTime(pendingTime);
-                    pendingPreference.setSummary(getString(R.string.preference_summary_pending_time, String.valueOf(configuration.getPendingTime())));
                     if(pendingTime < 10) {
                         if(isAdded()) {
                             ((BaseActivity) getActivity()).showAlertDialog(getString(R.string.text_error_pending_time_low));
                         }
                     }
-                } else {
+                    configuration.setPendingTime(pendingTime);
+                    pendingPreference.setText(String.valueOf(pendingTime));
+                    pendingPreference.setSummary(getString(R.string.preference_summary_pending_time, String.valueOf(pendingTime)));
+                } else if(isAdded()) {
+                    Toast.makeText(getActivity(), R.string.text_error_only_numbers, Toast.LENGTH_LONG).show();
                     pendingPreference.setText(String.valueOf(configuration.getPendingTime()));
-                }
-                break;
-            case PREF_TRIGGER_TIME:
-                value = triggerPreference.getText();
-                if (!TextUtils.isEmpty(value)) {
-                    configuration.setTriggerTime(Integer.parseInt(value));
-                    triggerPreference.setSummary(getString(R.string.preference_summary_trigger_time, String.valueOf(configuration.getTriggerTime())));
-                } else {
-                    triggerPreference.setText(String.valueOf(configuration.getTriggerTime()));
                 }
                 break;
             case PREF_TLS_CONNECTION:
