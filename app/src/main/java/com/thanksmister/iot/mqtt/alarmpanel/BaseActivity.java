@@ -172,6 +172,9 @@ abstract public class BaseActivity extends AppCompatActivity {
     }
     
     public void showAlertDialog(String message, DialogInterface.OnClickListener onClickListener) {
+        if(alertDialog != null) {
+            alertDialog.dismiss();
+        }
         alertDialog = new AlertDialog.Builder(this)
                 .setMessage(Html.fromHtml(message))
                 .setPositiveButton(android.R.string.ok, onClickListener)
@@ -179,6 +182,9 @@ abstract public class BaseActivity extends AppCompatActivity {
     }
 
     public void showAlertDialog(String message) {
+        if(alertDialog != null) {
+            alertDialog.dismiss();
+        }
         alertDialog = new AlertDialog.Builder(BaseActivity.this)
                 .setMessage(Html.fromHtml(message))
                 .setPositiveButton(android.R.string.ok, null)
