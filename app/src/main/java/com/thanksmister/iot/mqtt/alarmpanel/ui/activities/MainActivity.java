@@ -81,7 +81,7 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-       
+
         if(getConfiguration().isFirstTime()) {
             showAlertDialog(getString(R.string.dialog_first_time), new DialogInterface.OnClickListener() {
                 @Override
@@ -100,8 +100,8 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         resetInactivityTimer();
         if(mqttManager == null) {
             mqttManager = new MqttManager(this);
+            makeMqttConnection();
         }
-        makeMqttConnection();
     }
 
     @Override
@@ -112,6 +112,7 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         }
         if(mqttManager != null) {
             mqttManager.destroyMqttConnection();
+            mqttManager = null;
         }
     }
 
@@ -156,7 +157,7 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
     }
 
     private void makeMqttConnection() {
-        if(mqttManager != null && getConfiguration().hasConnectionCriteria()) {
+        if(mqttManager != null &&  getConfiguration().hasConnectionCriteria()) {
             mqttManager.makeMqttConnection(MainActivity.this, getConfiguration().getTlsConnection(),
                     getConfiguration().getBroker(), getConfiguration().getPort(), getConfiguration().getClientId(),
                     getConfiguration().getStateTopic(), getConfiguration().getUserName(), getConfiguration().getPassword());
