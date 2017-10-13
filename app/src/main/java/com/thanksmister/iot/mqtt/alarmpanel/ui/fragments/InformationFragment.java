@@ -122,8 +122,8 @@ public class InformationFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         // this picks up changes made in the settings and connects weather if needed
-        if(getConfiguration().showWeatherModule() && getConfiguration().getDarkSkyKey() != null
-                && getConfiguration().getLatitude() != null && getConfiguration().getLongitude() != null) {
+        if(getConfiguration().showWeatherModule() && readWeatherOptions().getDarkSkyKey() != null
+                && readWeatherOptions().getLatitude() != null && readWeatherOptions().getLongitude() != null) {
             if(weatherHandler != null) {
                 weatherHandler.removeCallbacks(weatherRunnable);
             }
@@ -177,10 +177,10 @@ public class InformationFragment extends BaseFragment {
             weatherModule = new WeatherModule();
         }
 
-        final String apiKey = getConfiguration().getDarkSkyKey();
-        final String units = getConfiguration().getWeatherUnits();
-        final String lat = getConfiguration().getLatitude();
-        final String lon = getConfiguration().getLongitude();
+        final String apiKey = readWeatherOptions().getDarkSkyKey();
+        final String units = readWeatherOptions().getWeatherUnits();
+        final String lat = readWeatherOptions().getLatitude();
+        final String lon = readWeatherOptions().getLongitude();
         weatherModule.getDarkSkyHourlyForecast(apiKey, units, lat, lon, new WeatherModule.ForecastListener() {
             @Override
             public void onWeatherToday(String icon, double temperature, String summary) {

@@ -27,6 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.thanksmister.iot.mqtt.alarmpanel.data.stores.StoreManager;
+import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions;
+import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions;
 import com.thanksmister.iot.mqtt.alarmpanel.network.model.Daily;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmDisableView;
@@ -70,9 +72,17 @@ public class BaseFragment extends Fragment {
     public StoreManager getStoreManager() {
         return ((BaseActivity) getActivity()).getStoreManager();
     }
-
+    
     public Configuration getConfiguration() {
         return ((BaseActivity) getActivity()).getConfiguration();
+    }
+
+    public MQTTOptions readMqttOptions() {
+        return ((BaseActivity) getActivity()).readMqttOptions();
+    }
+
+    public DarkSkyOptions readWeatherOptions() {
+        return ((BaseActivity) getActivity()).readWeatherOptions();
     }
 
     public void showAlarmDisableDialog(AlarmDisableView.ViewListener alarmCodeListener, int code, boolean beep, int timeRemaining) {
@@ -86,8 +96,28 @@ public class BaseFragment extends Fragment {
     public void showExtendedForecastDialog(Daily daily) {
         ((BaseActivity) getActivity()).showExtendedForecastDialog(daily);
     }
-    
+
     public void hideDialog() {
         ((BaseActivity) getActivity()).hideDialog();
+    }
+
+    public void hideDisableDialog() {
+        ((BaseActivity) getActivity()).hideDisableDialog();
+    }
+
+    public void hideAlertDialog() {
+        ((BaseActivity) getActivity()).hideAlertDialog();
+    }
+
+    public void hideProgressDialog() {
+        ((BaseActivity) getActivity()).hideProgressDialog();
+    }
+
+    public boolean hasNetworkConnectivity() {
+        return ((BaseActivity) getActivity()).hasNetworkConnectivity();
+    }
+
+    public void handleNetworkDisconnect() {
+        ((BaseActivity) getActivity()).handleNetworkDisconnect();
     }
 }

@@ -18,8 +18,13 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +33,7 @@ import android.widget.Toast;
 
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity;
 import com.thanksmister.iot.mqtt.alarmpanel.R;
-import com.thanksmister.iot.mqtt.alarmpanel.network.MqttManager;
+import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTService;
 import com.thanksmister.iot.mqtt.alarmpanel.network.model.SubscriptionData;
 import com.thanksmister.iot.mqtt.alarmpanel.tasks.SubscriptionDataTask;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration;
@@ -38,17 +43,21 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmTriggeredView;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.SettingsCodeView;
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import timber.log.Timber;
 
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_ARM_AWAY;
+import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_AWAY_TRIGGERED_PENDING;
+import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_HOME_TRIGGERED_PENDING;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_TRIGGERED;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_TRIGGERED_PENDING;
 
 public class MainActivity extends BaseActivity implements ControlsFragment.OnControlsFragmentListener, 
-        MqttManager.MqttManagerListener {
+        MQTTService.MqttManagerListener {
     
     @Bind(R.id.triggeredView)
     View triggeredView;
@@ -72,8 +81,8 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         showScreenSaver();
     }
 
+    private MQTTService mqttService;
     private SubscriptionDataTask subscriptionDataTask;
-    private MqttManager mqttManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,10 +106,18 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
     @Override
     public void onResume() {
         super.onResume();
+        registerReceiver(connReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        initializeMqttService();
         resetInactivityTimer();
-        if(mqttManager == null) {
-            mqttManager = new MqttManager(this);
-            makeMqttConnection();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(connReceiver);
+        } catch (IllegalArgumentException e) {
+            Timber.e(e.getMessage());
         }
     }
 
@@ -110,10 +127,7 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         if (subscriptionDataTask != null) {
             subscriptionDataTask.cancel(true);
         }
-        if(mqttManager != null) {
-            mqttManager.destroyMqttConnection();
-            mqttManager = null;
-        }
+        clearMqttService();
     }
 
     @Override
@@ -134,33 +148,60 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
         } 
         return super.onOptionsItemSelected(item);
     }
-    
-    @Override
+
+    /**
+     * We need to initialize or reset the MQTT service if our setup changes or
+     * the activity is destroyed.  
+     */
+    private void initializeMqttService() {
+        Timber.d("initializeMqttService");
+        if (mqttService == null) {
+            try {
+                mqttService = new MQTTService(getApplicationContext(), readMqttOptions(), this);
+            } catch (Throwable t) {
+                // TODO should we loop back and try again? 
+                Timber.e("Could not create MQTTPublisher" + t.getMessage());
+            }
+        } else if (readMqttOptions().hasUpdates()) {
+            Timber.d("readMqttOptions().hasUpdates(): " + readMqttOptions().hasUpdates());
+            try {
+                mqttService.reconfigure(readMqttOptions());
+            } catch (Throwable t) {
+                // TODO should we loop back and try again? 
+                Timber.e("Could not create MQTTPublisher" + t.getMessage());
+            }
+        }
+    }
+
+    private void clearMqttService() {
+        Timber.d("clearMqttService");
+        if(mqttService != null) {
+            try {
+                mqttService.close();
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            mqttService = null;
+        }
+    }
+
     public void publishArmedHome() {
-        if(mqttManager != null) {
-            mqttManager.publishArmedHome();
+        if(mqttService != null) {
+            mqttService.publish(AlarmUtils.COMMAND_ARM_HOME);
         }
     }
 
     @Override
     public void publishArmedAway() {
-        if(mqttManager != null) {
-            mqttManager.publishArmedAway();
+        if(mqttService != null) {
+            mqttService.publish(AlarmUtils.COMMAND_ARM_AWAY);
         }
     }
 
     @Override
     public void publishDisarmed() {
-        if(mqttManager != null) {
-            mqttManager.publishDisarmed();
-        }
-    }
-
-    private void makeMqttConnection() {
-        if(mqttManager != null &&  getConfiguration().hasConnectionCriteria()) {
-            mqttManager.makeMqttConnection(MainActivity.this, getConfiguration().getTlsConnection(),
-                    getConfiguration().getBroker(), getConfiguration().getPort(), getConfiguration().getClientId(),
-                    getConfiguration().getStateTopic(), getConfiguration().getUserName(), getConfiguration().getPassword());
+        if(mqttService != null) {
+            mqttService.publish(AlarmUtils.COMMAND_DISARM);
         }
     }
 
@@ -175,17 +216,28 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
             case AlarmUtils.STATE_DISARM:
                 awakenDeviceForAction();
                 resetInactivityTimer();
+                hideDisableDialog();
                 hideTriggeredView();
                 break;
             case AlarmUtils.STATE_ARM_AWAY:
             case AlarmUtils.STATE_ARM_HOME:
+                hideDisableDialog();
                 resetInactivityTimer();
                 hideDialog();
                 break;
             case AlarmUtils.STATE_PENDING:
+                hideDialog();
+                hideProgressDialog();
                 if (getConfiguration().getAlarmMode().equals(Configuration.PREF_ARM_HOME)
                         || getConfiguration().getAlarmMode().equals(PREF_ARM_AWAY)) {
                     getConfiguration().setAlarmMode(PREF_TRIGGERED_PENDING);
+                    if (getConfiguration().getAlarmMode().equals(Configuration.PREF_ARM_HOME)){
+                        getConfiguration().setAlarmMode(PREF_HOME_TRIGGERED_PENDING);
+                    } else if(getConfiguration().getAlarmMode().equals(PREF_ARM_AWAY)) {
+                        getConfiguration().setAlarmMode(PREF_AWAY_TRIGGERED_PENDING);
+                    } else {
+                        getConfiguration().setAlarmMode(PREF_TRIGGERED_PENDING);
+                    }
                     awakenDeviceForAction();
                     if(getConfiguration().getPendingTime() > 0) {
                         showAlarmDisableDialog(true, getConfiguration().getPendingTime());
@@ -195,9 +247,12 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
                 }
                 break;
             case AlarmUtils.STATE_TRIGGERED:
-                getConfiguration().setAlarmMode(PREF_TRIGGERED);
+                hideDialog();
+                hideDisableDialog();
+                hideProgressDialog();
                 awakenDeviceForAction();
                 showAlarmTriggered();
+                getConfiguration().setAlarmMode(PREF_TRIGGERED);
                 break;
             default:
                 break;
@@ -326,12 +381,36 @@ public class MainActivity extends BaseActivity implements ControlsFragment.OnCon
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         subscriptionDataTask = getUpdateMqttDataTask();
-                        subscriptionDataTask.execute(new SubscriptionData(getConfiguration().getStateTopic(), AlarmUtils.STATE_ERROR, "0"));
-                        makeMqttConnection();
+                        subscriptionDataTask.execute(new SubscriptionData(readMqttOptions().getStateTopic(), AlarmUtils.STATE_ERROR, "0"));
+                        clearMqttService();
+                        initializeMqttService();
                     }
                 });
                 Timber.d("Unable to connect client.");
             }
         });
     }
+
+    /**
+     * Network connectivity receiver to notify client of the network disconnect issues and
+     * to clear any network notifications when reconnected. It is easy for network connectivity
+     * to run amok that is why we only notify the user once for network disconnect with 
+     * a boolean flag. 
+     */
+    private BroadcastReceiver connReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+            NetworkInfo currentNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            if (currentNetworkInfo != null
+                    && currentNetworkInfo.isConnected()) {
+                Timber.d("Network Connected");
+                hasNetwork.set(true);
+                handleNetworkConnect();
+            } else if (hasNetwork.get()) {
+                Timber.d("Network Disconnected");
+                hasNetwork.set(false);
+                handleNetworkDisconnect();
+            }
+        }
+    };
 }

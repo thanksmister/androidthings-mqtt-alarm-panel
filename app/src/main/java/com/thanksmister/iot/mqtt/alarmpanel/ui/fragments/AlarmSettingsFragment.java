@@ -33,20 +33,21 @@ import android.widget.Toast;
 
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity;
 import com.thanksmister.iot.mqtt.alarmpanel.R;
+import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmCodeView;
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils;
 
+import static com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions.PREF_BROKER;
+import static com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions.PREF_CLIENT_ID;
+import static com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions.PREF_COMMAND_TOPIC;
+import static com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions.PREF_PASSWORD;
+import static com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions.PREF_PORT;
+import static com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions.PREF_STATE_TOPIC;
+import static com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions.PREF_TLS_CONNECTION;
+import static com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions.PREF_USERNAME;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_ALARM_CODE;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_BROKER;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_CLIENT_ID;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_COMMAND_TOPIC;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_PASSWORD;
 import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_PENDING_TIME;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_PORT;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_STATE_TOPIC;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_TLS_CONNECTION;
-import static com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.PREF_USERNAME;
 
 public class AlarmSettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -60,6 +61,7 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
     private EditTextPreference pendingPreference;
     private CheckBoxPreference sslPreference;
     private Configuration configuration;
+    private MQTTOptions mqttOptions;
     private Dialog alarmCodeDialog;
     private int defaultCode;
     private int tempCode;
@@ -130,36 +132,36 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
             configuration = ((BaseActivity) getActivity()).getConfiguration();
         }
         
-        brokerPreference.setText(configuration.getBroker());
-        clientPreference.setText(String.valueOf(configuration.getClientId()));
-        portPreference.setText(String.valueOf(configuration.getPort()));
-        commandTopicPreference.setText(configuration.getCommandTopic());
-        stateTopicPreference.setText(configuration.getStateTopic());
-        userNamePreference.setText(configuration.getUserName());
-        passwordPreference.setText(configuration.getPassword());
+        brokerPreference.setText(mqttOptions.getBroker());
+        clientPreference.setText(String.valueOf(mqttOptions.getClientId()));
+        portPreference.setText(String.valueOf(mqttOptions.getPort()));
+        commandTopicPreference.setText(mqttOptions.getCommandTopic());
+        stateTopicPreference.setText(mqttOptions.getStateTopic());
+        userNamePreference.setText(mqttOptions.getUsername());
+        passwordPreference.setText(mqttOptions.getPassword());
         pendingPreference.setText(String.valueOf(configuration.getPendingTime()));
-        sslPreference.setChecked(configuration.getTlsConnection());
+        sslPreference.setChecked(mqttOptions.getTlsConnection());
        
-        if(!TextUtils.isEmpty(configuration.getBroker())) {
-            brokerPreference.setSummary(configuration.getBroker());
+        if(!TextUtils.isEmpty(mqttOptions.getBroker())) {
+            brokerPreference.setSummary(mqttOptions.getBroker());
         }
-        if(!TextUtils.isEmpty(configuration.getClientId())) {
-            clientPreference.setSummary(configuration.getClientId());
+        if(!TextUtils.isEmpty(mqttOptions.getClientId())) {
+            clientPreference.setSummary(mqttOptions.getClientId());
         }
-        if(!TextUtils.isEmpty(String.valueOf(configuration.getPort()))) {
-            portPreference.setSummary(String.valueOf(configuration.getPort()));
+        if(!TextUtils.isEmpty(String.valueOf(mqttOptions.getPort()))) {
+            portPreference.setSummary(String.valueOf(mqttOptions.getPort()));
         }
-        if(!TextUtils.isEmpty(configuration.getCommandTopic())) {
-            commandTopicPreference.setSummary(configuration.getCommandTopic());
+        if(!TextUtils.isEmpty(mqttOptions.getCommandTopic())) {
+            commandTopicPreference.setSummary(mqttOptions.getCommandTopic());
         }
-        if(!TextUtils.isEmpty(configuration.getStateTopic())) {
-            stateTopicPreference.setSummary(configuration.getStateTopic());
+        if(!TextUtils.isEmpty(mqttOptions.getStateTopic())) {
+            stateTopicPreference.setSummary(mqttOptions.getStateTopic());
         }
-        if(!TextUtils.isEmpty(configuration.getUserName())) {
-            userNamePreference.setSummary(configuration.getUserName());
+        if(!TextUtils.isEmpty(mqttOptions.getUsername())) {
+            userNamePreference.setSummary(mqttOptions.getUsername());
         }
-        if(!TextUtils.isEmpty(configuration.getPassword())) {
-            passwordPreference.setSummary(toStars(configuration.getPassword()));
+        if(!TextUtils.isEmpty(mqttOptions.getPassword())) {
+            passwordPreference.setSummary(toStars(mqttOptions.getPassword()));
         }
         pendingPreference.setSummary(getString(R.string.preference_summary_pending_time, String.valueOf(configuration.getPendingTime())));
       
@@ -176,7 +178,7 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
             case PREF_BROKER:
                 value = brokerPreference.getText();
                 if (!TextUtils.isEmpty(value)) {
-                    configuration.setBroker(value);
+                    mqttOptions.setBroker(value);
                     brokerPreference.setSummary(value);
                 } else if(isAdded()) {
                     Toast.makeText(getActivity(), R.string.text_error_blank_entry, Toast.LENGTH_LONG).show();
@@ -185,51 +187,51 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
             case PREF_CLIENT_ID:
                 value = clientPreference.getText();
                 if (!TextUtils.isEmpty(value)) {
-                    configuration.setClientId(value);
+                    mqttOptions.setClientId(value);
                     clientPreference.setSummary(value);
                 } else if(isAdded()) {
                     Toast.makeText(getActivity(), R.string.text_error_blank_entry, Toast.LENGTH_LONG).show();
-                    clientPreference.setText(configuration.getClientId());
+                    clientPreference.setText(mqttOptions.getClientId());
                 }
                 break;
             case PREF_PORT:
                 value = portPreference.getText();
                 if (value.matches("[0-9]+") && !TextUtils.isEmpty(value)) {
-                    configuration.setPort(Integer.valueOf(value));
+                    mqttOptions.setPort(Integer.valueOf(value));
                     portPreference.setSummary(String.valueOf(value));
                 } else if(isAdded()) {
                     Toast.makeText(getActivity(), R.string.text_error_only_numbers, Toast.LENGTH_LONG).show();
-                    portPreference.setText(String.valueOf(configuration.getPort()));
+                    portPreference.setText(String.valueOf(mqttOptions.getPort()));
                 }
                 break;
             case PREF_COMMAND_TOPIC:
                 value = commandTopicPreference.getText();
                 if (!TextUtils.isEmpty(value)) {
-                    configuration.setCommandTopic(value);
+                    mqttOptions.setCommandTopic(value);
                     commandTopicPreference.setSummary(value);
                 } else if(isAdded()) {
                     Toast.makeText(getActivity(), R.string.text_error_blank_entry, Toast.LENGTH_LONG).show();
-                    commandTopicPreference.setText(configuration.getCommandTopic());
+                    commandTopicPreference.setText(mqttOptions.getCommandTopic());
                 }
                 break;
             case PREF_STATE_TOPIC:
                 value = stateTopicPreference.getText();
                 if (!TextUtils.isEmpty(value)) {
-                    configuration.setStateTopic(value);
+                    mqttOptions.setStateTopic(value);
                     stateTopicPreference.setSummary(value);
                 }else if(isAdded()) {
                     Toast.makeText(getActivity(), R.string.text_error_blank_entry, Toast.LENGTH_LONG).show();
-                    stateTopicPreference.setText(configuration.getStateTopic());
+                    stateTopicPreference.setText(mqttOptions.getStateTopic());
                 }
                 break;
             case PREF_USERNAME:
                 value = userNamePreference.getText();
-                configuration.setUserName(value);
+                mqttOptions.setUsername(value);
                 userNamePreference.setSummary(value);
                 break;
             case PREF_PASSWORD:
                 value = passwordPreference.getText();
-                configuration.setPassword(value);
+                mqttOptions.setPassword(value);
                 passwordPreference.setSummary(toStars(value));
                 break;
             case PREF_PENDING_TIME:
@@ -251,7 +253,7 @@ public class AlarmSettingsFragment extends PreferenceFragmentCompat implements S
                 break;
             case PREF_TLS_CONNECTION:
                 boolean checked = sslPreference.isChecked();
-                configuration.setTlsConnection(checked);
+                mqttOptions.setTlsConnection(checked);
                 break;
         }
     }

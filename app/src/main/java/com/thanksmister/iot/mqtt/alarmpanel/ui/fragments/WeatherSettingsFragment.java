@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity;
 import com.thanksmister.iot.mqtt.alarmpanel.R;
+import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions;
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration;
 import com.thanksmister.iot.mqtt.alarmpanel.utils.LocationUtils;
 
@@ -58,6 +59,7 @@ public class WeatherSettingsFragment extends PreferenceFragmentCompat
     private EditTextPreference weatherLatitude;
     private EditTextPreference weatherLongitude;
     private Configuration configuration;
+    private DarkSkyOptions weatherOptions;
     private LocationManager locationManager;
     private Handler locationHandler;
 
@@ -109,26 +111,27 @@ public class WeatherSettingsFragment extends PreferenceFragmentCompat
         
         if(isAdded()) {
             configuration = ((BaseActivity) getActivity()).getConfiguration();
+            weatherOptions = ((BaseActivity) getActivity()).readWeatherOptions();
         }
         
-        if(!TextUtils.isEmpty(configuration.getDarkSkyKey())) {
-            weatherApiKeyPreference.setText(String.valueOf(configuration.getDarkSkyKey()));
-            weatherApiKeyPreference.setSummary(String.valueOf(configuration.getDarkSkyKey()));
+        if(!TextUtils.isEmpty(weatherOptions.getDarkSkyKey())) {
+            weatherApiKeyPreference.setText(String.valueOf(weatherOptions.getDarkSkyKey()));
+            weatherApiKeyPreference.setSummary(String.valueOf(weatherOptions.getDarkSkyKey()));
         }
 
-        if(!TextUtils.isEmpty(configuration.getLatitude())) {
-            weatherLatitude.setText(String.valueOf(configuration.getLatitude()));
-            weatherLatitude.setSummary(String.valueOf(configuration.getLatitude()));
+        if(!TextUtils.isEmpty(weatherOptions.getLatitude())) {
+            weatherLatitude.setText(String.valueOf(weatherOptions.getLatitude()));
+            weatherLatitude.setSummary(String.valueOf(weatherOptions.getLatitude()));
         }
 
-        if(!TextUtils.isEmpty(configuration.getLongitude())) {
-            weatherLongitude.setText(configuration.getLongitude());
-            weatherLongitude.setSummary(configuration.getLongitude());
+        if(!TextUtils.isEmpty(weatherOptions.getLongitude())) {
+            weatherLongitude.setText(weatherOptions.getLongitude());
+            weatherLongitude.setSummary(weatherOptions.getLongitude());
         }
 
         weatherModulePreference.setChecked(configuration.showWeatherModule());
         
-        unitsPreference.setChecked(configuration.getIsCelsius());
+        unitsPreference.setChecked(weatherOptions.getIsCelsius());
         unitsPreference.setEnabled(configuration.showWeatherModule());
         weatherApiKeyPreference.setEnabled(configuration.showWeatherModule());
         weatherLatitude.setEnabled(configuration.showWeatherModule());
@@ -153,32 +156,32 @@ public class WeatherSettingsFragment extends PreferenceFragmentCompat
                 break;
             case "pref_units":
                 boolean useCelsius = unitsPreference.isChecked();
-                configuration.setIsCelsius(useCelsius);
+                weatherOptions.setIsCelsius(useCelsius);
                 break;
             case "pref_weather_api_key":
                 value = weatherApiKeyPreference.getText();
-                configuration.setDarkSkyKey(value);
+                weatherOptions.setDarkSkyKey(value);
                 weatherApiKeyPreference.setSummary(value);
                 break;
             case "pref_longitude":
                 value = weatherLongitude.getText();
                 if(LocationUtils.longitudeValid(value)) {
-                    configuration.setLon(value);
+                    weatherOptions.setLon(value);
                     weatherLongitude.setSummary(value);
                 } else {
                     Toast.makeText(getActivity(), R.string.toast_invalid_latitude, Toast.LENGTH_SHORT).show();
-                    configuration.setLon(value);
+                    weatherOptions.setLon(value);
                     weatherLongitude.setSummary("");
                 }
                 break;
             case "pref_latitude":
                 value = weatherLatitude.getText();
                 if(LocationUtils.longitudeValid(value)) {
-                    configuration.setLat(value);
+                    weatherOptions.setLat(value);
                     weatherLatitude.setSummary(value);
                 } else {
                     Toast.makeText(getActivity(), R.string.toast_invalid_longitude, Toast.LENGTH_SHORT).show();
-                    configuration.setLat(value);
+                    weatherOptions.setLat(value);
                     weatherLatitude.setSummary("");
                 }
                 break;
@@ -195,10 +198,10 @@ public class WeatherSettingsFragment extends PreferenceFragmentCompat
                     String longitude = String.valueOf(location.getLongitude());
                     if (LocationUtils.coordinatesValid(latitude, longitude)) {
                         Timber.d("setUpLocationMonitoring complete");
-                        configuration.setLat(String.valueOf(location.getLatitude()));
-                        configuration.setLon(String.valueOf(location.getLongitude()));
-                        weatherLatitude.setSummary(String.valueOf(configuration.getLatitude()));
-                        weatherLongitude.setSummary(configuration.getLongitude());
+                        weatherOptions.setLat(String.valueOf(location.getLatitude()));
+                        weatherOptions.setLon(String.valueOf(location.getLongitude()));
+                        weatherLatitude.setSummary(String.valueOf(weatherOptions.getLatitude()));
+                        weatherLongitude.setSummary(weatherOptions.getLongitude());
                     } else {
                         Toast.makeText(getActivity(), R.string.toast_invalid_coordinates, Toast.LENGTH_SHORT).show();
                     }

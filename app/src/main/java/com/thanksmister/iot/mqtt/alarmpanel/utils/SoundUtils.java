@@ -1,6 +1,7 @@
 package com.thanksmister.iot.mqtt.alarmpanel.utils;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.Handler;
 
 import com.google.android.things.contrib.driver.pwmspeaker.Speaker;
@@ -11,23 +12,17 @@ import java.io.IOException;
 
 import timber.log.Timber;
 
-/**
- * Created by michaelritchie on 8/25/17.
- */
-
-public class SoundUtils {
+public class SoundUtils extends ContextWrapper {
 
     private static final long PLAYBACK_BEEP_DELAY = 800;
     private Handler mHandler;
     private Speaker speaker;
-    private Context context;
 
-    public SoundUtils(Context context) {
-        this.context = context;
+    public SoundUtils(Context base) {
+        super(base);
     }
 
     public void destroyBuzzer() {
-
         // handle buzzer
         if (speaker != null) {
             try {
@@ -46,7 +41,6 @@ public class SoundUtils {
     }
 
     private void initSpeaker() {
-
         if(speaker == null) {
             try {
                 speaker = new Speaker(BoardDefaults.getPwmPin());
@@ -58,7 +52,6 @@ public class SoundUtils {
     }
 
     public void playBuzzerOnButtonPress() {
-
         destroyBuzzer();
         stopBuzzerRepeat(); // stop the buzzer if
         initSpeaker();

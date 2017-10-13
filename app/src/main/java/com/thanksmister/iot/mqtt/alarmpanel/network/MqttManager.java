@@ -19,6 +19,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import timber.log.Timber;
 
+@Deprecated
 public class MqttManager {
 
     private MqttManagerListener listener;
@@ -111,35 +112,33 @@ public class MqttManager {
             public void deliveryComplete(IMqttDeliveryToken token) {
             }
         });
-        
-        try {
-            if (mqttAndroidClient != null && !mqttAndroidClient.isConnected()) {
-                mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
-                    @Override
-                    public void onSuccess(IMqttToken asyncActionToken) {
-                        DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
-                        disconnectedBufferOptions.setBufferEnabled(true);
-                        disconnectedBufferOptions.setBufferSize(100);
-                        disconnectedBufferOptions.setPersistBuffer(false);
-                        disconnectedBufferOptions.setDeleteOldestMessages(false);
-                        if (mqttAndroidClient != null) {
-                            mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
-                        }
-                        subscribeToTopic(topic);
-                    }
 
-                    @Override
-                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Timber.e("Failed to connect to: " + serverUri + " exception: " + exception);
-                        if (listener != null) {
-                            listener.handleMqttException("Error connecting to the broker and port: " + serverUri);
-                        }
+        try {
+            mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
+                    disconnectedBufferOptions.setBufferEnabled(true);
+                    disconnectedBufferOptions.setBufferSize(100);
+                    disconnectedBufferOptions.setPersistBuffer(false);
+                    disconnectedBufferOptions.setDeleteOldestMessages(false);
+                    if(mqttAndroidClient != null) {
+                        mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
                     }
-                });
-            }
-        } catch(MqttException e){
+                    subscribeToTopic(topic);
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Timber.e("Failed to connect to: " + serverUri + " exception: " + exception);
+                    if(listener != null) {
+                        listener.handleMqttException("Error connecting to the broker and port: " + serverUri);
+                    }
+                }
+            });
+        } catch (MqttException e) {
             e.printStackTrace();
-            if (listener != null) {
+            if(listener != null) {
                 listener.handleMqttException("Error while connecting: " + e.getMessage());
             }
         }
