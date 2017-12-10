@@ -12,7 +12,7 @@ The alarm control panel acts as an interface for your own home alarm system and 
 
 To use the application with Home Assistant, you need to use the [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component and have the MQTT service setup and configured. In the alarm control panel application you enter your MQTT broker address, port number, and credentials if necessary.   If you are using an automation system other than Home Assistant, you will need to use the same publish states and commands in your setup.
 
-# Default Command and Publish States
+# Supported Command and Publish States
 
 - Command topic:  home/alarm/set
 - Command payloads: ARM_HOME, ARM_AWAY, DISARM
@@ -23,11 +23,11 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 
 - Raspberry Pi 3 and SD Card.
 - [7" Touchscreen Display for display](https://www.adafruit.com/product/2718).
-- [Piezo Buzzer](https://www.adafruit.com/product/160) for button feedback and sounds.
+- (Optional) Externally powered speaker for sounds.
 
-# Software to Build from Codebase (otherwise just install from release section)
+# Software to Build from Codebase (only if building from code)
 
-- [Android Things 0.4.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html)
+- [Android Things 0.6.0-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html)
 - Android Studio with Android SDK N or above.
 
 # Home Assistant Setup
@@ -41,7 +41,7 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 
 Make sure you properly setup the RPi3 with the 7" Touchscreen Display.  You won't need any special software setup if you use the The Raspberry Pi Foundation 7" Touchscreen as it's compatible with Android Things. Other compatible touch screens may require additional configuration for Android Things. There are two options for installing the setting up your RPi 3 and installing the application. 
 
-- (1) The first is to set up your RPi3 to use [Android Things 0.4.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Clone the repository and compile the APK using Android Studio, then side load the APK file onto your device running Android Things Preview 0.4.1 using the ADB tool. 
+- (1) The first is to set up your RPi3 to use [Android Things 0.6.0-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Clone the repository and compile the APK using Android Studio, then side load the APK file onto your device running Android Things Preview 0.4.1 using the ADB tool. 
 
 - (2) The second option is to download the latest build from the [release](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/releases/) section on Github which includes both the Android Things Preview 0.4.1 and the APK file for the MQTT control panel application. This also allows for future OTA updates.
 
@@ -124,8 +124,6 @@ I have added this essential feature to the Alarm Control Panel application. The 
 I have also made a version of the same software that runs on Android devices which can be found on [Google Play] (https://play.google.com/store/apps/details?id=com.thanksmister.iot.mqtt.alarmpanel).
 
 At this time there is an issue dimming the brightness of the backlight for the display. So for now I have included a screen saver feature as a short-term fix until the issue is addressed by the Android Things development team.  
-
-There have been multiple display issues using Android Things 0.5.0 and 0.5.1, therefore this application runs best under Android Things 0.4.1. 
 
 It's important that the alarm control panel settings reflect the settings of those used in the alarm control panel component. Initially the hardware control panel is set to the default settings of the alarm control panel component. There are settings options to match those used in the HASS manual alarm panel. 
 
