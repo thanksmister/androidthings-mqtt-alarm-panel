@@ -2,100 +2,76 @@ package com.thanksmister.iot.mqtt.alarmpanel.utils;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.os.Handler;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 
-import com.google.android.things.contrib.driver.pwmspeaker.Speaker;
-import com.thanksmister.iot.mqtt.alarmpanel.AlarmSounds;
-import com.thanksmister.iot.mqtt.alarmpanel.BoardDefaults;
-
-import java.io.IOException;
-
-import timber.log.Timber;
+import com.thanksmister.iot.mqtt.alarmpanel.R;
 
 public class SoundUtils extends ContextWrapper {
-
-    private static final long PLAYBACK_BEEP_DELAY = 800;
-    private Handler mHandler;
-    private Speaker speaker;
+    
+    private MediaPlayer speaker;
+    private boolean playing; 
+    private boolean repeating;
 
     public SoundUtils(Context base) {
         super(base);
     }
-
+    
     public void destroyBuzzer() {
-        // handle buzzer
-        if (speaker != null) {
-            try {
-                speaker.stop();
-                speaker.close();
-            } catch (Exception e) {
-                Timber.e("Error closing speaker " + e.getMessage());
-            } finally {
-                speaker = null;
-            }
-        }
-
-        if (mHandler != null) {
-            mHandler.removeCallbacks(mPlaybackRunnable);
-        }
-    }
-
-    private void initSpeaker() {
-        if(speaker == null) {
-            try {
-                speaker = new Speaker(BoardDefaults.getPwmPin());
-                speaker.stop(); // in case the PWM pin was enabled already
-            } catch (IOException e) {
-                Timber.e("Error initializing speaker");
-            }
-        }
-    }
-
-    public void playBuzzerOnButtonPress() {
-        destroyBuzzer();
-        stopBuzzerRepeat(); // stop the buzzer if
-        initSpeaker();
-
-        // if speaker is null try media player
-        if(speaker != null) {
-            double note = AlarmSounds.A4;
-            try {
-                speaker.play(note);
-                Thread.sleep(100);
-                speaker.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void stopBuzzerRepeat() {
-        if(mHandler != null) {
-            mHandler.removeCallbacks(mPlaybackRunnable);
-            mHandler = null;
-        }
-    }
-
-    public void playBuzzerRepeat() {
-        mHandler = new Handler();
-        mHandler.post(mPlaybackRunnable);
-    }
-
-    private Runnable mPlaybackRunnable = new Runnable() {
-        @Override
-        public void run() {
-            initSpeaker();
-            if(speaker != null) {
-                try {
-                    double note = AlarmSounds.A4;
-                    speaker.play(note);
-                    Thread.sleep(200);
+        try {
+            if (speaker != null) {
+                if(playing || repeating) {
                     speaker.stop();
-                    mHandler.postDelayed(mPlaybackRunnable, PLAYBACK_BEEP_DELAY);
-                } catch (Exception e) {
-                    Timber.e("Error initializing speaker");
+                    speaker.reset();
+                    speaker.release();
                 }
             }
+        } catch (Exception e){
+            e.printStackTrace();
         }
-    };
+        speaker = null;
+    }
+    
+    public void playBuzzerOnButtonPress() {
+
+        // stop the buzzer if repeating
+        if(repeating) {
+            stopBuzzerRepeat(); 
+            repeating = false;
+        }
+        try {
+            if(!playing) {
+                speaker = MediaPlayer.create(getApplicationContext(), R.raw.beep);
+                speaker.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    public void onCompletion(MediaPlayer mp) {
+                        mp.stop();
+                        mp.release();
+                        playing = false;
+                    }
+                });
+                playing = true;
+                speaker.start();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopBuzzerRepeat() {
+        if (speaker != null) {
+            if(speaker.isPlaying()) {
+                speaker.stop();
+            }
+            speaker.release();
+        }
+    }
+    
+    public void playBuzzerRepeat() {
+        if(speaker == null) {
+            speaker = MediaPlayer.create(getApplicationContext(), R.raw.beep_loop);
+        }
+        repeating = true;
+        speaker.setLooping(true);
+        speaker.start();
+    }
 }

@@ -20,6 +20,9 @@
                   xmlns:tools="http://schemas.android.com/tools"
                   android:id="@+id/preferenceView">
 
+
+    <PreferenceCategory android:title="@string/preference_title_screen_saver_title">
+
     <CheckBoxPreference
             android:title="@string/preference_title_screen_saver"
             android:summary="@string/preference_summary_screen_saver_settings"
@@ -63,5 +66,7 @@
             android:digits="0123456789"
             android:negativeButtonText="@android:string/cancel"
             android:positiveButtonText="@android:string/ok"/>
+
+    </PreferenceCategory>
     
 </PreferenceScreen>

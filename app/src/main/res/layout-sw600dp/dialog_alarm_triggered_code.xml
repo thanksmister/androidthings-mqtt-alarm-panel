@@ -18,17 +18,17 @@
   -->
 
 <com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmTriggeredView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:ProgressWheel="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:background="@color/red"
-        android:padding="16dp"
-        android:orientation="horizontal">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ProgressWheel="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:background="@color/red"
+    android:padding="16dp"
+    android:orientation="horizontal">
 
     <LinearLayout 
                   android:layout_width="360dp"
@@ -284,23 +284,23 @@
             </FrameLayout>
 
             <FrameLayout
-                    android:id="@+id/button0"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_gravity="center"
-                    android:layout_weight="1">
+                android:id="@+id/button0"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_weight="1">
 
                 <TextView
-                        style="?android:textAppearanceLarge"
-                        android:background="@drawable/background_right_bottom_border_red"
-                        android:textSize="@dimen/text_size_login"
-                        android:textColor="@color/white"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="0"/>
+                    style="?android:textAppearanceLarge"
+                    android:background="@drawable/background_right_bottom_border_red"
+                    android:textSize="@dimen/text_size_login"
+                    android:textColor="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="0"/>
 
             </FrameLayout>
 
@@ -343,7 +343,7 @@
         <TextView
                 android:id="@+id/codeTitle"
                 style="@style/TextAppearance.AppCompat.Large.Inverse"
-                android:textSize="96sp"
+                android:textSize="86sp"
                 android:textStyle="bold"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
@@ -355,7 +355,7 @@
         <TextView
                 android:id="@+id/codeDescription"
                 style="@style/TextAppearance.AppCompat.Large.Inverse"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textStyle="bold"

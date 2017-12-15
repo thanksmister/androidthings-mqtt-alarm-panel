@@ -1,0 +1,39 @@
+<!--
+  ~ Copyright (c) 2017. ThanksMister LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed
+  ~ under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:id="@+id/preferenceView">
+
+    <PreferenceCategory android:title="@string/pref_time_title">
+
+        <Preference
+            android:key="pref_device_time"
+            android:title="@string/pref_time_update_title"
+            android:summary="@string/pref_time_summary" />
+
+        <SwitchPreference
+            android:key="pref_device_time_server"
+            android:title="@string/pref_automatic_time_zone_title"
+            android:summary="@string/pref_automatic_time_zone_summary"/>
+
+        <SwitchPreference
+            android:key="pref_device_time_format"
+            android:title="@string/pref_time_format_title"
+            android:summary="1:00 PM" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

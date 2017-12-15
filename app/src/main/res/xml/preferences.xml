@@ -86,7 +86,7 @@
                 android:positiveButtonText="@android:string/ok"/>
 
         <EditTextPreference
-                android:key="pref_state_topic"
+                android:key="pref_alarm_topic"
                 android:title="@string/preference_title_state_topic"
                 android:summary="@string/preference_summary_state_topic"
                 android:negativeButtonText="@android:string/cancel"
