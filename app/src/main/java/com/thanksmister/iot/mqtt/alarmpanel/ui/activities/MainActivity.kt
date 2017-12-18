@@ -45,6 +45,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
+
 
 class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFragment.OnControlsFragmentListener,
         MQTTModule.MQTTListener, CameraModule.CallbackListener, MainFragment.OnMainFragmentListener, PlatformFragment.OnPlatformFragmentListener {
@@ -59,13 +61,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (viewModel.isFirstTime()) {
-            dialogUtils.showAlertDialog(getString(R.string.dialog_first_time), DialogInterface.OnClickListener { _, _ ->
-                val intent = SettingsActivity.createStartIntent(this@MainActivity)
-                startActivity(intent)
-            })
-        }
 
         mBackgroundThread = HandlerThread("BackgroundThread")
         mBackgroundThread!!.start()
@@ -91,9 +86,20 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                         when (state) {
                             AlarmUtils.STATE_DISARM,
                             AlarmUtils.STATE_ARM_AWAY,
-                            AlarmUtils.STATE_ARM_HOME -> resetInactivityTimer()
+                            AlarmUtils.STATE_ARM_HOME -> {
+                                resetInactivityTimer()
+                                //screenManager!!.setScreenOffTimeout(configuration.inactivityTime, TimeUnit.MILLISECONDS);
+                                screenManager!!.setScreenOffTimeout(3, TimeUnit.HOURS);
+                            }
+                            AlarmUtils.STATE_TRIGGERED -> {
+                                awakenDeviceForAction()
+                                stopDisconnectTimer()
+                                screenManager!!.setScreenOffTimeout(12, TimeUnit.HOURS);
+                            }
+                            AlarmUtils.STATE_PENDING -> {
+                                awakenDeviceForAction()
+                            }
                         }
-                        awakenDeviceForAction()
                     })
                 }, { error -> Timber.e("Unable to get message: " + error)}))
     }
@@ -183,12 +189,23 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     private val initializeOnBackground = Runnable {
+
+        runOnUiThread {
+            if (!isFinishing && configuration.isFirstTime) {
+                dialogUtils.showAlertDialog(this@MainActivity, getString(R.string.dialog_first_time), DialogInterface.OnClickListener { _, _ ->
+                    configuration.isFirstTime = false;
+                    val intent = SettingsActivity.createStartIntent(this@MainActivity)
+                    startActivity(intent)
+                })
+            }
+        }
+
         if (textToSpeechModule == null) {
             textToSpeechModule = TextToSpeechModule(this@MainActivity, configuration)
             lifecycle.addObserver(textToSpeechModule!!)
         }
 
-        if (mqttModule == null) {
+        if (mqttModule == null && readMqttOptions().isValid) {
             mqttModule = MQTTModule(this@MainActivity.applicationContext, readMqttOptions(),this@MainActivity)
             lifecycle.addObserver(mqttModule!!)
         }
@@ -208,8 +225,8 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
      * We need to awaken the device and allow the user to take action.
      */
     private fun awakenDeviceForAction() {
+        Timber.d("BaseActivity awakenDeviceForAction")
         stopDisconnectTimer() // stop screen saver mode
-        dialogUtils.hideScreenSaverDialog()
     }
 
     private fun captureImage() {
@@ -222,7 +239,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         if(NOTIFICATION_STATE_TOPIC == topic) {
             this@MainActivity.runOnUiThread({
                 if (viewModel.hasAlerts()) {
-                    dialogUtils.showAlertDialog(payload)
+                    dialogUtils.showAlertDialog(this@MainActivity, payload)
                 }
                 if (textToSpeechModule != null && viewModel.hasTss()) {
                     textToSpeechModule!!.speakText(payload)
@@ -239,12 +256,12 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     override fun onMQTTException(message: String) {
-        this@MainActivity.runOnUiThread { dialogUtils.showAlertDialog(message) }
+        this@MainActivity.runOnUiThread { dialogUtils.showAlertDialog(this@MainActivity, message) }
     }
 
     override fun onMQTTDisconnect() {
         this@MainActivity.runOnUiThread {
-            dialogUtils.showAlertDialog(getString(R.string.error_mqtt_connection), DialogInterface.OnClickListener { _, _ ->
+            dialogUtils.showAlertDialog(this@MainActivity, getString(R.string.error_mqtt_connection), DialogInterface.OnClickListener { _, _ ->
                 if (mqttModule != null) {
                     mqttModule!!.restart()
                 }
@@ -254,7 +271,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun onCameraException(message: String) {
         this@MainActivity.runOnUiThread {
-            dialogUtils.showAlertDialog(message)
+            dialogUtils.showAlertDialog(this@MainActivity, message)
         }
     }
 
