@@ -22,6 +22,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_ARM_
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_ARM_HOME
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_ARM_HOME_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_AWAY_TRIGGERED_PENDING
+import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_DISARM
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_HOME_TRIGGERED_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_TRIGGERED
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_TRIGGERED_PENDING
@@ -43,14 +44,14 @@ constructor(application: Application, private val dataSource: MessageDao, privat
     private var mailSubscription: Disposable? = null
 
     private var armed: Boolean = false
-    private var mode: String = Configuration.PREF_DISARM
+    private var mode: String = MODE_DISARM
     private val notificationMessage = MutableLiveData<String>()
 
     @AlarmUtils.AlarmStates
     private fun setAlarmModeFromState(state: String) {
         if(state == AlarmUtils.STATE_PENDING) {
             if (getAlarmMode().equals(MODE_ARM_HOME) || getAlarmMode().equals(MODE_ARM_AWAY)) {
-                if (getAlarmMode().equals(Configuration.PREF_ARM_HOME)){
+                if (getAlarmMode().equals(MODE_ARM_HOME)){
                     setAlarmMode(MODE_HOME_TRIGGERED_PENDING);
                 } else if(getAlarmMode().equals(MODE_ARM_AWAY)) {
                     setAlarmMode(MODE_AWAY_TRIGGERED_PENDING);
@@ -157,33 +158,7 @@ constructor(application: Application, private val dataSource: MessageDao, privat
                 }
     }
 
-    /*fun getNotificationMessage():Flowable<String> {
-        return dataSource.getMessages(NOTIFICATION_TYPE)
-                .distinct()
-                .filter {messages -> messages.isNotEmpty()}
-                .map {messages -> messages[messages.size - 1]}
-                .map {message -> message.payload}
-    }*/
-
     init {
-        /*disposable.add(getMessages()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({message ->
-                    val topic = message.topic
-                    val payload = message.payload
-                    Timber.d("topic start: " + topic)
-                    Timber.d("payload start: " + topic)
-                    if (ALARM_STATE_TOPIC == topic) {
-                        if (payload != null) {
-                            setAlarmModeFromState(payload)
-                        }
-                    } else if (NOTIFICATION_STATE_TOPIC == topic) {
-                        if (payload != null) {
-                            setNotificationPayload(payload)
-                        }
-                    }
-                }, { error -> Timber.e("Unable to get message: " + error)}))*/
     }
 
     /**

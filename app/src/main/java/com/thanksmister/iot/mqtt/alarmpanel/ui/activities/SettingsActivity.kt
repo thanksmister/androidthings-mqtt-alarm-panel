@@ -64,7 +64,7 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         }
 
         pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
-        viewPager.setAdapter(pagerAdapter)
+        viewPager.adapter = pagerAdapter
         viewPager.addOnPageChangeListener(this)
 
         setPageViewController()
@@ -81,7 +81,6 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     override fun onBackPressed() {
-
         if (viewPager.currentItem == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
@@ -96,12 +95,6 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
      * We should close this view if we have no more user activity.
      */
     override fun showScreenSaver() {
-        if (configuration.alarmMode.equals(Configuration.PREF_TRIGGERED)
-                || configuration.alarmMode.equals(Configuration.PREF_HOME_TRIGGERED_PENDING)
-                || configuration.alarmMode.equals(Configuration.PREF_AWAY_TRIGGERED_PENDING)
-                || configuration.alarmMode.equals(Configuration.PREF_TRIGGERED_PENDING)) {
-            return
-        }
         super.showScreenSaver()
         this.finish()
     }
@@ -143,8 +136,8 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
         override fun getItem(position: Int): Fragment {
             return when (position) {
-                0 -> AlarmSettingsFragment()
-                1 -> DeviceSettingsFragment()
+                0 -> DeviceSettingsFragment()
+                1 -> AlarmSettingsFragment()
                 2 -> NotificationsSettingsFragment()
                 3 -> CameraSettingsFragment()
                 4 -> WeatherSettingsFragment()

@@ -38,6 +38,18 @@ constructor(private val sharedPreferences: DPreference) {
         get() = this.sharedPreferences.getPrefLong(PREF_INACTIVITY_TIME, INACTIVITY_TIMEOUT)
         set(value) = this.sharedPreferences.setPrefLong(PREF_INACTIVITY_TIME, value)
 
+    var timeZone: String
+        get() = this.sharedPreferences.getPrefString(PREF_DEVICE_TIME_ZONE, "America/Los_Angeles")
+        set(value) = this.sharedPreferences.setPrefString(PREF_DEVICE_TIME_ZONE, value)
+
+    var screenDensity: Int
+        get() = this.sharedPreferences.getPrefInt(PREF_DEVICE_SCREEN_DENSITY, 160)
+        set(value) = this.sharedPreferences.setPrefInt(PREF_DEVICE_SCREEN_DENSITY, value)
+
+    var screenBrightness: Int
+        get() = this.sharedPreferences.getPrefInt(PREF_DEVICE_SCREEN_BRIGHTNESS, 200)
+        set(value) = this.sharedPreferences.setPrefInt(PREF_DEVICE_SCREEN_BRIGHTNESS, value)
+
     var isFirstTime: Boolean
         get() = sharedPreferences.getPrefBoolean(PREF_FIRST_TIME, true)
         set(value) = sharedPreferences.setPrefBoolean(PREF_FIRST_TIME, value)
@@ -50,18 +62,9 @@ constructor(private val sharedPreferences: DPreference) {
         get() = this.sharedPreferences.getPrefInt(PREF_DISABLE_DIALOG_TIME, AlarmUtils.DISABLE_TIME)
         set(value) = this.sharedPreferences.setPrefInt(PREF_DISABLE_DIALOG_TIME, value)
 
-
     var alarmCode: Int
         get() = this.sharedPreferences.getPrefInt(PREF_ALARM_CODE, 1234)
         set(value) = this.sharedPreferences.setPrefInt(PREF_ALARM_CODE, value)
-
-    var isArmed: Boolean
-        get() = this.sharedPreferences.getPrefBoolean(PREF_ARMED, false)
-        set(value) = this.sharedPreferences.setPrefBoolean(PREF_ARMED, value)
-
-    var alarmMode: String
-        get() = sharedPreferences.getPrefString(PREF_ALARM_MODE, PREF_DISARM).toLowerCase()
-        set(mode) = sharedPreferences.setPrefString(PREF_ALARM_MODE, mode)
 
     var timeFormat: Int
         get() = sharedPreferences.getPrefInt(PREF_DEVICE_TIME_FORMAT, 12)
@@ -95,12 +98,12 @@ constructor(private val sharedPreferences: DPreference) {
         this.sharedPreferences.setPrefBoolean(PREF_MODULE_ALERTS, value)
     }
 
-    fun showScreenSaverModule(): Boolean {
-        return sharedPreferences.getPrefBoolean(PREF_MODULE_SAVER, true)
+    fun showClockScreenSaverModule(): Boolean {
+        return sharedPreferences.getPrefBoolean(PREF_MODULE_CLOCK_SAVER, false)
     }
 
-    fun setScreenSaverModule(value: Boolean) {
-        this.sharedPreferences.setPrefBoolean(PREF_MODULE_SAVER, value)
+    fun setClockScreenSaverModule(value: Boolean) {
+        this.sharedPreferences.setPrefBoolean(PREF_MODULE_CLOCK_SAVER, value)
     }
 
     fun showPhotoScreenSaver(): Boolean {
@@ -185,11 +188,9 @@ constructor(private val sharedPreferences: DPreference) {
      */
     fun reset() {
         sharedPreferences.removePreference(PREF_ALARM_MODE)
-        sharedPreferences.removePreference(PREF_ARMED)
         sharedPreferences.removePreference(PREF_PENDING_TIME)
-        sharedPreferences.removePreference(PREF_MODULE_SAVER)
+        sharedPreferences.removePreference(PREF_MODULE_CLOCK_SAVER)
         sharedPreferences.removePreference(PREF_MODULE_PHOTO_SAVER)
-        sharedPreferences.removePreference(PREF_ARM_PENDING)
         sharedPreferences.removePreference(PREF_INACTIVITY_TIME)
         sharedPreferences.removePreference(PREF_MODULE_WEATHER)
         sharedPreferences.removePreference(PREF_MODULE_WEB)
@@ -206,22 +207,18 @@ constructor(private val sharedPreferences: DPreference) {
         sharedPreferences.removePreference(PREF_CAMERA_ROTATE)
         sharedPreferences.removePreference(PREF_MODULE_TSS)
         sharedPreferences.removePreference(PREF_MODULE_ALERTS)
+        sharedPreferences.removePreference(PREF_DEVICE_SCREEN_DENSITY)
+        sharedPreferences.removePreference(PREF_DEVICE_TIME_ZONE)
+        sharedPreferences.removePreference(PREF_DEVICE_TIME)
+        sharedPreferences.removePreference(PREF_DEVICE_TIME_FORMAT)
+        sharedPreferences.removePreference(PREF_DEVICE_TIME_SERVER)
+        sharedPreferences.removePreference(PREF_DEVICE_SCREEN_BRIGHTNESS)
     }
 
     companion object {
         @JvmField val PREF_PENDING_TIME = "pref_pending_time"
         @JvmField val PREF_ALARM_CODE = "pref_alarm_code"
-        @JvmField val PREF_ARM_HOME = "arm_home"
-        @JvmField val PREF_ARM_HOME_PENDING = "arm_home_pending"
-        @JvmField val PREF_ARM_PENDING = "arm_pending"
-        @JvmField val PREF_ARM_AWAY = "arm_away"
-        @JvmField val PREF_ARM_AWAY_PENDING = "arm_away_pending"
-        @JvmField val PREF_DISARM = "disarm"
-        @JvmField val PREF_TRIGGERED = "triggered"
-        @JvmField val PREF_TRIGGERED_PENDING = "triggered_pending"
-        @JvmField val PREF_AWAY_TRIGGERED_PENDING = "triggered_away_pending"
-        @JvmField val PREF_HOME_TRIGGERED_PENDING = "triggered_home_pending"
-        @JvmField val PREF_MODULE_SAVER = "pref_module_saver"
+        @JvmField val PREF_MODULE_CLOCK_SAVER = "pref_module_saver_clock"
         @JvmField val PREF_MODULE_PHOTO_SAVER = "pref_module_saver_photo"
         @JvmField val PREF_IMAGE_SOURCE = "pref_image_source"
         @JvmField val PREF_IMAGE_FIT_SIZE = "pref_image_fit"
@@ -241,11 +238,13 @@ constructor(private val sharedPreferences: DPreference) {
         private val PREF_MODULE_WEATHER = "pref_module_weather"
         @JvmField val PREF_MODULE_WEB = "pref_module_web"
         @JvmField val PREF_WEB_URL = "pref_web_url"
-        private val PREF_ARMED = "pref_armed"
         private val PREF_FIRST_TIME = "pref_first_time"
         private val PREF_ALARM_MODE = "pref_alarm_mode"
         @JvmField val PREF_DEVICE_TIME_SERVER = "pref_device_time_server"
         @JvmField val PREF_DEVICE_TIME_FORMAT = "pref_device_time_format"
         @JvmField val PREF_DEVICE_TIME = "pref_device_time"
+        @JvmField val PREF_DEVICE_TIME_ZONE = "pref_device_time_zone"
+        @JvmField val PREF_DEVICE_SCREEN_DENSITY = "pref_device_density"
+        @JvmField val PREF_DEVICE_SCREEN_BRIGHTNESS = "pref_device_brightness"
     }
 }

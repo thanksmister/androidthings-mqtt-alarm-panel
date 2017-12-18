@@ -122,7 +122,7 @@ class ControlsFragment : BaseFragment() {
                 }
             } else {
                 if (isAdded) {
-                    dialogUtils.showAlertDialog(getString(R.string.text_error_no_alarm_setup))
+                    dialogUtils.showAlertDialog(activity as BaseActivity, getString(R.string.text_error_no_alarm_setup))
                 }
             }
         }
@@ -146,14 +146,14 @@ class ControlsFragment : BaseFragment() {
                                 dialogUtils.clearDialogs()
                                 hideAlarmPendingView()
                                 viewModel.isArmed(true)
-                                viewModel.setAlarmMode(Configuration.PREF_ARM_AWAY)
+                                viewModel.setAlarmMode(MODE_ARM_AWAY)
                                 setArmedAwayView()
                             }
                             AlarmUtils.STATE_ARM_HOME -> {
                                 dialogUtils.clearDialogs()
                                 hideAlarmPendingView()
                                 viewModel.isArmed(true)
-                                viewModel.setAlarmMode(Configuration.PREF_ARM_HOME)
+                                viewModel.setAlarmMode(MODE_ARM_HOME)
                                 setArmedHomeView()
                             }
                             AlarmUtils.STATE_DISARM -> {

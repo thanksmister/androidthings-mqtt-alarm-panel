@@ -40,7 +40,6 @@
     <Preference
         android:key="pref_description"
         android:selectable="false"
-        android:enabled="false"
         android:summary="@string/preference_web_description" />
 
 

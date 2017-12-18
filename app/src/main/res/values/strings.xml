@@ -40,7 +40,7 @@
     <string name="preference_summary_username">Set the service username (if needed).</string>
     <string name="preference_title_password">Password</string>
     <string name="preference_summary_password">Set the service password (if needed).</string>
-    <string name="preference_title_alarm">Alarm</string>
+    <string name="preference_title_alarm">Alarm Settings</string>
     <string name="preference_summary_alarm">Alarm code settings</string>
     <string name="preference_title_pending_time">Pending Time</string>
     <string name="preference_summary_pending_time">The time in seconds before arming the alarm. Currently %1$s seconds.</string>
@@ -89,9 +89,9 @@
     <string name="preference_title_notification">Notifications</string>
     <string name="preference_summary_notification">Show a notification if the alarm is triggered.</string>
 
-    <string name="preference_title_inactivity">Sleep</string>
-    <string name="preference_summary_inactivity_seconds">After %1$s seconds of inactivity.</string>
-    <string name="preference_summary_inactivity_minutes">After %1$s minute(s) of inactivity.</string>
+    <string name="preference_title_inactivity">Screen time out</string>
+    <string name="preference_summary_inactivity_seconds">After %1$s seconds of inactivity screen dims.</string>
+    <string name="preference_summary_inactivity_minutes">After %1$s minute(s) of inactivity screen dims.</string>
 
 
     <string name="preference_title_notifications">Notifications</string>
@@ -147,7 +147,7 @@
     <string name="text_system">SYSTEM</string>
     <string name="text_disarmed">DISARMED</string>
     <string name="dialog_alarm_triggered">ENTER CODE TO DISMISS</string>
-    <string name="dialog_first_time">Since this is your first time, please setup your MQTT and Alarm information. The default alarm code is 1234.</string>
+    <string name="dialog_first_time">Since this is your first time, please setup your device, MQTT server, and alarm information (the default alarm code is 1234).</string>
     <string name="text_alarm_pending">ALARM PENDING</string>
     <string name="text_f">°F</string>
     <string name="text_c">°C</string>
@@ -188,7 +188,7 @@
     <string name="text_license_information">License information</string>
     <string name="text_github_code">GitHub code</string>
     <string name="text_about">About</string>
-    <string name="text_alarm_settings">Alarm Settings</string>
+    <string name="text_alarm_settings">Device Settings</string>
     <string name="notification_channel_name">Entry Detection / Alarm Triggered</string>
     <string name="text_channel_description">Alarm Panel Notifications</string>
     <string name="text_notification_entry_title">Entry Detected</string>
@@ -220,11 +220,17 @@
     <string name="pref_time_summary">Update the device time.</string>
     <string name="pref_time_format_title">Use 24-hour format</string>
     <string name="text_dialog_select_time">Select Time</string>
+    <string name="pref_density_summary">Change the screen density. Currently %1$sdpi.</string>
+    <string name="pref_device_brightness_summary">Set the screen brightness between 0 and 255. Currently %1$s.</string>
+    <string name="pref_device_density_title">Screen Density</string>
+    <string name="pref_device_brightness_title">Screen Brightness</string>
+    <string name="pref_reset_category">Reset</string>
+    <string name="pref_reset_title">Clear settings</string>
+    <string name="pref_reset_summary">Clears all settings and returns device to default settings.</string>
 
     <string-array name="settings_titles">
-        <item>@string/preference_title_alarm</item>
         <item>@string/pref_time_title</item>
-        <item>@string/preference_title_notification</item>
+        <item>@string/preference_title_alarm</item>
         <item>@string/preference_title_notification</item>
         <item>@string/preference_camera_title</item>
         <item>@string/preference_title_weather_settings</item>
@@ -267,6 +273,182 @@
         <item>-90f</item>
         <item>90f</item>
         <item>180f</item>
+    </string-array>
+
+    <string-array name="time_zones">
+        <item id="Pacific/Majuro">Marshall Islands</item>
+        <item id="Pacific/Midway">Midway Island</item>
+        <item id="Pacific/Honolulu">Hawaii</item>
+        <item id="America/Anchorage">Alaska</item>
+        <item id="America/Los_Angeles">Pacific Time</item>
+        <item id="America/Tijuana">Tijuana</item>
+        <item id="America/Phoenix">Arizona</item>
+        <item id="America/Chihuahua">Chihuahua</item>
+        <item id="America/Denver">Mountain Time</item>
+        <item id="America/Costa_Rica">Central America</item>
+        <item id="America/Chicago">Central Time</item>
+        <item id="America/Mexico_City">Mexico City</item>
+        <item id="America/Regina">Saskatchewan</item>
+        <item id="America/Bogota">Bogota</item>
+        <item id="America/New_York">Eastern Time</item>
+        <item id="America/Caracas">Venezuela</item>
+        <item id="America/Barbados">Atlantic Time (Barbados)</item>
+        <item id="America/Halifax">Atlantic Time (Canada)</item>
+        <item id="America/Manaus">Manaus</item>
+        <item id="America/Santiago">Santiago</item>
+        <item id="America/St_Johns">Newfoundland</item>
+        <item id="America/Sao_Paulo">Brasilia</item>
+        <item id="America/Argentina/Buenos_Aires">Buenos Aires</item>
+        <item id="America/Godthab">Greenland</item>
+        <item id="America/Montevideo">Montevideo</item>
+        <item id="Atlantic/South_Georgia">Mid-Atlantic</item>
+        <item id="Atlantic/Azores">Azores</item>
+        <item id="Atlantic/Cape_Verde">Cape Verde Islands</item>
+        <item id="Africa/Casablanca">Casablanca</item>
+        <item id="Europe/London">London, Dublin</item>
+        <item id="Europe/Amsterdam">Amsterdam, Berlin</item>
+        <item id="Europe/Belgrade">Belgrade</item>
+        <item id="Europe/Brussels">Brussels</item>
+        <item id="Europe/Sarajevo">Sarajevo</item>
+        <item id="Africa/Windhoek">Windhoek</item>
+        <item id="Africa/Brazzaville">W. Africa Time</item>
+        <item id="Asia/Amman">Amman, Jordan</item>
+        <item id="Europe/Athens">Athens, Istanbul</item>
+        <item id="Asia/Beirut">Beirut, Lebanon</item>
+        <item id="Africa/Cairo">Cairo</item>
+        <item id="Europe/Helsinki">Helsinki</item>
+        <item id="Asia/Jerusalem">Jerusalem</item>
+        <item id="Europe/Minsk">Minsk</item>
+        <item id="Africa/Harare">Harare</item>
+        <item id="Asia/Baghdad">Baghdad</item>
+        <item id="Europe/Moscow">Moscow</item>
+        <item id="Asia/Kuwait">Kuwait</item>
+        <item id="Africa/Nairobi">Nairobi</item>
+        <item id="Asia/Tehran">Tehran</item>
+        <item id="Asia/Baku">Baku</item>
+        <item id="Asia/Tbilisi">Tbilisi</item>
+        <item id="Asia/Yerevan">Yerevan</item>
+        <item id="Asia/Dubai">Dubai</item>
+        <item id="Asia/Kabul">Kabul</item>
+        <item id="Asia/Karachi">Islamabad, Karachi</item>
+        <item id="Asia/Oral">Ural'sk</item>
+        <item id="Asia/Yekaterinburg">Yekaterinburg</item>
+        <item id="Asia/Calcutta">Kolkata</item>
+        <item id="Asia/Colombo">Sri Lanka</item>
+        <item id="Asia/Katmandu">Kathmandu</item>
+        <item id="Asia/Almaty">Astana</item>
+        <item id="Asia/Rangoon">Yangon</item>
+        <item id="Asia/Krasnoyarsk">Krasnoyarsk</item>
+        <item id="Asia/Bangkok">Bangkok</item>
+        <item id="Asia/Jakarta">Jakarta</item>
+        <item id="Asia/Shanghai">Beijing</item>
+        <item id="Asia/Hong_Kong">Hong Kong</item>
+        <item id="Asia/Irkutsk">Irkutsk</item>
+        <item id="Asia/Kuala_Lumpur">Kuala Lumpur</item>
+        <item id="Australia/Perth">Perth</item>
+        <item id="Asia/Taipei">Taipei</item>
+        <item id="Asia/Seoul">Seoul</item>
+        <item id="Asia/Tokyo">Tokyo, Osaka</item>
+        <item id="Asia/Yakutsk">Yakutsk</item>
+        <item id="Australia/Adelaide">Adelaide</item>
+        <item id="Australia/Darwin">Darwin</item>
+        <item id="Australia/Brisbane">Brisbane</item>
+        <item id="Australia/Hobart">Hobart</item>
+        <item id="Australia/Sydney">Sydney, Canberra</item>
+        <item id="Asia/Vladivostok">Vladivostok</item>
+        <item id="Pacific/Guam">Guam</item>
+        <item id="Asia/Magadan">Magadan</item>
+        <item id="Pacific/Auckland">Auckland</item>
+        <item id="Pacific/Fiji">Fiji</item>
+        <item id="Pacific/Tongatapu">Tonga</item>
+    </string-array>
+
+    <string-array name="time_zones_values">
+        <item id="Pacific/Majuro">Pacific/Majuro</item>
+        <item id="Pacific/Midway">Pacific/Midway</item>
+        <item id="Pacific/Honolulu">Pacific/Honolulu</item>
+        <item id="America/Anchorage">America/Anchorage</item>
+        <item id="America/Los_Angeles">America/Los_Angeles</item>
+        <item id="America/Tijuana">America/Tijuana</item>
+        <item id="America/Phoenix">America/Phoenix</item>
+        <item id="America/Chihuahua">America/Chihuahua</item>
+        <item id="America/Denver">America/Denver</item>
+        <item id="America/Costa_Rica">America/Costa_Rica</item>
+        <item id="America/Chicago">America/Chicago</item>
+        <item id="America/Mexico_City">America/Mexico_City</item>
+        <item id="America/Regina">America/Regina</item>
+        <item id="America/Bogota">America/Bogota</item>
+        <item id="America/New_York">America/New_York</item>
+        <item id="America/Caracas">America/Caracas</item>
+        <item id="America/Barbados">America/Barbados</item>
+        <item id="America/Halifax">BaseActivity</item>
+        <item id="America/Manaus">America/Manaus</item>
+        <item id="America/Santiago">America/Santiago</item>
+        <item id="America/St_Johns">America/St_Johns</item>
+        <item id="America/Sao_Paulo">America/Sao_Paulo</item>
+        <item id="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires</item>
+        <item id="America/Godthab">America/Godthab</item>
+        <item id="America/Montevideo">America/Montevideo</item>
+        <item id="Atlantic/South_Georgia">Atlantic/South_Georgia</item>
+        <item id="Atlantic/Azores">Atlantic/Azore</item>
+        <item id="Atlantic/Cape_Verde">Atlantic/Cape_Verde</item>
+        <item id="Africa/Casablanca">Africa/Casablanca</item>
+        <item id="Europe/London">Europe/London</item>
+        <item id="Europe/Amsterdam">Europe/Amsterdam</item>
+        <item id="Europe/Belgrade">Europe/Belgrade</item>
+        <item id="Europe/Brussels">urope/Brussels</item>
+        <item id="Europe/Sarajevo">Europe/Sarajevo</item>
+        <item id="Africa/Windhoek">Africa/Windhoek</item>
+        <item id="Africa/Brazzaville">Africa/Brazzaville</item>
+        <item id="Asia/Amman">Asia/Amman</item>
+        <item id="Europe/Athens">Europe/Athens</item>
+        <item id="Asia/Beirut">Asia/Beirut</item>
+        <item id="Africa/Cairo">Africa/Cairo</item>
+        <item id="Europe/Helsinki">Europe/Helsinki</item>
+        <item id="Asia/Jerusalem">sia/Jerusalem</item>
+        <item id="Europe/Minsk">Europe/Minsk</item>
+        <item id="Africa/Harare">Africa/Harare</item>
+        <item id="Asia/Baghdad">Asia/Baghdad</item>
+        <item id="Europe/Moscow">Europe/Moscow</item>
+        <item id="Asia/Kuwait">Asia/Kuwait</item>
+        <item id="Africa/Nairobi">Africa/Nairobi</item>
+        <item id="Asia/Tehran">Asia/Tehran</item>
+        <item id="Asia/Baku">Asia/Baku"</item>
+        <item id="Asia/Tbilisi">Asia/Tbilisi</item>
+        <item id="Asia/Yerevan">Asia/Yerevan</item>
+        <item id="Asia/Dubai">Asia/Dubai</item>
+        <item id="Asia/Kabul">Asia/Kabul</item>
+        <item id="Asia/Karachi">Asia/Karachi</item>
+        <item id="Asia/Oral">Asia/Oral</item>
+        <item id="Asia/Yekaterinburg">Asia/Yekaterinburg</item>
+        <item id="Asia/Calcutta">Asia/Calcutta</item>
+        <item id="Asia/Colombo">Asia/Colombo</item>
+        <item id="Asia/Katmandu">Asia/Katmandu</item>
+        <item id="Asia/Almaty">Asia/Almaty</item>
+        <item id="Asia/Rangoon">Asia/Rangoon</item>
+        <item id="Asia/Krasnoyarsk">Asia/Krasnoyarsk</item>
+        <item id="Asia/Bangkok">Asia/Bangkok</item>
+        <item id="Asia/Jakarta">Asia/Jakarta</item>
+        <item id="Asia/Shanghai">Asia/Shanghai</item>
+        <item id="Asia/Hong_Kong">Asia/Hong_Kong</item>
+        <item id="Asia/Irkutsk">Asia/Irkutsk</item>
+        <item id="Asia/Kuala_Lumpur">Asia/Kuala_Lumpur</item>
+        <item id="Australia/Perth">Australia/Perth</item>
+        <item id="Asia/Taipei">Asia/Taipei</item>
+        <item id="Asia/Seoul">Asia/Seoul</item>
+        <item id="Asia/Tokyo">Asia/Tokyo</item>
+        <item id="Asia/Yakutsk">Asia/Yakutsk</item>
+        <item id="Australia/Adelaide">Australia/Adelaide</item>
+        <item id="Australia/Darwin">Australia/Darwin</item>
+        <item id="Australia/Brisbane">Australia/Brisbane</item>
+        <item id="Australia/Hobart">Australia/Hobart"</item>
+        <item id="Australia/Sydney">Australia/Sydney</item>
+        <item id="Asia/Vladivostok">Asia/Vladivostok</item>
+        <item id="Pacific/Guam">Pacific/Guam</item>
+        <item id="Asia/Magadan">Asia/Magadan</item>
+        <item id="Pacific/Auckland">Pacific/Auckland</item>
+        <item id="Pacific/Fiji">Pacific/Fiji</item>
+        <item id="Pacific/Tongatapu">Pacific/Tongatapu</item>
     </string-array>
 
 </resources>

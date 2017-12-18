@@ -22,6 +22,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.support.v14.preference.SwitchPreference
+import android.support.v7.preference.ListPreference
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.View
@@ -31,10 +32,20 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_FORMAT
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_SERVER
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_ZONE
 import dagger.android.support.AndroidSupportInjection
+import timber.log.Timber
 import java.text.DateFormat
 import java.util.*
 import javax.inject.Inject
+import android.content.Intent
+import android.provider.Settings.ACTION_WIFI_SETTINGS
+import android.support.v7.preference.EditTextPreference
+import android.support.v7.preference.Preference.OnPreferenceClickListener
+import com.google.android.things.device.ScreenManager
+import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_BRIGHTNESS
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_DENSITY
 
 
 class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -44,7 +55,12 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
     private var serverPreference: SwitchPreference? = null
     private var formatPreference: SwitchPreference? = null
     private var timePreference: Preference? = null
+    private var resetPreference: Preference? = null
+    private var densityPreference: EditTextPreference? = null
+    private var brightnessPreference: EditTextPreference? = null
+    private var timeZonePreference: ListPreference? = null
     private val timeManager = TimeManager()
+    private val screenManager = ScreenManager(ScreenManager.BRIGHTNESS_MODE_MANUAL)
 
     override fun onAttach(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -80,10 +96,32 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
         super.onViewCreated(view, savedInstanceState)
 
+        resetPreference = findPreference("pref_device_reset") as EditTextPreference
+        resetPreference!!.onPreferenceClickListener = OnPreferenceClickListener {
+            configuration.reset()
+            activity!!.finish();
+            true
+        }
+
+        brightnessPreference = findPreference(PREF_DEVICE_SCREEN_BRIGHTNESS) as EditTextPreference
+        brightnessPreference!!.setDefaultValue(configuration.screenBrightness)
+        brightnessPreference!!.summary = getString(R.string.pref_device_brightness_summary, configuration.screenBrightness.toString())
+
+        densityPreference = findPreference(PREF_DEVICE_SCREEN_DENSITY) as EditTextPreference
+        densityPreference!!.setDefaultValue(configuration.screenDensity)
+        densityPreference!!.summary = getString(R.string.pref_density_summary, configuration.screenDensity.toString())
+
         timePreference = findPreference(PREF_DEVICE_TIME) as Preference
-        timePreference!!.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        timePreference!!.onPreferenceClickListener = OnPreferenceClickListener {
             showTimePicker();
             true
+        }
+
+        try {
+            timeZonePreference = findPreference(PREF_DEVICE_TIME_ZONE) as ListPreference
+            timeZonePreference!!.setDefaultValue(configuration.timeZone)
+        } catch (e : Exception) {
+            Timber.e(e.message)
         }
 
         serverPreference = findPreference(PREF_DEVICE_TIME_SERVER) as SwitchPreference
@@ -95,7 +133,10 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
         if(configuration.useTimeServer) {
             timeManager.setAutoTimeEnabled(configuration.useTimeServer)
+        } else {
+            timeZonePreference!!.isEnabled = true
         }
+
         if(configuration.timeFormat == TimeManager.FORMAT_12) {
             timeManager.setTimeFormat(TimeManager.FORMAT_12)
             formatPreference!!.summary = "1:00 PM"
@@ -114,7 +155,7 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         val mTimePicker: TimePickerDialog
         val is24Hour = (configuration.timeFormat == TimeManager.FORMAT_24)
         mTimePicker = TimePickerDialog(context, TimePickerDialog.OnTimeSetListener {
-            timePicker, selectedHour, selectedMinute ->
+            _, selectedHour, selectedMinute ->
             setTime(selectedHour, selectedMinute)
         }, hour, minute, is24Hour) // Yes 24 hour time
         mTimePicker.setTitle(getString(R.string.text_dialog_select_time))
@@ -150,6 +191,23 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 val checked = serverPreference!!.isChecked
                 timeManager.setAutoTimeEnabled(checked)
                 configuration.useTimeServer = checked
+                timeZonePreference!!.isEnabled = !checked
+            }
+            PREF_DEVICE_TIME_ZONE -> {
+                val timezone = timeZonePreference!!.value
+                configuration.timeZone = timezone
+                timeManager.setTimeZone(timezone)
+            }
+            PREF_DEVICE_SCREEN_DENSITY -> {
+                val density = densityPreference!!.text.toInt()
+                configuration.screenDensity = density
+                densityPreference!!.summary = getString(R.string.pref_density_summary, density.toString())
+            }
+            PREF_DEVICE_SCREEN_BRIGHTNESS -> {
+                val brightness = brightnessPreference!!.text.toInt()
+                configuration.screenBrightness = brightness
+                brightnessPreference!!.summary = getString(R.string.pref_device_brightness_summary, brightness.toString())
+                screenManager.setBrightness(brightness)
             }
         }
     }

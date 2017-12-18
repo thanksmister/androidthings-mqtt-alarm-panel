@@ -17,6 +17,22 @@
                   xmlns:tools="http://schemas.android.com/tools"
                   android:id="@+id/preferenceView">
 
+    <PreferenceCategory android:title="Display Settings">
+
+        <EditTextPreference
+            android:key="pref_device_density"
+            android:title="@string/pref_device_density_title"
+            android:inputType="number"
+            android:summary="@string/pref_density_summary"/>
+
+        <EditTextPreference
+            android:key="pref_device_brightness"
+            android:title="@string/pref_device_brightness_title"
+            android:inputType="number"
+            android:summary="@string/pref_device_brightness_summary"/>
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_time_title">
 
         <Preference
@@ -29,10 +45,26 @@
             android:title="@string/pref_automatic_time_zone_title"
             android:summary="@string/pref_automatic_time_zone_summary"/>
 
+        <ListPreference
+            android:key="pref_device_time_zone"
+            android:enabled="false"
+            android:title="Select Time Zone"
+            android:entries="@array/time_zones"
+            android:entryValues="@array/time_zones_values"/>
+
         <SwitchPreference
             android:key="pref_device_time_format"
             android:title="@string/pref_time_format_title"
             android:summary="1:00 PM" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_reset_category">
+
+        <EditTextPreference
+            android:key="pref_device_reset"
+            android:title="@string/pref_reset_title"
+            android:summary="@string/pref_reset_summary"/>
 
     </PreferenceCategory>
 

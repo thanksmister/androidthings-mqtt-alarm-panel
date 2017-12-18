@@ -85,17 +85,20 @@ class MainFragment : BaseFragment() {
             val intent = LogActivity.createStartIntent(activity!!.applicationContext)
             startActivity(intent)
         })
+    }
 
-        if (configuration.hasPlatformModule() && !TextUtils.isEmpty(configuration.webUrl)) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_main, container, false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (viewModel.hasPlatform()) {
             platformButton.visibility = View.VISIBLE;
             platformButton.setOnClickListener(View.OnClickListener {listener?.navigatePlatformPanel() })
         } else {
             platformButton.visibility = View.INVISIBLE;
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
     override fun onDetach() {

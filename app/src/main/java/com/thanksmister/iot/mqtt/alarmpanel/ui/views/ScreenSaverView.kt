@@ -112,29 +112,29 @@ class ScreenSaverView : RelativeLayout {
         this.listener = listener
     }
 
-    fun setScreenSaver(context: Context, useImageScreenSaver: Boolean, userName: String, fitToScreen: Boolean,
-                       rotationIntervalMinutes: Int) {
+    fun setScreenSaver(context: Context, useImageScreenSaver: Boolean, useClockScreenSaver: Boolean,
+                       userName: String, fitToScreen: Boolean, rotationIntervalMinutes: Int) {
         this.saverContext = context
         this.userName = userName
         this.fitToScreen = fitToScreen
         this.rotationInterval = (rotationIntervalMinutes * 1000).toLong() // convert to milliseconds
 
         if (useImageScreenSaver && !TextUtils.isEmpty(userName)) {
-            screenSaverImage.setVisibility(View.VISIBLE)
-            screenSaverClock.setVisibility(View.GONE)
+            screenSaverImage.visibility = View.VISIBLE
+            screenSaverClock.visibility = View.GONE
             if (timeHandler != null) {
                 timeHandler!!.removeCallbacks(timeRunnable)
             }
-            startScreenSavor()
-        } else { // use clock
-            screenSaverImage.setVisibility(View.GONE)
-            screenSaverClock.setVisibility(View.VISIBLE)
+            startImageScreenSavor()
+        } else if(useClockScreenSaver) { // use clock
+            screenSaverImage.visibility = View.GONE
+            screenSaverClock.visibility = View.VISIBLE
             timeHandler = Handler()
             timeHandler!!.postDelayed(timeRunnable, 10)
         }
     }
 
-    private fun startScreenSavor() {
+    private fun startImageScreenSavor() {
         if (itemList == null || itemList!!.isEmpty()) {
             fetchMediaData()
         } else {

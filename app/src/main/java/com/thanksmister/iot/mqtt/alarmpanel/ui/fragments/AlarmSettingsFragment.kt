@@ -154,11 +154,6 @@ class AlarmSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSh
             passwordPreference!!.summary = toStars(mqttOptions!!.getPassword())
         }
         pendingPreference!!.summary = getString(R.string.preference_summary_pending_time, configuration.pendingTime.toString())
-
-        // the first time we need to set the alarm code
-        if (configuration.isFirstTime) {
-            showAlarmCodeDialog()
-        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -229,7 +224,7 @@ class AlarmSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSh
                     val pendingTime = Integer.parseInt(value)
                     if (pendingTime < 10) {
                         if (isAdded) {
-                            dialogUtils.showAlertDialog(getString(R.string.text_error_pending_time_low))
+                            dialogUtils.showAlertDialog(activity as BaseActivity, getString(R.string.text_error_pending_time_low))
                         }
                     }
                     configuration.pendingTime = pendingTime
@@ -274,7 +269,6 @@ class AlarmSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSh
                         showAlarmCodeDialog()
                     } else if (code == tempCode) {
                         configuration.alarmCode = tempCode
-                        configuration.isFirstTime = false
                         tempCode = 0
                         confirmCode = false
                         dialogUtils.clearDialogs()

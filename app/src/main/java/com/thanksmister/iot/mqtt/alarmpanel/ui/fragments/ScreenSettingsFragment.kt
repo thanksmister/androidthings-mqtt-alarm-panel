@@ -44,7 +44,7 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
     @Inject lateinit var configuration: Configuration
 
-    private var modulePreference: CheckBoxPreference? = null
+    private var clockSaverPreference: CheckBoxPreference? = null
     private var photoSaverPreference: CheckBoxPreference? = null
     private var urlPreference: EditTextPreference? = null
     private var imageFitPreference: CheckBoxPreference? = null
@@ -82,8 +82,9 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
         super.onViewCreated(view, savedInstanceState)
 
-        modulePreference = findPreference(Configuration.PREF_MODULE_SAVER) as CheckBoxPreference
+        clockSaverPreference = findPreference(Configuration.PREF_MODULE_CLOCK_SAVER) as CheckBoxPreference
         photoSaverPreference = findPreference(Configuration.PREF_MODULE_PHOTO_SAVER) as CheckBoxPreference
+
         urlPreference = findPreference(Configuration.PREF_IMAGE_SOURCE) as EditTextPreference
         imageFitPreference = findPreference(Configuration.PREF_IMAGE_FIT_SIZE) as CheckBoxPreference
         rotationPreference = findPreference(Configuration.PREF_IMAGE_ROTATION) as EditTextPreference
@@ -98,7 +99,7 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         rotationPreference!!.summary = getString(R.string.preference_summary_image_rotation, imageOptions!!.imageRotation.toString())
         urlPreference!!.summary = getString(R.string.preference_summary_image_source, imageOptions!!.getImageSource())
 
-        inactivityPreference!!.setDefaultValue(configuration.inactivityTime.toString())
+        inactivityPreference!!.setDefaultValue(configuration.inactivityTime)
         if (configuration.inactivityTime < SECONDS_VALUE) {
             inactivityPreference!!.summary = getString(R.string.preference_summary_inactivity_seconds,
                     DateUtils.convertInactivityTime(configuration.inactivityTime))
@@ -106,31 +107,46 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             inactivityPreference!!.summary = getString(R.string.preference_summary_inactivity_minutes,
                     DateUtils.convertInactivityTime(configuration.inactivityTime))
         }
-
-        modulePreference!!.isChecked = configuration.showScreenSaverModule()
-        photoSaverPreference!!.isEnabled = configuration.showScreenSaverModule()
-        photoSaverPreference!!.isChecked = configuration.showPhotoScreenSaver()
         imageFitPreference!!.isChecked = imageOptions!!.imageFitScreen
-        urlPreference!!.isEnabled = configuration.showPhotoScreenSaver()
-        imageFitPreference!!.isEnabled = configuration.showPhotoScreenSaver()
-        rotationPreference!!.isEnabled = configuration.showPhotoScreenSaver()
-        inactivityPreference!!.isEnabled = configuration.showScreenSaverModule()
+
+        if(configuration.showPhotoScreenSaver() && configuration.showClockScreenSaverModule()) {
+            setPhotoScreenSaver(false)
+            setClockScreenSaver(false)
+        } else {
+            setPhotoScreenSaver(configuration.showPhotoScreenSaver())
+            setClockScreenSaver(configuration.showClockScreenSaverModule())
+        }
+    }
+
+    private fun setPhotoScreenSaver (value : Boolean) {
+        photoSaverPreference!!.isChecked = value
+        imageFitPreference!!.isEnabled = value
+        rotationPreference!!.isEnabled = value
+        urlPreference!!.isEnabled = value
+        configuration.setPhotoScreenSaver(value)
+    }
+
+    private fun setClockScreenSaver(value: Boolean) {
+        clockSaverPreference!!.isChecked = value
+        configuration.setClockScreenSaverModule(value)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
 
         when (key) {
-            Configuration.PREF_MODULE_SAVER -> {
-                val checked = modulePreference!!.isChecked
-                configuration.setScreenSaverModule(checked)
-                photoSaverPreference!!.isEnabled = checked
+            Configuration.PREF_MODULE_CLOCK_SAVER -> {
+                val checked = clockSaverPreference!!.isChecked
+                setClockScreenSaver(checked)
+                if(checked) {
+                    setPhotoScreenSaver(false)
+                }
             }
             Configuration.PREF_MODULE_PHOTO_SAVER -> {
-                val usePhotos = photoSaverPreference!!.isChecked
-                configuration.setPhotoScreenSaver(usePhotos)
-                urlPreference!!.isEnabled = usePhotos
-                rotationPreference!!.isEnabled = usePhotos
-                imageFitPreference!!.isEnabled = usePhotos
+                val checked = photoSaverPreference!!.isChecked
+                setPhotoScreenSaver(checked)
+                if(checked) {
+                    setClockScreenSaver(false)
+                }
             }
             Configuration.PREF_IMAGE_SOURCE -> {
                 val value = urlPreference!!.text
@@ -147,7 +163,7 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 rotationPreference!!.summary = getString(R.string.preference_summary_image_rotation, rotation.toString())
             }
             Configuration.PREF_INACTIVITY_TIME -> {
-                val inactivity = java.lang.Long.valueOf(inactivityPreference!!.value)!!
+                val inactivity = inactivityPreference!!.value!!.toLong()
                 configuration.inactivityTime = inactivity
                 if (inactivity < SECONDS_VALUE) {
                     inactivityPreference!!.summary = getString(R.string.preference_summary_inactivity_seconds, DateUtils.convertInactivityTime(inactivity))

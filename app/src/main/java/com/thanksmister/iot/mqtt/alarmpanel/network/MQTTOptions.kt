@@ -77,13 +77,13 @@ class MQTTOptions private constructor(private val sharedPreferences: DPreference
         get() = if (tlsConnection) {
             !TextUtils.isEmpty(broker) &&
                     !TextUtils.isEmpty(clientId) &&
-                    stateTopics!!.size > 0 &&
+                    stateTopics!!.isNotEmpty() &&
                     !TextUtils.isEmpty(commandTopic) &&
                     !TextUtils.isEmpty(username) &&
                     !TextUtils.isEmpty(password)
         } else !TextUtils.isEmpty(broker) &&
                 !TextUtils.isEmpty(clientId) &&
-                stateTopics!!.size > 0 &&
+                stateTopics!!.isNotEmpty() &&
                 !TextUtils.isEmpty(commandTopic)
 
     fun getBroker(): String? {

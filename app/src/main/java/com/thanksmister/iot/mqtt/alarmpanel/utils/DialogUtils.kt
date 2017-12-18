@@ -45,6 +45,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ArmOptionsView
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ExtendedForecastView
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ScreenSaverView
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.SettingsCodeView
+import timber.log.Timber
 
 /**
  * Dialog utils
@@ -120,35 +121,36 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         }
     }
 
-    fun showAlertDialog(message: String) {
+    fun showAlertDialog(activity: AppCompatActivity, message: String) {
         hideAlertDialog()
-        alertDialog = AlertDialog.Builder(this, R.style.CustomAlertDialog)
+        alertDialog = AlertDialog.Builder(activity, R.style.CustomAlertDialog)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
     }
 
-    fun showAlertDialogToDismiss(title: String, message: String) {
+    fun showAlertDialogToDismiss(activity: AppCompatActivity, title: String, message: String) {
         hideAlertDialog()
-        alertDialog = AlertDialog.Builder(this, R.style.CustomAlertDialog)
+        alertDialog = AlertDialog.Builder(activity, R.style.CustomAlertDialog)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
     }
 
-    fun showAlertDialog(title: String, message: String) {
+    fun showAlertDialog(activity: AppCompatActivity, title: String, message: String) {
         hideAlertDialog()
-        alertDialog = AlertDialog.Builder(this, R.style.CustomAlertDialog)
+        alertDialog = AlertDialog.Builder(activity, R.style.CustomAlertDialog)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
     }
 
-    fun showAlertDialog(message: String, onClickListener: DialogInterface.OnClickListener) {
+    fun showAlertDialog(context: Context, message: String, onClickListener: DialogInterface.OnClickListener) {
         hideAlertDialog()
-        alertDialog =  AlertDialog.Builder(this, R.style.CustomAlertDialog)
+        Timber.d("showAlertDialog")
+        alertDialog = AlertDialog.Builder(context, R.style.CustomAlertDialog)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok, onClickListener)
                 .show()
@@ -247,6 +249,7 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
      * with the alarm disabled because the disable time will be longer than this.
      */
     fun showScreenSaver(activity: AppCompatActivity, showPhotoScreenSaver: Boolean,
+                        showClockScreenSaver: Boolean,
                         imageSource: String, fitToScreen: Boolean, rotation: Int,
                         listener: ScreenSaverView.ViewListener, onClickListener: View.OnClickListener) {
 
@@ -257,7 +260,7 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.dialog_screen_saver, null, false)
         val screenSaverView = view.findViewById<ScreenSaverView>(R.id.screenSaverView)
-        screenSaverView.setScreenSaver(activity, showPhotoScreenSaver,
+        screenSaverView.setScreenSaver(activity, showPhotoScreenSaver, showClockScreenSaver,
                 imageSource, fitToScreen, rotation)
         screenSaverView.setListener(listener)
         screenSaverView.setOnClickListener(onClickListener)

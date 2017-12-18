@@ -31,6 +31,8 @@ import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.google.android.things.device.ScreenManager
+import com.google.android.things.device.TimeManager
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.InstagramOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
@@ -57,7 +59,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
     private var inactivityHandler: Handler? = Handler()
     private var hasNetwork = AtomicBoolean(true)
-    public val disposable = CompositeDisposable()
+    val disposable = CompositeDisposable()
+    var screenManager: ScreenManager? = null
 
     abstract fun getLayoutId(): Int
 
@@ -72,6 +75,14 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MessageViewModel::class.java)
 
+        screenManager = ScreenManager(Display.DEFAULT_DISPLAY);
+        screenManager!!.setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
+        screenManager!!.setBrightness(configuration.screenBrightness);
+        screenManager!!.setScreenOffTimeout(3, TimeUnit.HOURS);
+        screenManager!!.setDisplayDensity(configuration.screenDensity);
+
+        val timeManager = TimeManager()
+        timeManager.setTimeZone(configuration.timeZone)
     }
 
     override fun onStart(){
@@ -88,6 +99,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     }
 
     fun resetInactivityTimer() {
+        Timber.d("resetInactivityTimer")
+        screenManager!!.setBrightness(configuration.screenBrightness);
         dialogUtils.hideScreenSaverDialog()
         inactivityHandler!!.removeCallbacks(inactivityCallback)
         inactivityHandler!!.postDelayed(inactivityCallback, configuration.inactivityTime)
@@ -99,12 +112,13 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     }
 
     override fun onUserInteraction() {
+        Timber.d("onUserInteraction")
         resetInactivityTimer()
     }
 
     public override fun onStop() {
         super.onStop()
-        stopDisconnectTimer()
+        //stopDisconnectTimer()
     }
 
     public override fun onResume() {
@@ -149,8 +163,10 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      */
     open fun showScreenSaver() {
         if (!viewModel.isAlarmTriggeredMode()) {
+            Timber.d("showScreenSaver")
             inactivityHandler!!.removeCallbacks(inactivityCallback)
-            dialogUtils.showScreenSaver(this@BaseActivity, configuration.showPhotoScreenSaver(),
+            dialogUtils.showScreenSaver(this@BaseActivity,
+                    configuration.showPhotoScreenSaver(), configuration.showClockScreenSaverModule(),
                     readImageOptions().getImageSource()!!, readImageOptions().imageFitScreen,
                     readImageOptions().imageRotation, object : ScreenSaverView.ViewListener {
                 override fun onMotion() {
@@ -161,6 +177,14 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                 dialogUtils.hideScreenSaverDialog()
                 resetInactivityTimer()
             })
+
+            if( configuration.showPhotoScreenSaver()) {
+                screenManager!!.setBrightness(40);
+            } else if (configuration.showClockScreenSaverModule()) {
+                screenManager!!.setBrightness(80);
+            } else {
+                screenManager!!.setBrightness(0);
+            }
         }
     }
 
@@ -172,7 +196,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      */
     fun handleNetworkDisconnect() {
         dialogUtils.hideScreenSaverDialog()
-        dialogUtils.showAlertDialogToDismiss(getString(R.string.text_notification_network_title),
+        dialogUtils.showAlertDialogToDismiss(this@BaseActivity, getString(R.string.text_notification_network_title),
                     getString(R.string.text_notification_network_description))
     }
 
