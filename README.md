@@ -126,7 +126,11 @@ If you choose to get weather updates, enter your DarkSky API key and current lat
 
 ![alarm_weather](https://user-images.githubusercontent.com/142340/29889463-9f64e550-8d9a-11e7-8d06-cbb046588875.png)
 
-To use a screen saver other than the digital clock, turn this feature on in the screen saver settings. Optionally you can load other Instagram images by changing the Instagram profile name.  
+You can also load your home automation platfgorm website by entering the address with port into the settings.  It slides from the right on the main screen. 
+
+![platform_panel](https://user-images.githubusercontent.com/142340/34175188-53419a14-e4da-11e7-970a-77d2ff753d31.png)
+
+To use a screen saver other than the black, turn this feature on in the screen saver settings. 
 
 # Weather Updates
 
