@@ -27,8 +27,6 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
     private var mImageReader: ImageReader? = null
     private var mCameraDevice: CameraDevice? = null
     private var mCaptureSession: CameraCaptureSession? = null
-    private var previewHolder: SurfaceHolder? = null
-    private var mSurface: SurfaceView? = null
 
     interface CallbackListener {
         fun onCameraComplete(bitmap: Bitmap)

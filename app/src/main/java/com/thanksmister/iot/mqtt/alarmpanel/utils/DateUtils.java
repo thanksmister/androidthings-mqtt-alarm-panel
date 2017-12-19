@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 public final class DateUtils {
 
     public static int SECONDS_VALUE = 60000;
+    public static int MINUTES_VALUE = 1800000;
 
     private DateUtils(){
     }
@@ -68,6 +69,8 @@ public final class DateUtils {
     public static String convertInactivityTime(long inactivityValue) {
         if(inactivityValue < SECONDS_VALUE) {
             return String.valueOf(TimeUnit.MILLISECONDS.toSeconds(inactivityValue));
+        } else if(inactivityValue > MINUTES_VALUE) {
+            return String.valueOf(TimeUnit.MILLISECONDS.toHours(inactivityValue));
         } else {
             return String.valueOf(TimeUnit.MILLISECONDS.toMinutes(inactivityValue));
         }

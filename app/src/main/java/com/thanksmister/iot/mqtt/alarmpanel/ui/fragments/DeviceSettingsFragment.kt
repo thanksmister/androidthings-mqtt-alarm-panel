@@ -22,30 +22,30 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.support.v14.preference.SwitchPreference
+import android.support.v7.preference.EditTextPreference
 import android.support.v7.preference.ListPreference
 import android.support.v7.preference.Preference
+import android.support.v7.preference.Preference.OnPreferenceClickListener
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.View
+import com.google.android.things.device.ScreenManager
 import com.google.android.things.device.TimeManager
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_BRIGHTNESS
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_DENSITY
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_TIMEOUT
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_FORMAT
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_SERVER
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_ZONE
+import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
 import dagger.android.support.AndroidSupportInjection
 import timber.log.Timber
 import java.text.DateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import android.content.Intent
-import android.provider.Settings.ACTION_WIFI_SETTINGS
-import android.support.v7.preference.EditTextPreference
-import android.support.v7.preference.Preference.OnPreferenceClickListener
-import com.google.android.things.device.ScreenManager
-import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
-import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_BRIGHTNESS
-import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_DENSITY
 
 
 class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -59,6 +59,7 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
     private var densityPreference: EditTextPreference? = null
     private var brightnessPreference: EditTextPreference? = null
     private var timeZonePreference: ListPreference? = null
+    private var screenTimeoutPreference: ListPreference? = null
     private val timeManager = TimeManager()
     private val screenManager = ScreenManager(ScreenManager.BRIGHTNESS_MODE_MANUAL)
 
@@ -96,7 +97,8 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
         super.onViewCreated(view, savedInstanceState)
 
-        resetPreference = findPreference("pref_device_reset") as EditTextPreference
+        resetPreference = findPreference("pref_device_reset") as Preference
+        resetPreference!!.isPersistent = false
         resetPreference!!.onPreferenceClickListener = OnPreferenceClickListener {
             configuration.reset()
             activity!!.finish();
@@ -104,11 +106,11 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         }
 
         brightnessPreference = findPreference(PREF_DEVICE_SCREEN_BRIGHTNESS) as EditTextPreference
-        brightnessPreference!!.setDefaultValue(configuration.screenBrightness)
+        brightnessPreference!!.setDefaultValue(configuration.screenBrightness.toString())
         brightnessPreference!!.summary = getString(R.string.pref_device_brightness_summary, configuration.screenBrightness.toString())
 
         densityPreference = findPreference(PREF_DEVICE_SCREEN_DENSITY) as EditTextPreference
-        densityPreference!!.setDefaultValue(configuration.screenDensity)
+        densityPreference!!.setDefaultValue(configuration.screenDensity.toString())
         densityPreference!!.summary = getString(R.string.pref_density_summary, configuration.screenDensity.toString())
 
         timePreference = findPreference(PREF_DEVICE_TIME) as Preference
@@ -117,11 +119,26 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             true
         }
 
-        try {
-            timeZonePreference = findPreference(PREF_DEVICE_TIME_ZONE) as ListPreference
-            timeZonePreference!!.setDefaultValue(configuration.timeZone)
-        } catch (e : Exception) {
-            Timber.e(e.message)
+        timeZonePreference = findPreference(PREF_DEVICE_TIME_ZONE) as ListPreference
+        timeZonePreference!!.setDefaultValue(configuration.timeZone)
+        timeZonePreference!!.value = configuration.timeZone
+
+        Timber.d("Time Zone: " + configuration.timeZone)
+        timeManager.setTimeZone(configuration.timeZone)
+
+        screenTimeoutPreference = findPreference(PREF_DEVICE_SCREEN_TIMEOUT) as ListPreference
+        screenTimeoutPreference!!.value = configuration.screenTimeout.toString()
+
+        if (configuration.screenTimeout < DateUtils.SECONDS_VALUE) {
+            screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_seconds_summary,
+                    DateUtils.convertInactivityTime(configuration.screenTimeout))
+        } else if (configuration.screenTimeout > DateUtils.MINUTES_VALUE) {
+            screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_hours_summary,
+                    DateUtils.convertInactivityTime(configuration.screenTimeout))
+        } else {
+            screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_minutes_summary,
+                    DateUtils.convertInactivityTime(configuration.screenTimeout))
+
         }
 
         serverPreference = findPreference(PREF_DEVICE_TIME_SERVER) as SwitchPreference
@@ -200,14 +217,33 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             }
             PREF_DEVICE_SCREEN_DENSITY -> {
                 val density = densityPreference!!.text.toInt()
+                Timber.d("Screen Density value: " + density)
                 configuration.screenDensity = density
                 densityPreference!!.summary = getString(R.string.pref_density_summary, density.toString())
+                screenManager.setDisplayDensity(density)
             }
             PREF_DEVICE_SCREEN_BRIGHTNESS -> {
                 val brightness = brightnessPreference!!.text.toInt()
+                Timber.d("Screen Density Brightness value: " + brightness)
                 configuration.screenBrightness = brightness
                 brightnessPreference!!.summary = getString(R.string.pref_device_brightness_summary, brightness.toString())
                 screenManager.setBrightness(brightness)
+            }
+            PREF_DEVICE_SCREEN_TIMEOUT -> {
+                val timeout = screenTimeoutPreference!!.value.toLong()
+                configuration.screenTimeout = timeout
+                screenManager.setScreenOffTimeout(timeout, TimeUnit.MILLISECONDS)
+                if (configuration.screenTimeout < DateUtils.SECONDS_VALUE) {
+                    screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_seconds_summary,
+                            DateUtils.convertInactivityTime(configuration.screenTimeout))
+                } else if (configuration.screenTimeout > DateUtils.MINUTES_VALUE) {
+                    screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_hours_summary,
+                            DateUtils.convertInactivityTime(configuration.screenTimeout))
+                } else {
+                    screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_minutes_summary,
+                            DateUtils.convertInactivityTime(configuration.screenTimeout))
+
+                }
             }
         }
     }

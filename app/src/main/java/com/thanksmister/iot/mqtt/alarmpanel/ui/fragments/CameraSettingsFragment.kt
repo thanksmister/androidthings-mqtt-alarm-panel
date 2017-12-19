@@ -172,7 +172,7 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 descriptionPreference!!.isEnabled = checked
                 rotatePreference!!.isEnabled = checked
             }
-            Configuration.PREF_INACTIVITY_TIME -> {
+            Configuration.PREF_CAMERA_ROTATE -> {
                 val valueInt = Integer.valueOf(rotatePreference!!.value)!!
                 val valueName = rotatePreference!!.entry.toString()
                 rotatePreference!!.summary = getString(R.string.preference_camera_flip_summary, valueName)

@@ -89,7 +89,7 @@
     <string name="preference_title_notification">Notifications</string>
     <string name="preference_summary_notification">Show a notification if the alarm is triggered.</string>
 
-    <string name="preference_title_inactivity">Screen time out</string>
+    <string name="preference_title_inactivity">Start screen saver after…</string>
     <string name="preference_summary_inactivity_seconds">After %1$s seconds of inactivity screen dims.</string>
     <string name="preference_summary_inactivity_minutes">After %1$s minute(s) of inactivity screen dims.</string>
 
@@ -220,7 +220,7 @@
     <string name="pref_time_summary">Update the device time.</string>
     <string name="pref_time_format_title">Use 24-hour format</string>
     <string name="text_dialog_select_time">Select Time</string>
-    <string name="pref_density_summary">Change the screen density. Currently %1$sdpi.</string>
+    <string name="pref_density_summary">Change the screen density. Currently %1$s dpi.</string>
     <string name="pref_device_brightness_summary">Set the screen brightness between 0 and 255. Currently %1$s.</string>
     <string name="pref_device_density_title">Screen Density</string>
     <string name="pref_device_brightness_title">Screen Brightness</string>
@@ -228,13 +228,19 @@
     <string name="pref_reset_title">Clear settings</string>
     <string name="pref_reset_summary">Clears all settings and returns device to default settings.</string>
 
+    <string name="pref_device_timeout_minutes_summary">After %1$s minute(s) the screen turns off.</string>
+    <string name="pref_device_timeout_seconds_summary">After %1$s second(s) the screen turns off.</string>
+    <string name="pref_device_timeout_hours_summary">After %1$s hour(s) the screen turns off.</string>
+
+    <string name="pref_device_timeout_title">Screen Timeout</string>
+
     <string-array name="settings_titles">
         <item>@string/pref_time_title</item>
         <item>@string/preference_title_alarm</item>
         <item>@string/preference_title_notification</item>
         <item>@string/preference_camera_title</item>
-        <item>@string/preference_title_weather_settings</item>
         <item>@string/preference_title_screen_saver_title</item>
+        <item>@string/preference_title_weather_settings</item>
         <item>@string/preference_title_web_settings</item>
         <item>@string/text_about</item>
     </string-array>
@@ -259,6 +265,41 @@
         <item>300000</item>
         <item>600000</item>
         <item>1800000</item>
+    </string-array>
+
+    <string-array name="timeout_times">
+        <item>15 seconds</item>
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>24 hours</item>
+    </string-array>
+
+    <string-array name="timeout_values">
+        <item>15000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>180000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+        <item>3600000</item>
+        <item>7200000</item>
+        <item>10800000</item>
+        <item>21600000</item>
+        <item>43200000</item>
+        <item>86400000</item>
+
     </string-array>
 
     <string-array name="flip_directions">

@@ -184,11 +184,11 @@ class WeatherSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.On
         weatherLongitude!!.isEnabled = configuration.showWeatherModule()
     }
 
+    // TODO (make these all constants in the configuration)
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         when (key) {
             "pref_weather" -> {
                 val checked = weatherModulePreference!!.isChecked
-                Timber.d("checked: " + checked)
                 configuration.setShowWeatherModule(checked)
                 weatherApiKeyPreference!!.isEnabled = checked
                 weatherLatitude!!.isEnabled = checked

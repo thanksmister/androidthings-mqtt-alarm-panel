@@ -35,7 +35,7 @@ constructor(private val sharedPreferences: DPreference) {
         set(value) = this.sharedPreferences.setPrefString(PREF_WEB_URL, value)
 
     var inactivityTime: Long
-        get() = this.sharedPreferences.getPrefLong(PREF_INACTIVITY_TIME, INACTIVITY_TIMEOUT)
+        get() = this.sharedPreferences.getPrefLong(PREF_INACTIVITY_TIME, 300000)
         set(value) = this.sharedPreferences.setPrefLong(PREF_INACTIVITY_TIME, value)
 
     var timeZone: String
@@ -49,6 +49,10 @@ constructor(private val sharedPreferences: DPreference) {
     var screenBrightness: Int
         get() = this.sharedPreferences.getPrefInt(PREF_DEVICE_SCREEN_BRIGHTNESS, 200)
         set(value) = this.sharedPreferences.setPrefInt(PREF_DEVICE_SCREEN_BRIGHTNESS, value)
+
+    var screenTimeout: Long
+        get() = this.sharedPreferences.getPrefLong(PREF_DEVICE_SCREEN_TIMEOUT, 1800000)
+        set(value) = this.sharedPreferences.setPrefLong(PREF_DEVICE_SCREEN_TIMEOUT, value)
 
     var isFirstTime: Boolean
         get() = sharedPreferences.getPrefBoolean(PREF_FIRST_TIME, true)
@@ -106,10 +110,12 @@ constructor(private val sharedPreferences: DPreference) {
         this.sharedPreferences.setPrefBoolean(PREF_MODULE_CLOCK_SAVER, value)
     }
 
+    @Deprecated("Instagram no longer works")
     fun showPhotoScreenSaver(): Boolean {
-        return sharedPreferences.getPrefBoolean(PREF_MODULE_PHOTO_SAVER, false)
+        return false //sharedPreferences.getPrefBoolean(PREF_MODULE_PHOTO_SAVER, false)
     }
 
+    @Deprecated("Instagram no longer works")
     fun setPhotoScreenSaver(value: Boolean) {
         this.sharedPreferences.setPrefBoolean(PREF_MODULE_PHOTO_SAVER, value)
     }
@@ -187,7 +193,6 @@ constructor(private val sharedPreferences: DPreference) {
      * Reset the `SharedPreferences` and database
      */
     fun reset() {
-        sharedPreferences.removePreference(PREF_ALARM_MODE)
         sharedPreferences.removePreference(PREF_PENDING_TIME)
         sharedPreferences.removePreference(PREF_MODULE_CLOCK_SAVER)
         sharedPreferences.removePreference(PREF_MODULE_PHOTO_SAVER)
@@ -195,10 +200,8 @@ constructor(private val sharedPreferences: DPreference) {
         sharedPreferences.removePreference(PREF_MODULE_WEATHER)
         sharedPreferences.removePreference(PREF_MODULE_WEB)
         sharedPreferences.removePreference(PREF_MODULE_NOTIFICATION)
-
         sharedPreferences.removePreference(PREF_WEB_URL)
         sharedPreferences.removePreference(PREF_FIRST_TIME)
-        sharedPreferences.removePreference(PREF_ALARM_MODE)
         sharedPreferences.removePreference(PREF_MAIL_TO)
         sharedPreferences.removePreference(PREF_MAIL_FROM)
         sharedPreferences.removePreference(PREF_MODULE_CAMERA)
@@ -213,6 +216,7 @@ constructor(private val sharedPreferences: DPreference) {
         sharedPreferences.removePreference(PREF_DEVICE_TIME_FORMAT)
         sharedPreferences.removePreference(PREF_DEVICE_TIME_SERVER)
         sharedPreferences.removePreference(PREF_DEVICE_SCREEN_BRIGHTNESS)
+        sharedPreferences.removePreference(PREF_DEVICE_SCREEN_TIMEOUT)
     }
 
     companion object {
@@ -232,19 +236,19 @@ constructor(private val sharedPreferences: DPreference) {
         @JvmField val PREF_MAIL_API_KEY = "pref_mail_api_key"
         @JvmField val PREF_MAIL_URL = "pref_mail_url"
         @JvmField val PREF_DISABLE_DIALOG_TIME = "pref_disable_dialog_time" // this isn't configurable
-        private val INACTIVITY_TIMEOUT = (5 * 60 * 1000).toLong() // 5 min
+
         @JvmField val PREF_MODULE_CAMERA = "pref_module_camera"
         @JvmField val PREF_CAMERA_ROTATE = "pref_camera_rotate"
-        private val PREF_MODULE_WEATHER = "pref_module_weather"
+        @JvmField  val PREF_MODULE_WEATHER = "pref_module_weather"
         @JvmField val PREF_MODULE_WEB = "pref_module_web"
         @JvmField val PREF_WEB_URL = "pref_web_url"
         private val PREF_FIRST_TIME = "pref_first_time"
-        private val PREF_ALARM_MODE = "pref_alarm_mode"
         @JvmField val PREF_DEVICE_TIME_SERVER = "pref_device_time_server"
         @JvmField val PREF_DEVICE_TIME_FORMAT = "pref_device_time_format"
         @JvmField val PREF_DEVICE_TIME = "pref_device_time"
         @JvmField val PREF_DEVICE_TIME_ZONE = "pref_device_time_zone"
-        @JvmField val PREF_DEVICE_SCREEN_DENSITY = "pref_device_density"
+        @JvmField val PREF_DEVICE_SCREEN_DENSITY = "pref_device_screen_density"
         @JvmField val PREF_DEVICE_SCREEN_BRIGHTNESS = "pref_device_brightness"
+        @JvmField val PREF_DEVICE_SCREEN_TIMEOUT = "pref_device_timeout"
     }
 }

@@ -83,15 +83,17 @@ class TextToSpeechModule( base: Context?, private val configuration: Configurati
             am.setStreamVolume(AudioManager.STREAM_MUSIC, 11, 0)
             if (textToSpeech != null && isInitialized) {
                 Timber.d("Speak this: " + message)
-                textToSpeech!!.speak(message, TextToSpeech.QUEUE_ADD, null, UTTERANCE_ID)
+                textToSpeech?.speak(message, TextToSpeech.QUEUE_ADD, null, UTTERANCE_ID)
             }
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun stop() {
-        textToSpeech!!.stop()
-        textToSpeech!!.shutdown()
-        textToSpeech = null
+        if(textToSpeech != null) {
+            textToSpeech?.stop()
+            textToSpeech?.shutdown()
+            textToSpeech = null
+        }
     }
 }

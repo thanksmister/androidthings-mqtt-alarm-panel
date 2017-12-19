@@ -77,9 +77,10 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
         screenManager = ScreenManager(Display.DEFAULT_DISPLAY);
         screenManager!!.setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
+        screenManager!!.setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
         screenManager!!.setBrightness(configuration.screenBrightness);
-        screenManager!!.setScreenOffTimeout(3, TimeUnit.HOURS);
         screenManager!!.setDisplayDensity(configuration.screenDensity);
+        Timber.d("Screen Density: " + configuration.screenDensity)
 
         val timeManager = TimeManager()
         timeManager.setTimeZone(configuration.timeZone)
@@ -178,10 +179,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                 resetInactivityTimer()
             })
 
-            if( configuration.showPhotoScreenSaver()) {
+            if( configuration.showClockScreenSaverModule()) {
                 screenManager!!.setBrightness(40);
-            } else if (configuration.showClockScreenSaverModule()) {
-                screenManager!!.setBrightness(80);
             } else {
                 screenManager!!.setBrightness(0);
             }

@@ -19,17 +19,26 @@
 
     <PreferenceCategory android:title="Display Settings">
 
+        <ListPreference
+            android:key="pref_device_timeout"
+            android:title="@string/pref_device_timeout_title"
+            android:summary="@string/pref_device_timeout_minutes_summary"
+            android:entries="@array/timeout_times"
+            android:entryValues="@array/timeout_values"/>
+
         <EditTextPreference
-            android:key="pref_device_density"
+            android:key="pref_device_screen_density"
             android:title="@string/pref_device_density_title"
-            android:inputType="number"
-            android:summary="@string/pref_density_summary"/>
+            android:summary="@string/pref_density_summary"
+            android:negativeButtonText="@android:string/cancel"
+            android:positiveButtonText="@android:string/ok"/>
 
         <EditTextPreference
             android:key="pref_device_brightness"
             android:title="@string/pref_device_brightness_title"
-            android:inputType="number"
-            android:summary="@string/pref_device_brightness_summary"/>
+            android:summary="@string/pref_device_brightness_summary"
+            android:negativeButtonText="@android:string/cancel"
+            android:positiveButtonText="@android:string/ok"/>
 
     </PreferenceCategory>
 
@@ -61,10 +70,10 @@
 
     <PreferenceCategory android:title="@string/pref_reset_category">
 
-        <EditTextPreference
+        <Preference
             android:key="pref_device_reset"
             android:title="@string/pref_reset_title"
-            android:summary="@string/pref_reset_summary"/>
+            android:summary="@string/pref_reset_summary" />
 
     </PreferenceCategory>
 
