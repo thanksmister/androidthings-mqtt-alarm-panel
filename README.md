@@ -101,12 +101,14 @@ $ adb shell setprop persist.sys.timezone "America/Denver"
 
 # Alarm Application Setup 
 
-When you first start the application you will be asked to go to the setting screen and enter your pin code. You also need to enter the MQTT information that you configured in Home Assistant for your MQTT service. Be sure you adjust the time intervals to match those set in the Home Assistant MQTT alarm control panel. 
+When you first start the application you will be asked to go to the setting screen to setup the device. You also need to enter the MQTT information that you configured in Home Assistant for your MQTT service. Be sure you adjust the time intervals to match those set in the Home Assistant MQTT alarm control panel. Alsop reset your alarm pin code, the default is 1234. 
 
 ![alarm_settings](https://user-images.githubusercontent.com/142340/29889464-9f6874cc-8d9a-11e7-8e90-6f59787b5ef3.png)
 
 The application should then connect to your MQTT broker. 
 Whenever the state of the alarm control panel in  in Home Assistant chances, the alarm control panel will reflect those changes.  You need to enter you pin code whenever you want to disarm the alarm or if the alarm has been triggered.  
+
+![alarm_home](https://user-images.githubusercontent.com/142340/29889460-9f615642-8d9a-11e7-99a6-1a49529dd580.png)
 
 ![alarm_disarm](https://user-images.githubusercontent.com/142340/29889459-9f557980-8d9a-11e7-996e-dcbfd54d44cc.png)
 
