@@ -6,7 +6,7 @@ This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual
 - Instructions to build your own: https://www.hackster.io/thanksmister/mqtt-alarm-control-panel-for-home-assistant-a206cc
 - Android Tablet: https://github.com/thanksmister/android-mqtt-alarm-panel
 
-![alarm_home](https://user-images.githubusercontent.com/142340/29889460-9f615642-8d9a-11e7-99a6-1a49529dd580.png)
+![alarm_panel](https://user-images.githubusercontent.com/142340/34173863-a2a8a4e4-e4d5-11e7-96b4-15a59a163243.jpg)
 
 The alarm control panel acts as an interface for your own home alarm system and allows for two way communication using MQTT messaging.  You can set the alarm state to away or home, or disarm the alarm using a code.  Your home automation system will controls the sensors or automation that triggers the siren or notifies users of possible intrusion.  
 
