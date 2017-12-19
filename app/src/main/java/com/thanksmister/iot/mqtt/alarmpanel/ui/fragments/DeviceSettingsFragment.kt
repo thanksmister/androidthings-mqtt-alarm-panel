@@ -138,7 +138,6 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         } else {
             screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_minutes_summary,
                     DateUtils.convertInactivityTime(configuration.screenTimeout))
-
         }
 
         serverPreference = findPreference(PREF_DEVICE_TIME_SERVER) as SwitchPreference
@@ -217,14 +216,12 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             }
             PREF_DEVICE_SCREEN_DENSITY -> {
                 val density = densityPreference!!.text.toInt()
-                Timber.d("Screen Density value: " + density)
                 configuration.screenDensity = density
                 densityPreference!!.summary = getString(R.string.pref_density_summary, density.toString())
                 screenManager.setDisplayDensity(density)
             }
             PREF_DEVICE_SCREEN_BRIGHTNESS -> {
                 val brightness = brightnessPreference!!.text.toInt()
-                Timber.d("Screen Density Brightness value: " + brightness)
                 configuration.screenBrightness = brightness
                 brightnessPreference!!.summary = getString(R.string.pref_device_brightness_summary, brightness.toString())
                 screenManager.setBrightness(brightness)

@@ -81,7 +81,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({state ->
-                    Timber.e("Alarm state: " + state)
                     this@MainActivity.runOnUiThread({
                         when (state) {
                             AlarmUtils.STATE_DISARM,
@@ -166,21 +165,18 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     override fun publishArmedHome() {
-        Timber.d("publish ArmedHome")
         if (mqttModule != null) {
             mqttModule?.publish(AlarmUtils.COMMAND_ARM_HOME)
         }
     }
 
     override fun publishArmedAway() {
-        Timber.d("publish ArmedAway")
         if (mqttModule != null) {
             mqttModule?.publish(AlarmUtils.COMMAND_ARM_AWAY)
         }
     }
 
     override fun publishDisarmed() {
-        Timber.d("publish Disarmed")
         if (mqttModule != null) {
             mqttModule?.publish(AlarmUtils.COMMAND_DISARM)
         }
@@ -224,7 +220,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
      * We need to awaken the device and allow the user to take action.
      */
     private fun awakenDeviceForAction() {
-        Timber.d("BaseActivity awakenDeviceForAction")
         stopDisconnectTimer() // stop screen saver mode
     }
 
@@ -237,6 +232,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     override fun onMQTTMessage(id: String, topic: String, payload: String) {
         if(NOTIFICATION_STATE_TOPIC == topic) {
             this@MainActivity.runOnUiThread({
+                awakenDeviceForAction()
                 if (viewModel.hasAlerts()) {
                     dialogUtils.showAlertDialog(this@MainActivity, payload)
                 }
@@ -249,8 +245,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Timber.d("onMQTTMessage topic: " + topic)
-                    Timber.d("onMQTTMessage payload: " + payload)
                 }, { error -> Timber.e("onMQTTMessage error" + error.message)}))
     }
 

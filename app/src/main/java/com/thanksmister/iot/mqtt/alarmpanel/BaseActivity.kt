@@ -80,7 +80,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         screenManager!!.setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
         screenManager!!.setBrightness(configuration.screenBrightness);
         screenManager!!.setDisplayDensity(configuration.screenDensity);
-        Timber.d("Screen Density: " + configuration.screenDensity)
 
         val timeManager = TimeManager()
         timeManager.setTimeZone(configuration.timeZone)
@@ -164,8 +163,12 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      */
     open fun showScreenSaver() {
         if (!viewModel.isAlarmTriggeredMode()) {
-            Timber.d("showScreenSaver")
             inactivityHandler!!.removeCallbacks(inactivityCallback)
+            if( configuration.showClockScreenSaverModule()) {
+                screenManager!!.setBrightness(40);
+            } else {
+                screenManager!!.setBrightness(0);
+            }
             dialogUtils.showScreenSaver(this@BaseActivity,
                     configuration.showPhotoScreenSaver(), configuration.showClockScreenSaverModule(),
                     readImageOptions().getImageSource()!!, readImageOptions().imageFitScreen,
@@ -178,12 +181,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                 dialogUtils.hideScreenSaverDialog()
                 resetInactivityTimer()
             })
-
-            if( configuration.showClockScreenSaverModule()) {
-                screenManager!!.setBrightness(40);
-            } else {
-                screenManager!!.setBrightness(0);
-            }
         }
     }
 
