@@ -32,7 +32,7 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 - Raspberry Pi 3 and SD Card.
 - [7" Touchscreen Display for display](https://www.adafruit.com/product/2718).
 - (Optional) Externally powered speaker for sound.
-- (Optional) Raspberry Pi Camera v2 
+- (Optional) [Raspberry Pi Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/)
 
 # Software to Build from Codebase (only if building from code)
 
@@ -128,13 +128,21 @@ If you choose to get weather updates, enter your DarkSky API key and current lat
 
 To use a screen saver other than the digital clock, turn this feature on in the screen saver settings. Optionally you can load other Instagram images by changing the Instagram profile name.  
 
-# Firebase + Crashlytics
+# Weather Updates
 
-![firebase_crashlytics](https://user-images.githubusercontent.com/142340/31292515-1a9ae1f8-aaaa-11e7-8384-e5ba3210f013.png)
+If you would like to get weather updates, create and enter a [Dark Sky API](https://darksky.net/dev/) key and your current latitude and longitude into the weather setting screen. You can get your current location by using maps.google.com in a web browser and copying the lat/lon from the url (they look like -34.6156624,-58.5035102 in the url).
 
-The Alarm Control Panel, like many IoT devices will be used on hardware that may be disseminated throughout the world. Therefore we need a way to remotely track it's stability and alert us to any possible issues in the field. Fabric’s Crashlytics is now part of [Google's Cloud IoT Core](https://cloud.google.com/solutions/iot/) and [Firebase](http://firebase.google.com) services. [Crashlytics](https://fabric.io/kits/android/crashlytics/install) provides advanced tools for solving stability issues as well as engagement metrics using [Answers](https://www.fabric.io/kits/ios/answers). 
+To use a photo screensaver rather than the digital clock, turn this feature on, using the screen saver settings screen. You can load other Instagram images by changing the Instagram profile name in the settings.
 
-I have added this essential feature to the Alarm Control Panel application. The full RPi3 image from the from the release section already includes the Android Things preview 0.6.1 and the Alarm Control Panel application setup for Crashlytics reporting. You don't need to setup your own Crashlytics to use the application.  However, if you want to set up Crashlytics and Answers for your own application you can either install it following the [manual installation instructions](https://fabric.io/kits/android/crashlytics/install) or use the [Android Plugin](https://fabric.io/downloads/android-studio) for Android Studio or IntelliJ.  I recommend using the Android plugin as it's the simplest to setup and use.   
+# Capture Images
+
+If you would like to capture and email images when the alarm is deactivated then you need to setup a [MailGun](https://www.mailgun.com/)account, you will need to enter the domain address and API key to mail yourself images. 
+
+The camera only captures images when activated in the settings and MailGun is setup properly.  Images are captured each time the alarm is deactivated. 
+
+# Enclosure
+
+Originally I 3D printed an enclosure: https://www.thingiverse.com/thing:1082431. However, I ended up you want to buying a SmartPi Touch case which is a great option especially if you have the [Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/).
 
 # Notes 
 
