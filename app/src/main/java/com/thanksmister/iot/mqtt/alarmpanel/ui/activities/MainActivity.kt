@@ -70,21 +70,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         view_pager.adapter = pagerAdapter
         view_pager.addOnPageChangeListener(this)
         view_pager.setPagingEnabled(false)
-
-        configuration.setShowWeatherModule(true)
-        readWeatherOptions().darkSkyKey = "ad815e46605dfe141b9dbafcabf2a72f"
-        readWeatherOptions().setLat("-34.5707737")
-        readWeatherOptions().setLon("-58.4471991")
-        readWeatherOptions().setIsCelsius(true)
-        readMqttOptions().setBroker("192.168.86.228")
-        configuration.setHasCamera(true)
-        configuration.setWebModule(true)
-        configuration.setHasNotifications(true)
-        configuration.webUrl = "http://192.168.86.228:8123/kiosk"
-        configuration.setMailFrom("mister@thanksmister.com")
-        configuration.setMailGunApiKey("key-4d08926d65dc12dde8ec05d7f9d0fd5c")
-        configuration.setMailTo("mister@thanksmister.com")
-        configuration.setMailGunUrl("sandboxd83b1e232f934c75a471c51000485df0.mailgun.org")
     }
 
     public override fun onStart() {
