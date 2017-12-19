@@ -100,10 +100,10 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
     fun resetInactivityTimer() {
         Timber.d("resetInactivityTimer")
-        screenManager!!.setBrightness(configuration.screenBrightness);
         dialogUtils.hideScreenSaverDialog()
         inactivityHandler!!.removeCallbacks(inactivityCallback)
         inactivityHandler!!.postDelayed(inactivityCallback, configuration.inactivityTime)
+        screenManager!!.setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
     }
 
     fun stopDisconnectTimer() {

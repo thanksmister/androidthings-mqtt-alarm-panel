@@ -87,7 +87,7 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
             super.onBackPressed()
         } else {
             // Otherwise, select the previous step.
-            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1)
+            viewPager.currentItem = viewPager.getCurrentItem() - 1
         }
     }
 
@@ -95,7 +95,6 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
      * We should close this view if we have no more user activity.
      */
     override fun showScreenSaver() {
-        super.showScreenSaver()
         this.finish()
     }
 

@@ -87,7 +87,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                             AlarmUtils.STATE_ARM_AWAY,
                             AlarmUtils.STATE_ARM_HOME -> {
                                 resetInactivityTimer()
-                                screenManager!!.setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
                             }
                             AlarmUtils.STATE_TRIGGERED -> {
                                 awakenDeviceForAction()
