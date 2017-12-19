@@ -4,7 +4,7 @@ This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual
 
 - Alarm Panel Video: https://youtu.be/xspCZoRIBNQ
 - Instructions to build your own: https://www.hackster.io/thanksmister/mqtt-alarm-control-panel-for-home-assistant-a206cc
-- Android Tablet: https://github.com/thanksmister/android-mqtt-alarm-panel
+- Android Device Version: https://github.com/thanksmister/android-mqtt-alarm-panel
 
 ![alarm_panel](https://user-images.githubusercontent.com/142340/34173863-a2a8a4e4-e4d5-11e7-96b4-15a59a163243.jpg)
 
