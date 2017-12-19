@@ -1,6 +1,6 @@
 # Android Things Alarm Panel for Home Assistant
 
-This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component. However, the application can be used with any home automation platform that supports the MQTT messaging protocol such as OpenHab, Node-RED, or a cloud-based MQTT services. This project was built using a Raspberry Pi 3 and a 7" Touchscreen display running Android Things.
+This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component. However, the application can be used with any home automation platform that supports the MQTT messaging protocol such as OpenHab, Node-RED, or cloud-based MQTT services. This project was built using a Raspberry Pi 3 and a 7" Touchscreen display running Android Things.
 
 - Alarm Panel Video: https://youtu.be/xspCZoRIBNQ
 - Instructions to build your own: https://www.hackster.io/thanksmister/mqtt-alarm-control-panel-for-home-assistant-a206cc
@@ -12,9 +12,17 @@ The alarm control panel acts as an interface for your own home alarm system and 
 
 To use the application with Home Assistant, you need to use the [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component and have the MQTT service setup and configured. In the alarm control panel application you enter your MQTT broker address, port number, and credentials if necessary.   If you are using an automation system other than Home Assistant, you will need to use the same publish states and commands in your setup.
 
+# Features
+- Externally powered speaker for sound and notificaitons.
+- Camera support for capturing and emailing images when alarm disabled (requires Mailgun api key).
+- Google Text-to-Speech support to speak MQTT notification messages.
+- Screen timout and brightness control with optional clock screensaver mode. 
+- 7 day Weather forecast (requires Darksky api key).
+- Home Automation Platform webpage support for viewing your home automation website.
+
 # Supported Command and Publish States
 
-- Command topic:  home/alarm/set
+- Command topic:  home/alarm/set, home/notification
 - Command payloads: ARM_HOME, ARM_AWAY, DISARM
 - Publish topic: home/alarm
 - Publish payloads: disarmed, armed_away, armed_home, pending, triggered.
@@ -23,11 +31,13 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 
 - Raspberry Pi 3 and SD Card.
 - [7" Touchscreen Display for display](https://www.adafruit.com/product/2718).
-- (Optional) Externally powered speaker for sounds.
+- (Optional) Externally powered speaker for sound.
+- (Optional) Raspberry Pi Camera v2 
 
 # Software to Build from Codebase (only if building from code)
 
-- [Android Things 0.6.0-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html)
+- [Android Things 0.6.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html) from the site or using the [Android Things Setup Utility](https://partner.android.com/things/console/u/0/#/tools).
+
 - Android Studio with Android SDK N or above.
 
 # Home Assistant Setup
@@ -41,16 +51,16 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 
 Make sure you properly setup the RPi3 with the 7" Touchscreen Display.  You won't need any special software setup if you use the The Raspberry Pi Foundation 7" Touchscreen as it's compatible with Android Things. Other compatible touch screens may require additional configuration for Android Things. There are two options for installing the setting up your RPi 3 and installing the application. 
 
-- (1) The first is to set up your RPi3 to use [Android Things 0.6.0-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Clone the repository and compile the APK using Android Studio, then side load the APK file onto your device running Android Things Preview 0.4.1 using the ADB tool. 
+- (1) The first is to set up your RPi3 to use [Android Things 0.6.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Clone the repository and compile the APK using Android Studio, then side load the APK file onto your device running Android Things Preview 0.6.1 using the ADB tool. 
 
-- (2) The second option is to download the latest build from the [release](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/releases/) section on Github which includes both the Android Things Preview 0.4.1 and the APK file for the MQTT control panel application. This also allows for future OTA updates.
+- (2) The second option is to download the latest build from the [release](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/releases/) section on Github which includes both the Android Things Preview 0.6.1 and the APK file for the MQTT control panel application. This also allows for future OTA updates.
 
  * Download the latest release zip: MQTT_Alarm_Control_Panel_1.x.x.zip.
  * Unzip the file to get the the image: iot_rpi3.img. 
  * Burn the image to your SD card using a tool like Etcher. 
  * Insert the SD card into RPi3 and boot.
 
-- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use WiFi and ethernet at the same time. 
+- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use WiFi and ethernet at the same time.  You can use the [Android Things Setup Utility](https://partner.android.com/things/console/u/0/#/tools) or use the adb command line tool.
 
 ```
 # Use the adb tool to connect over ethernet to the device
@@ -64,7 +74,7 @@ adb shell am startservice \
     -e passphrase <Network_Passcode>
 ```
 
-- You probably also want to set the time and [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) of the device:
+- You probably also want to set the time and [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) of the device. This can be done from within the application settings or manually using the adb command line tool:
 
 ```
 # Reboot ADB into root mode
@@ -76,7 +86,11 @@ $ adb shell date 123112002017.00
 # Set the time zone to US Mountain Time
 $ adb shell setprop persist.sys.timezone "America/Denver"
 ```
-- Optionally connect the buzzer as shown in the [sampel diagram](https://github.com/androidthings/drivers-samples/tree/master/pwmspeaker).
+
+# Device Settings
+
+- Under the settings (gear icon) you can change the screen timeout time, screen brightness, and the screen density (for the official screen use a DPI of 160).
+- Additionally you can set the time and timezone for the application. 
 
 # Alarm Setup
 
@@ -86,6 +100,7 @@ $ adb shell setprop persist.sys.timezone "America/Denver"
 - To use a screen saver other than the digital clock, turn this feature on in the screen saver settings. Optionally you can load other Instagram images by changing the Instagram profile name.  
 
 # Alarm Application Setup 
+
 When you first start the application you will be asked to go to the setting screen and enter your pin code. You also need to enter the MQTT information that you configured in Home Assistant for your MQTT service. Be sure you adjust the time intervals to match those set in the Home Assistant MQTT alarm control panel. 
 
 ![alarm_settings](https://user-images.githubusercontent.com/142340/29889464-9f6874cc-8d9a-11e7-8e90-6f59787b5ef3.png)
@@ -117,13 +132,11 @@ To use a screen saver other than the digital clock, turn this feature on in the 
 
 The Alarm Control Panel, like many IoT devices will be used on hardware that may be disseminated throughout the world. Therefore we need a way to remotely track it's stability and alert us to any possible issues in the field. Fabric’s Crashlytics is now part of [Google's Cloud IoT Core](https://cloud.google.com/solutions/iot/) and [Firebase](http://firebase.google.com) services. [Crashlytics](https://fabric.io/kits/android/crashlytics/install) provides advanced tools for solving stability issues as well as engagement metrics using [Answers](https://www.fabric.io/kits/ios/answers). 
 
-I have added this essential feature to the Alarm Control Panel application. The full RPi3 image from the from the release section already includes the Android Things preview 0.4.1 and the Alarm Control Panel application setup for Crashlytics reporting. You don't need to setup your own Crashlytics to use the application.  However, if you want to set up Crashlytics and Answers for your own application you can either install it following the [manual installation instructions](https://fabric.io/kits/android/crashlytics/install) or use the [Android Plugin](https://fabric.io/downloads/android-studio) for Android Studio or IntelliJ.  I recommend using the Android plugin as it's the simplest to setup and use.   
+I have added this essential feature to the Alarm Control Panel application. The full RPi3 image from the from the release section already includes the Android Things preview 0.6.1 and the Alarm Control Panel application setup for Crashlytics reporting. You don't need to setup your own Crashlytics to use the application.  However, if you want to set up Crashlytics and Answers for your own application you can either install it following the [manual installation instructions](https://fabric.io/kits/android/crashlytics/install) or use the [Android Plugin](https://fabric.io/downloads/android-studio) for Android Studio or IntelliJ.  I recommend using the Android plugin as it's the simplest to setup and use.   
 
 # Notes 
 
 I have also made a version of the same software that runs on Android devices which can be found on [Google Play] (https://play.google.com/store/apps/details?id=com.thanksmister.iot.mqtt.alarmpanel).
-
-At this time there is an issue dimming the brightness of the backlight for the display. So for now I have included a screen saver feature as a short-term fix until the issue is addressed by the Android Things development team.  
 
 It's important that the alarm control panel settings reflect the settings of those used in the alarm control panel component. Initially the hardware control panel is set to the default settings of the alarm control panel component. There are settings options to match those used in the HASS manual alarm panel. 
 
