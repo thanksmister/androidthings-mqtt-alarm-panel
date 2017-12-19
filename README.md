@@ -140,7 +140,7 @@ To use a photo screensaver rather than the digital clock, turn this feature on, 
 
 # Capture Images
 
-If you would like to capture and email images when the alarm is deactivated then you need to setup a [MailGun](https://www.mailgun.com/)account, you will need to enter the domain address and API key to mail yourself images. 
+If you would like to capture and email images when the alarm is deactivated then you need to setup a [MailGun](https://www.mailgun.com/) account, you will need to enter the domain address and API key to mail yourself images. 
 
 The camera only captures images when activated in the settings and MailGun is setup properly.  Images are captured each time the alarm is deactivated. 
 
