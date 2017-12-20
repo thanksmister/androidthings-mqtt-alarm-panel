@@ -72,6 +72,12 @@ constructor(application: Application, private val dataSource: MessageDao, privat
         return (configuration.hasPlatformModule() && !TextUtils.isEmpty(configuration.webUrl))
     }
 
+    fun hasCamera() : Boolean {
+        return (configuration.hasCamera()
+                && configuration.hasMailGunCredentials())
+    }
+
+
     fun hasTss() : Boolean {
         return configuration.hasTssModule()
     }

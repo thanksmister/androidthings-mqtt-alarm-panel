@@ -54,7 +54,7 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
     private var serverPreference: SwitchPreference? = null
     private var formatPreference: SwitchPreference? = null
-    private var timePreference: Preference? = null
+    //private var timePreference: Preference? = null
     private var resetPreference: Preference? = null
     private var densityPreference: EditTextPreference? = null
     private var brightnessPreference: EditTextPreference? = null
@@ -113,17 +113,17 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         densityPreference!!.setDefaultValue(configuration.screenDensity.toString())
         densityPreference!!.summary = getString(R.string.pref_density_summary, configuration.screenDensity.toString())
 
-        timePreference = findPreference(PREF_DEVICE_TIME) as Preference
+        /*timePreference = findPreference(PREF_DEVICE_TIME) as Preference
         timePreference!!.onPreferenceClickListener = OnPreferenceClickListener {
             showTimePicker();
             true
-        }
+        }*/
 
         timeZonePreference = findPreference(PREF_DEVICE_TIME_ZONE) as ListPreference
         timeZonePreference!!.setDefaultValue(configuration.timeZone)
         timeZonePreference!!.value = configuration.timeZone
+        timeZonePreference!!.summary = configuration.timeZone
 
-        Timber.d("Time Zone: " + configuration.timeZone)
         timeManager.setTimeZone(configuration.timeZone)
 
         screenTimeoutPreference = findPreference(PREF_DEVICE_SCREEN_TIMEOUT) as ListPreference
@@ -144,13 +144,11 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         formatPreference = findPreference(PREF_DEVICE_TIME_FORMAT) as SwitchPreference
         serverPreference!!.isChecked = configuration.useTimeServer
 
-        val currentTimeString = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(Date())
-        timePreference!!.summary = currentTimeString
+        /*val currentTimeString = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(Date())
+        timePreference!!.summary = currentTimeString*/
 
         if(configuration.useTimeServer) {
             timeManager.setAutoTimeEnabled(configuration.useTimeServer)
-        } else {
-            timeZonePreference!!.isEnabled = true
         }
 
         if(configuration.timeFormat == TimeManager.FORMAT_12) {
@@ -186,8 +184,8 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
         val timeStamp = calendar.timeInMillis;
         timeManager.setTime(timeStamp);
-        val currentTimeString = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(Date())
-        timePreference!!.summary = currentTimeString
+        /*val currentTimeString = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(Date())
+        timePreference!!.summary = currentTimeString*/
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -207,12 +205,12 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 val checked = serverPreference!!.isChecked
                 timeManager.setAutoTimeEnabled(checked)
                 configuration.useTimeServer = checked
-                timeZonePreference!!.isEnabled = !checked
             }
             PREF_DEVICE_TIME_ZONE -> {
                 val timezone = timeZonePreference!!.value
                 configuration.timeZone = timezone
                 timeManager.setTimeZone(timezone)
+                timeZonePreference!!.summary = configuration.timeZone
             }
             PREF_DEVICE_SCREEN_DENSITY -> {
                 val density = densityPreference!!.text.toInt()

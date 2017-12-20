@@ -44,11 +44,6 @@
 
     <PreferenceCategory android:title="@string/pref_time_title">
 
-        <Preference
-            android:key="pref_device_time"
-            android:title="@string/pref_time_update_title"
-            android:summary="@string/pref_time_summary" />
-
         <SwitchPreference
             android:key="pref_device_time_server"
             android:title="@string/pref_automatic_time_zone_title"
@@ -56,10 +51,14 @@
 
         <ListPreference
             android:key="pref_device_time_zone"
-            android:enabled="false"
             android:title="Select Time Zone"
             android:entries="@array/time_zones"
             android:entryValues="@array/time_zones_values"/>
+
+        <!--<Preference
+            android:key="pref_device_time"
+            android:title="@string/pref_time_update_title"
+            android:summary="@string/pref_time_summary" />-->
 
         <SwitchPreference
             android:key="pref_device_time_format"

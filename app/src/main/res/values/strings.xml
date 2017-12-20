@@ -20,7 +20,7 @@
     <string name="text_renter_alarm_code_title">Please enter the new code again to verify</string>
 
     <!-- Preferences -->
-    <string name="preference_summary_security_code">Set the alarm system code.</string>
+    <string name="preference_summary_security_code">Set the alarm system code (default is 1234).</string>
     <string name="preference_title_security_code">Security Code</string>
     <string name="preference_title_mqtt_server">MQTT Setup</string>
     <string name="preference_summary_mqtt_server">Set the values for the MQTT service</string>
@@ -63,7 +63,7 @@
     <string name="preference_title_screen_saver_title">Screen Saver</string>
     <string name="preference_title_screen_saver_settings">Screen Saver Settings</string>
     <string name="preference_summary_screen_saver_settings">When active, uses a built-in clock screen saver.</string>
-    <string name="preference_title_screen_saver">Use Screen Saver</string>
+    <string name="preference_title_screen_saver">Clock Screen Saver</string>
 
     <string name="preference_title_screen_saver_photo_settings">Photo Screen Saver Settings</string>
     <string name="preference_summary_screen_saver_photo_settings">When active, uses Instagram images for the screen saver.</string>
@@ -96,7 +96,7 @@
 
     <string name="preference_title_notifications">Notifications</string>
     <string name="preference_title_mqtt_notifications">MQTT Notifications</string>
-    <string name="preference_summary_mqtt_notifications">Display notifications from MQTT messages.</string>
+    <string name="preference_summary_mqtt_notifications">Display or speak notifications from MQTT messages.</string>
 
     <string name="preference_title_alert">Alert Notifications</string>
     <string name="preference_summary_alert">Use an alert dialog to show the notification content.</string>
@@ -233,9 +233,10 @@
     <string name="pref_device_timeout_hours_summary">After %1$s hour(s) the screen turns off.</string>
 
     <string name="pref_device_timeout_title">Screen Timeout</string>
+    <string name="text_update_available">There is a new update available, would you like to install it now?</string>
 
     <string-array name="settings_titles">
-        <item>@string/pref_time_title</item>
+        <item>@string/text_alarm_settings</item>
         <item>@string/preference_title_alarm</item>
         <item>@string/preference_title_notification</item>
         <item>@string/preference_camera_title</item>

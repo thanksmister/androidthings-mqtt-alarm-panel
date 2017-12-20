@@ -27,6 +27,7 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
     private var mImageReader: ImageReader? = null
     private var mCameraDevice: CameraDevice? = null
     private var mCaptureSession: CameraCaptureSession? = null
+    private var hasCamera:Boolean = false
 
     interface CallbackListener {
         fun onCameraComplete(bitmap: Bitmap)
@@ -42,12 +43,14 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
         try {
             camIds = manager.cameraIdList
         } catch (e: CameraAccessException) {
-            Timber.d("Cam access exception getting ids", e)
-            throw CameraAccessException(CAMERA_ERROR, "Cam access exception getting ids")
+            Timber.e("Cam access exception getting ids: " + e.message)
+            hasCamera = false
+            return
         }
         if (camIds.isEmpty()) {
-            Timber.d("No cameras found")
-            throw CameraAccessException(CAMERA_ERROR, "No Cameras found")
+            Timber.e("No cameras found")
+            hasCamera = false
+            return
         }
 
         val id = camIds[0]
@@ -57,11 +60,13 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
         mImageReader?.setOnImageAvailableListener(imageAvailableListener, backgroundHandler)
         try {
             manager.openCamera(id, mStateCallback, backgroundHandler)
+            hasCamera = true;
         } catch (cae: Exception) {
             Timber.d("Camera access exception"  + cae)
             if(callback != null) {
                 callback!!.onCameraException("Camera access exception" + cae);
             }
+            hasCamera = false;
         }
     }
 
@@ -76,11 +81,13 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
     }
 
     fun takePicture() {
-        Timber.d("takePicture")
-        mCameraDevice?.createCaptureSession(
-                arrayListOf(mImageReader?.surface),
-                mSessionCallback,
-                null)
+        Timber.d("takePicture mCameraDevice" + mCameraDevice)
+        if(hasCamera) {
+            mCameraDevice?.createCaptureSession(
+                    arrayListOf(mImageReader?.surface),
+                    mSessionCallback,
+                    null)
+        }
     }
 
     private fun getBitmapFromByteArray(imageBytes: ByteArray): Bitmap {
@@ -92,11 +99,13 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
     }
 
     private fun triggerImageCapture() {
-        val captureBuilder = mCameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
-        captureBuilder?.addTarget(mImageReader!!.surface)
-        captureBuilder?.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)
-        captureBuilder?.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
-        mCaptureSession?.capture(captureBuilder?.build(), mCaptureCallback, null)
+        if(hasCamera) {
+            val captureBuilder = mCameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
+            captureBuilder?.addTarget(mImageReader!!.surface)
+            captureBuilder?.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)
+            captureBuilder?.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
+            mCaptureSession?.capture(captureBuilder?.build(), mCaptureCallback, null)
+        }
     }
 
     private val mCaptureCallback = object : CameraCaptureSession.CaptureCallback() {

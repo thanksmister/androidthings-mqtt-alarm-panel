@@ -29,8 +29,11 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
+import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
+import com.google.android.things.device.ScreenManager
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.ControlsFragment
@@ -58,18 +61,32 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     private var mBackgroundThread: HandlerThread? = null
     private var mBackgroundHandler: Handler? = null
     private var cameraModule: CameraModule? = null
+    private var alertDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mBackgroundThread = HandlerThread("BackgroundThread")
-        mBackgroundThread!!.start()
-        mBackgroundHandler = Handler(mBackgroundThread!!.looper)
+        mBackgroundThread?.start()
+        mBackgroundHandler = Handler(mBackgroundThread?.looper)
 
         pagerAdapter = MainSlidePagerAdapter(supportFragmentManager)
         view_pager.adapter = pagerAdapter
         view_pager.addOnPageChangeListener(this)
         view_pager.setPagingEnabled(false)
+
+        configuration.isFirstTime = false;
+
+        if (configuration.isFirstTime) {
+            alertDialog = AlertDialog.Builder(this@MainActivity, R.style.CustomAlertDialog)
+                    .setMessage(getString(R.string.dialog_first_time))
+                    .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { _, _ ->
+                        configuration.isFirstTime = false;
+                        val intent = SettingsActivity.createStartIntent(this@MainActivity)
+                        startActivity(intent)
+                    })
+                    .show()
+        }
     }
 
     public override fun onStart() {
@@ -87,11 +104,13 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                             AlarmUtils.STATE_ARM_AWAY,
                             AlarmUtils.STATE_ARM_HOME -> {
                                 resetInactivityTimer()
+                                ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+                                ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
                             }
                             AlarmUtils.STATE_TRIGGERED -> {
                                 awakenDeviceForAction()
                                 stopDisconnectTimer()
-                                screenManager!!.setScreenOffTimeout(3, TimeUnit.HOURS);
+                                ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS);
                             }
                             AlarmUtils.STATE_PENDING -> {
                                 awakenDeviceForAction()
@@ -117,6 +136,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         }
         mBackgroundThread = null
         mBackgroundHandler = null
+        if(alertDialog != null) {
+            alertDialog?.dismiss()
+            alertDialog = null
+        }
     }
 
     override fun onBackPressed() {
@@ -184,7 +207,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     private val initializeOnBackground = Runnable {
 
-        runOnUiThread {
+        /*runOnUiThread {
             if (!isFinishing && configuration.isFirstTime) {
                 dialogUtils.showAlertDialog(this@MainActivity, getString(R.string.dialog_first_time), DialogInterface.OnClickListener { _, _ ->
                     configuration.isFirstTime = false;
@@ -192,7 +215,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                     startActivity(intent)
                 })
             }
-        }
+        }*/
 
         if (textToSpeechModule == null) {
             textToSpeechModule = TextToSpeechModule(this@MainActivity, configuration)
@@ -204,7 +227,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
             lifecycle.addObserver(mqttModule!!)
         }
 
-        if (cameraModule == null) {
+        if (cameraModule == null && viewModel.hasCamera()) {
             cameraModule = CameraModule(this@MainActivity, mBackgroundHandler!!,this@MainActivity)
             lifecycle.addObserver(cameraModule!!)
         }
@@ -248,7 +271,9 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     override fun onMQTTException(message: String) {
-        this@MainActivity.runOnUiThread { dialogUtils.showAlertDialog(this@MainActivity, message) }
+        this@MainActivity.runOnUiThread {
+            dialogUtils.showAlertDialog(this@MainActivity, message)
+        }
     }
 
     override fun onMQTTDisconnect() {

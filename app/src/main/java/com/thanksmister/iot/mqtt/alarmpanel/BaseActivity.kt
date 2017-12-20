@@ -20,23 +20,28 @@ package com.thanksmister.iot.mqtt.alarmpanel
 
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AlertDialog
 import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.google.android.things.device.ScreenManager
 import com.google.android.things.device.TimeManager
+import com.google.android.things.update.StatusListener
+import com.google.android.things.update.UpdateManager
+import com.google.android.things.update.UpdateManager.POLICY_APPLY_AND_REBOOT
+import com.google.android.things.update.UpdateManager.POLICY_CHECKS_ONLY
+import com.google.android.things.update.UpdateManagerStatus
+import com.google.android.things.update.UpdatePolicy
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.InstagramOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
+import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.SettingsActivity
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ScreenSaverView
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
@@ -60,7 +65,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     private var inactivityHandler: Handler? = Handler()
     private var hasNetwork = AtomicBoolean(true)
     val disposable = CompositeDisposable()
-    var screenManager: ScreenManager? = null
+    //var screenManager: ScreenManager? = null
 
     abstract fun getLayoutId(): Int
 
@@ -75,14 +80,31 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MessageViewModel::class.java)
 
-        screenManager = ScreenManager(Display.DEFAULT_DISPLAY);
-        screenManager!!.setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
-        screenManager!!.setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
-        screenManager!!.setBrightness(configuration.screenBrightness);
-        screenManager!!.setDisplayDensity(configuration.screenDensity);
+        // These are Android Things specific settings for setting the time, display, and update manager
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
+        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+        ScreenManager(Display.DEFAULT_DISPLAY).setDisplayDensity(configuration.screenDensity);
 
-        val timeManager = TimeManager()
-        timeManager.setTimeZone(configuration.timeZone)
+        TimeManager().setTimeZone(configuration.timeZone)
+
+        UpdateManager()
+                .setPolicy(UpdatePolicy.Builder()
+                        .setPolicy(POLICY_CHECKS_ONLY)
+                        .setApplyDeadline(2, TimeUnit.DAYS)
+                        .build())
+
+        UpdateManager()
+                .addStatusListener { updateManagerStatus ->
+                    if (updateManagerStatus.currentState == UpdateManagerStatus.STATE_UPDATE_AVAILABLE) {
+                        AlertDialog.Builder(this@BaseActivity, R.style.CustomAlertDialog)
+                                .setMessage(getString(R.string.text_update_available))
+                                .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { _, _ ->
+                                    UpdateManager().performUpdateNow(POLICY_APPLY_AND_REBOOT)
+                                })
+                                .show()
+                    }
+                }
     }
 
     override fun onStart(){
@@ -101,9 +123,9 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     fun resetInactivityTimer() {
         Timber.d("resetInactivityTimer")
         dialogUtils.hideScreenSaverDialog()
-        inactivityHandler!!.removeCallbacks(inactivityCallback)
-        inactivityHandler!!.postDelayed(inactivityCallback, configuration.inactivityTime)
-        screenManager!!.setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+        inactivityHandler?.removeCallbacks(inactivityCallback)
+        inactivityHandler?.postDelayed(inactivityCallback, configuration.inactivityTime)
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
     }
 
     fun stopDisconnectTimer() {
@@ -123,9 +145,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
     public override fun onResume() {
         super.onResume()
-        if(connReceiver != null) {
-            registerReceiver(connReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-        }
+        registerReceiver(connReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
     override fun onPause() {
@@ -165,9 +185,9 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         if (!viewModel.isAlarmTriggeredMode()) {
             inactivityHandler!!.removeCallbacks(inactivityCallback)
             if( configuration.showClockScreenSaverModule()) {
-                screenManager!!.setBrightness(40);
+                ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(40);
             } else {
-                screenManager!!.setBrightness(0);
+                ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(0);
             }
             dialogUtils.showScreenSaver(this@BaseActivity,
                     configuration.showPhotoScreenSaver(), configuration.showClockScreenSaverModule(),
