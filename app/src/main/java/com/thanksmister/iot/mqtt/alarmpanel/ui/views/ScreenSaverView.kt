@@ -20,7 +20,6 @@ package com.thanksmister.iot.mqtt.alarmpanel.ui.views
 
 import android.content.Context
 import android.os.Handler
-import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout

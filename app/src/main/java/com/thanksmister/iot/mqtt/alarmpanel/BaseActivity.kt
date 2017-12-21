@@ -183,8 +183,10 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         dialogUtils.clearDialogs()
         if (!viewModel.isAlarmTriggeredMode() && viewModel.hasScreenSaver()) {
             inactivityHandler!!.removeCallbacks(inactivityCallback)
-            if( configuration.showClockScreenSaverModule()) {
+            if(configuration.showClockScreenSaverModule()) {
                 ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(40);
+            } else if (configuration.showPhotoScreenSaver()) {
+                ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(80);
             }
             dialogUtils.showScreenSaver(this@BaseActivity,
                     configuration.showPhotoScreenSaver(), configuration.showClockScreenSaverModule(),

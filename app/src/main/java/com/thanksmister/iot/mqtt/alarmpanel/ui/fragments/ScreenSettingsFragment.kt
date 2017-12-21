@@ -157,7 +157,7 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             }
             Configuration.PREF_IMAGE_SOURCE -> {
                 val value = urlPreference!!.text
-                imageOptions!!.setImageSource(value)
+                imageOptions!!.setTag(value)
             }
             Configuration.PREF_IMAGE_CLIENT_ID -> {
                 val value = clientIdPreference!!.text

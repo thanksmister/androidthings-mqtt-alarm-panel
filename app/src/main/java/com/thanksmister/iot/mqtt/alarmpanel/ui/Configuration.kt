@@ -110,12 +110,10 @@ constructor(private val sharedPreferences: DPreference) {
         this.sharedPreferences.setPrefBoolean(PREF_MODULE_CLOCK_SAVER, value)
     }
 
-    @Deprecated("Instagram no longer works")
     fun showPhotoScreenSaver(): Boolean {
-        return false //sharedPreferences.getPrefBoolean(PREF_MODULE_PHOTO_SAVER, false)
+        return sharedPreferences.getPrefBoolean(PREF_MODULE_PHOTO_SAVER, false)
     }
 
-    @Deprecated("Instagram no longer works")
     fun setPhotoScreenSaver(value: Boolean) {
         this.sharedPreferences.setPrefBoolean(PREF_MODULE_PHOTO_SAVER, value)
     }
