@@ -85,22 +85,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                     })
                     .show()
         }
-
-        configuration.alarmCode = 3355
-        configuration.setShowWeatherModule(true)
-        readWeatherOptions().darkSkyKey = "39a9cc0d0d9ae56426613d0df7022d54"
-        readWeatherOptions().setLat("-34.5707737")
-        readWeatherOptions().setLon("-58.4471991")
-        readWeatherOptions().setIsCelsius(true)
-        readMqttOptions().setBroker("192.168.86.228")
-        configuration.setHasCamera(true)
-        configuration.setWebModule(true)
-        configuration.setHasNotifications(true)
-        configuration.webUrl = "http://192.168.86.228:8123/kiosk"
-        configuration.setMailFrom("mister@thanksmister.com")
-        configuration.setMailGunApiKey("key-ef87016d5419a956b907459dc99b2265")
-        configuration.setMailTo("mister@thanksmister.com")
-        configuration.setMailGunUrl("sandboxd83b1e232f934c75a471c51000485df0.mailgun.org")
     }
 
     public override fun onStart() {
