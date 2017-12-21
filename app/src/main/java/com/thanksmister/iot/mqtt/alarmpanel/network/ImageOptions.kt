@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2017. ThanksMister LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.thanksmister.iot.mqtt.alarmpanel.network
 
 import android.text.TextUtils
@@ -7,7 +23,7 @@ import dpreference.DPreference
 /**
  * For original implementation see https://github.com/androidthings/sensorhub-cloud-iot.
  */
-class InstagramOptions private constructor(
+class ImageOptions private constructor(
         /**
          * Preferences.
          */
@@ -24,12 +40,21 @@ class InstagramOptions private constructor(
     private var imageSource: String? = null
 
     /**
+     * Client Id.
+     */
+    private var clientId: String? = null
+
+    /**
      * Rotation interval.
      */
     private var rotation: Int = 0
 
     val isValid: Boolean
-        get() = !TextUtils.isEmpty(imageSource)
+        get() = !TextUtils.isEmpty(imageSource) && !TextUtils.isEmpty(imageClientId)
+
+    var imageClientId: String?
+        get() = clientId
+        set(value) = this.sharedPreferences.setPrefString(PREF_IMAGE_CLIENT_ID, value)
 
     var imageRotation: Int
         get() = rotation
@@ -39,7 +64,23 @@ class InstagramOptions private constructor(
         get() = fitScreen
         set(value) = this.sharedPreferences.setPrefBoolean(PREF_IMAGE_FIT_SIZE, value)
 
-    fun getImageSource(): String? {
+    fun getClientId(): String? {
+        return clientId
+    }
+
+    fun setClientId(value: String) {
+        this.sharedPreferences.setPrefString(PREF_IMAGE_CLIENT_ID, value)
+    }
+
+    fun getRotation(): Int {
+        return imageRotation
+    }
+
+    fun setRotation(value: Int) {
+        this.sharedPreferences.setPrefInt(PREF_IMAGE_ROTATION, value)
+    }
+
+    fun getTag(): String? {
         return imageSource
     }
 
@@ -64,6 +105,7 @@ class InstagramOptions private constructor(
         val PREF_IMAGE_SOURCE = "pref_image_source"
         val PREF_IMAGE_FIT_SIZE = "pref_image_fit"
         val PREF_IMAGE_ROTATION = "pref_image_rotation"
+        val PREF_IMAGE_CLIENT_ID = "pref_image_client_id"
 
         private val IMAGE_OPTIONS_UPDATED = "pref_image_options_updated"
         private val ROTATE_TIME_IN_MINUTES = 30 // 30 minutes
@@ -71,10 +113,11 @@ class InstagramOptions private constructor(
         /**
          * Construct a MqttOptions object from Configuration.
          */
-        fun from(sharedPreferences: DPreference): InstagramOptions {
+        fun from(sharedPreferences: DPreference): ImageOptions {
             try {
-                val options = InstagramOptions(sharedPreferences)
-                options.imageSource = sharedPreferences.getPrefString(PREF_IMAGE_SOURCE, "omjsk")
+                val options = ImageOptions(sharedPreferences)
+                options.imageSource = sharedPreferences.getPrefString(PREF_IMAGE_SOURCE, "landscape")
+                options.clientId = sharedPreferences.getPrefString(PREF_IMAGE_CLIENT_ID, null)
                 options.fitScreen = sharedPreferences.getPrefBoolean(PREF_IMAGE_FIT_SIZE, false)
                 options.rotation = sharedPreferences.getPrefInt(PREF_IMAGE_ROTATION, ROTATE_TIME_IN_MINUTES)
                 return options

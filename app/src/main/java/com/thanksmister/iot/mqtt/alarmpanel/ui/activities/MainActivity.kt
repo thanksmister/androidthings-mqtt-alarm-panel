@@ -75,8 +75,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         view_pager.addOnPageChangeListener(this)
         view_pager.setPagingEnabled(false)
 
-        configuration.isFirstTime = false;
-
         if (configuration.isFirstTime) {
             alertDialog = AlertDialog.Builder(this@MainActivity, R.style.CustomAlertDialog)
                     .setMessage(getString(R.string.dialog_first_time))
@@ -87,6 +85,22 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                     })
                     .show()
         }
+
+        configuration.alarmCode = 3355
+        configuration.setShowWeatherModule(true)
+        readWeatherOptions().darkSkyKey = "39a9cc0d0d9ae56426613d0df7022d54"
+        readWeatherOptions().setLat("-34.5707737")
+        readWeatherOptions().setLon("-58.4471991")
+        readWeatherOptions().setIsCelsius(true)
+        readMqttOptions().setBroker("192.168.86.228")
+        configuration.setHasCamera(true)
+        configuration.setWebModule(true)
+        configuration.setHasNotifications(true)
+        configuration.webUrl = "http://192.168.86.228:8123/kiosk"
+        configuration.setMailFrom("mister@thanksmister.com")
+        configuration.setMailGunApiKey("key-ef87016d5419a956b907459dc99b2265")
+        configuration.setMailTo("mister@thanksmister.com")
+        configuration.setMailGunUrl("sandboxd83b1e232f934c75a471c51000485df0.mailgun.org")
     }
 
     public override fun onStart() {
@@ -169,23 +183,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.global, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == android.R.id.home) {
-            onBackPressed()
-            return true
-        } else if (id == R.id.action_settings) {
-            val intent = SettingsActivity.createStartIntent(this@MainActivity)
-            startActivity(intent)
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun publishArmedHome() {
         if (mqttModule != null) {
             mqttModule?.publish(AlarmUtils.COMMAND_ARM_HOME)
@@ -243,11 +240,15 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
      */
     private fun awakenDeviceForAction() {
         stopDisconnectTimer() // stop screen saver mode
+        if (view_pager != null && pagerAdapter.count > 0) {
+            dialogUtils.hideAlertDialog()
+            view_pager.setCurrentItem(0)
+        }
     }
 
     private fun captureImage() {
         if (cameraModule != null) {
-            cameraModule?.takePicture()
+            cameraModule?.takePicture(configuration.getCameraRotate()!!)
         }
     }
 

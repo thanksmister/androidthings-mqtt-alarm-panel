@@ -28,6 +28,7 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
     private var mCameraDevice: CameraDevice? = null
     private var mCaptureSession: CameraCaptureSession? = null
     private var hasCamera:Boolean = false
+    private var rotation:Float = 0f
 
     interface CallbackListener {
         fun onCameraComplete(bitmap: Bitmap)
@@ -80,7 +81,8 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
         callback?.onCameraComplete(bitmap);
     }
 
-    fun takePicture() {
+    fun takePicture(rotation: Float) {
+        this.rotation = rotation;
         Timber.d("takePicture mCameraDevice" + mCameraDevice)
         if(hasCamera) {
             mCameraDevice?.createCaptureSession(
@@ -94,7 +96,7 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         val matrix = Matrix()
         //For some reason the bitmap is rotated the incorrect way
-        matrix.postRotate(-90f)
+        matrix.postRotate(rotation)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 

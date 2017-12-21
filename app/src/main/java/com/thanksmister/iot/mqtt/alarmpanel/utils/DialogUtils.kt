@@ -38,6 +38,7 @@ import android.view.WindowManager
 import android.widget.TextView
 
 import com.thanksmister.iot.mqtt.alarmpanel.R
+import com.thanksmister.iot.mqtt.alarmpanel.network.ImageOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.model.Daily
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmCodeView
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmDisableView
@@ -249,8 +250,7 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
      * with the alarm disabled because the disable time will be longer than this.
      */
     fun showScreenSaver(activity: AppCompatActivity, showPhotoScreenSaver: Boolean,
-                        showClockScreenSaver: Boolean,
-                        imageSource: String, fitToScreen: Boolean, rotation: Int,
+                        showClockScreenSaver: Boolean, options: ImageOptions,
                         listener: ScreenSaverView.ViewListener, onClickListener: View.OnClickListener) {
 
         if (screenSaverDialog != null && screenSaverDialog!!.isShowing) {
@@ -260,8 +260,7 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.dialog_screen_saver, null, false)
         val screenSaverView = view.findViewById<ScreenSaverView>(R.id.screenSaverView)
-        screenSaverView.setScreenSaver(activity, showPhotoScreenSaver, showClockScreenSaver,
-                imageSource, fitToScreen, rotation)
+        screenSaverView.setScreenSaver(showPhotoScreenSaver, showClockScreenSaver, options)
         screenSaverView.setListener(listener)
         screenSaverView.setOnClickListener(onClickListener)
         screenSaverDialog = buildImmersiveDialog(activity, true, screenSaverView, true)

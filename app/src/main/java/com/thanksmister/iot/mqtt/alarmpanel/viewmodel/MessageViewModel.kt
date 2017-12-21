@@ -77,6 +77,9 @@ constructor(application: Application, private val dataSource: MessageDao, privat
                 && configuration.hasMailGunCredentials())
     }
 
+    fun hasScreenSaver() : Boolean {
+        return (configuration.showPhotoScreenSaver() || configuration.showClockScreenSaverModule())
+    }
 
     fun hasTss() : Boolean {
         return configuration.hasTssModule()

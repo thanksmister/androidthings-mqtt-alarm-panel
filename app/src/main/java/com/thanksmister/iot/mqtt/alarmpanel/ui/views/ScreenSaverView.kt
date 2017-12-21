@@ -26,11 +26,12 @@ import android.view.View
 import android.widget.RelativeLayout
 import com.squareup.picasso.Picasso
 import com.thanksmister.iot.mqtt.alarmpanel.R
-import com.thanksmister.iot.mqtt.alarmpanel.network.InstagramApi
-import com.thanksmister.iot.mqtt.alarmpanel.network.fetchers.InstagramFetcher
-import com.thanksmister.iot.mqtt.alarmpanel.network.model.InstagramItem
-import com.thanksmister.iot.mqtt.alarmpanel.network.model.InstagramResponse
-import com.thanksmister.iot.mqtt.alarmpanel.tasks.InstagramTask
+import com.thanksmister.iot.mqtt.alarmpanel.network.ImageApi
+import com.thanksmister.iot.mqtt.alarmpanel.network.ImageOptions
+import com.thanksmister.iot.mqtt.alarmpanel.network.fetchers.ImageFetcher
+import com.thanksmister.iot.mqtt.alarmpanel.network.model.ImageResponse
+import com.thanksmister.iot.mqtt.alarmpanel.network.model.Item
+import com.thanksmister.iot.mqtt.alarmpanel.tasks.ImageTask
 import com.thanksmister.iot.mqtt.alarmpanel.tasks.NetworkTask
 import kotlinx.android.synthetic.main.dialog_screen_saver.view.*
 import retrofit2.Response
@@ -40,15 +41,14 @@ import java.util.*
 
 class ScreenSaverView : RelativeLayout {
 
-    private var task: InstagramTask? = null
-    private var userName: String? = null
-    private var fitToScreen: Boolean = false
+    private var task: ImageTask? = null
     private var rotationHandler: Handler? = null
     private var timeHandler: Handler? = null
     private var picasso: Picasso? = null
-    private var itemList: List<InstagramItem>? = null
+    private var itemList: List<Item>? = null
     private var imageUrl: String? = null
     private var rotationInterval: Long = 0
+    private var options:ImageOptions? = null
 
     private var listener: ViewListener? = null
     private var saverContext: Context? = null
@@ -112,14 +112,12 @@ class ScreenSaverView : RelativeLayout {
         this.listener = listener
     }
 
-    fun setScreenSaver(context: Context, useImageScreenSaver: Boolean, useClockScreenSaver: Boolean,
-                       userName: String, fitToScreen: Boolean, rotationIntervalMinutes: Int) {
-        this.saverContext = context
-        this.userName = userName
-        this.fitToScreen = fitToScreen
-        this.rotationInterval = (rotationIntervalMinutes * 1000).toLong() // convert to milliseconds
+    fun setScreenSaver(useImageScreenSaver: Boolean, useClockScreenSaver: Boolean, options:ImageOptions) {
 
-        if (useImageScreenSaver && !TextUtils.isEmpty(userName)) {
+        this.options = options
+        this.rotationInterval = (options.getRotation() * 60 * 1000).toLong() // convert to milliseconds
+
+        if (useImageScreenSaver && options.isValid) {
             screenSaverImage.visibility = View.VISIBLE
             screenSaverClock.visibility = View.GONE
             if (timeHandler != null) {
@@ -150,40 +148,49 @@ class ScreenSaverView : RelativeLayout {
             val min = 0
             val max = itemList!!.size - 1
             val random = Random().nextInt(max - min + 1) + min
-            val instagramItem = itemList!![random]
-            imageUrl = instagramItem.images.standardResolution.url
-            if (fitToScreen) {
-                picasso!!.load(imageUrl)
-                        .placeholder(R.color.black)
-                        .resize(screenSaverImage.getWidth(), screenSaverImage.getHeight())
-                        .centerCrop()
-                        .error(R.color.black)
-                        .into(screenSaverImage)
+            val item = itemList!![random]
+            if(item.images !=  null) {
+                val minImage = 0
+                val maxImage = item.images.size - 1
+                val randomImage = Random().nextInt(maxImage - minImage + 1) + minImage
+                val image = item.images[randomImage]
+                imageUrl = image.link
+
+                if (options!!.imageFitScreen) {
+                    picasso!!.load(imageUrl)
+                            .placeholder(R.color.black)
+                            .resize(screenSaverImage.width, screenSaverImage.height)
+                            .centerCrop()
+                            .error(R.color.black)
+                            .into(screenSaverImage)
+                } else {
+                    picasso!!.load(imageUrl)
+                            .placeholder(R.color.black)
+                            .error(R.color.black)
+                            .into(screenSaverImage)
+                }
+                if (rotationHandler == null) {
+                    rotationHandler = Handler()
+                }
+                rotationHandler!!.postDelayed(delayRotationRunnable, rotationInterval)
             } else {
-                picasso!!.load(imageUrl)
-                        .placeholder(R.color.black)
-                        .error(R.color.black)
-                        .into(screenSaverImage)
+                startImageRotation()
             }
-            if (rotationHandler == null) {
-                rotationHandler = Handler()
-            }
-            rotationHandler!!.postDelayed(delayRotationRunnable, rotationInterval)
         }
     }
 
     private fun fetchMediaData() {
         if (task == null || task!!.isCancelled) {
-            val api = InstagramApi()
-            val fetcher = InstagramFetcher(api)
-            task = InstagramTask(fetcher)
+            val api = ImageApi()
+            val fetcher = ImageFetcher(api)
+            task = ImageTask(fetcher)
             task!!.setOnExceptionListener(object :   NetworkTask.OnExceptionListener {
                 override fun onException(paramException: Exception) {
-                    Timber.e("Instagram Exception: " + paramException.message)
+                    Timber.e("Imgur Exception: " + paramException.message)
                 }
             })
-            task!!.setOnCompleteListener(object : NetworkTask.OnCompleteListener<Response<InstagramResponse>> {
-                override fun onComplete(paramResult: Response<InstagramResponse>) {
+            task!!.setOnCompleteListener(object : NetworkTask.OnCompleteListener<Response<ImageResponse>> {
+                override fun onComplete(paramResult: Response<ImageResponse>) {
                     val instagramResponse = paramResult.body()
                     if (instagramResponse != null) {
                         itemList = instagramResponse.items
@@ -191,7 +198,7 @@ class ScreenSaverView : RelativeLayout {
                     }
                 }
             })
-            task!!.execute(userName)
+            task!!.execute(options!!.imageClientId, options!!.getTag())
         }
     }
 }

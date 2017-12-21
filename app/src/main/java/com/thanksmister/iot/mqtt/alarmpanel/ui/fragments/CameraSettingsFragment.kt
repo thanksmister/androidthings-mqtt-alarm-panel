@@ -173,10 +173,10 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 rotatePreference!!.isEnabled = checked
             }
             Configuration.PREF_CAMERA_ROTATE -> {
-                val valueInt = Integer.valueOf(rotatePreference!!.value)!!
+                val valueFloat = rotatePreference!!.value
                 val valueName = rotatePreference!!.entry.toString()
                 rotatePreference!!.summary = getString(R.string.preference_camera_flip_summary, valueName)
-                configuration.setCameraRotate(valueInt)
+                configuration.setCameraRotate(valueFloat)
             }
         }
     }

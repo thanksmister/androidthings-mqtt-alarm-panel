@@ -19,14 +19,17 @@
 package com.thanksmister.iot.mqtt.alarmpanel.network
 
 
-import com.thanksmister.iot.mqtt.alarmpanel.network.model.InstagramResponse
+import com.thanksmister.iot.mqtt.alarmpanel.network.model.ImageResponse
 
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.Path
 
-interface InstagramRequest {
+interface ImageRequest {
 
-    @GET("/{user}/media/")
-    fun getMedia(@Path("user") user: String): Call<InstagramResponse>
+    @GET("3/gallery/t/{tag}")
+    fun getImagesByTag(@Header("authorization") clientId: String,
+                       @Path("tag") user: String): Call<ImageResponse>
 }

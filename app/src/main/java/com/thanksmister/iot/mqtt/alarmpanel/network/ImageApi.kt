@@ -19,10 +19,9 @@
 package com.thanksmister.iot.mqtt.alarmpanel.network
 
 import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.thanksmister.iot.mqtt.alarmpanel.network.model.DarkSkyResponse
-import com.thanksmister.iot.mqtt.alarmpanel.network.model.InstagramResponse
+import com.thanksmister.iot.mqtt.alarmpanel.network.adapters.DataTypeAdapterFactory
+import com.thanksmister.iot.mqtt.alarmpanel.network.model.ImageResponse
 
 import java.util.concurrent.TimeUnit
 
@@ -32,13 +31,14 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class InstagramApi {
+class ImageApi {
 
-    private val service: InstagramRequest
+    private val service: ImageRequest
 
     init {
 
-        val base_url = "https://www.instagram.com"
+        val base_url = "https://api.imgur.com/"
+
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BODY
 
@@ -50,6 +50,7 @@ class InstagramApi {
                 .build()
 
         val gson = GsonBuilder()
+                .registerTypeAdapterFactory(DataTypeAdapterFactory())
                 .create()
 
         val retrofit = Retrofit.Builder()
@@ -58,11 +59,12 @@ class InstagramApi {
                 .baseUrl(base_url)
                 .build()
 
-        service = retrofit.create(InstagramRequest::class.java)
+        service = retrofit.create(ImageRequest::class.java)
     }
 
-    fun getMedia(userName: String): Call<InstagramResponse> {
+    fun getImagesByTag(clientId: String, tag: String): Call<ImageResponse> {
         val service = service
-        return service.getMedia(userName)
+        val auth = "Client-ID " + clientId
+        return service.getImagesByTag(auth, tag)
     }
 }

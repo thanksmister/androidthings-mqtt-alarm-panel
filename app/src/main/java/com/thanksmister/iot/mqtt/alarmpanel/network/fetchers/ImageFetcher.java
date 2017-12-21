@@ -18,24 +18,20 @@ package com.thanksmister.iot.mqtt.alarmpanel.network.fetchers;
 
 import android.support.annotation.NonNull;
 
-import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyApi;
-import com.thanksmister.iot.mqtt.alarmpanel.network.InstagramApi;
-import com.thanksmister.iot.mqtt.alarmpanel.network.model.DarkSkyResponse;
-import com.thanksmister.iot.mqtt.alarmpanel.network.model.InstagramResponse;
-
-import java.util.Locale;
+import com.thanksmister.iot.mqtt.alarmpanel.network.ImageApi;
+import com.thanksmister.iot.mqtt.alarmpanel.network.model.ImageResponse;
 
 import retrofit2.Call;
 
-public class InstagramFetcher {
+public class ImageFetcher {
 
-    private final InstagramApi networkApi;
+    private final ImageApi networkApi;
 
-    public InstagramFetcher(@NonNull InstagramApi networkApi) {
+    public ImageFetcher(@NonNull ImageApi networkApi) {
         this.networkApi = networkApi;
     }
-    
-    public Call<InstagramResponse> getMedia(final String userName) {
-        return networkApi.getMedia(userName);
+
+    public Call<ImageResponse> getImagesByTag(final String clientId, final String tag) {
+        return networkApi.getImagesByTag(clientId, tag);
     }
 }

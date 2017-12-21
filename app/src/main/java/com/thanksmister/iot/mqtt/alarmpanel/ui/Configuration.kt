@@ -181,12 +181,12 @@ constructor(private val sharedPreferences: DPreference) {
         this.sharedPreferences.setPrefBoolean(PREF_MODULE_CAMERA, value)
     }
 
-    fun getCameraRotate(): Int? {
-        return sharedPreferences.getPrefInt(PREF_CAMERA_ROTATE, 0)
+    fun getCameraRotate(): Float? {
+        return sharedPreferences.getPrefString(PREF_CAMERA_ROTATE, "0f").toFloat()
     }
 
-    fun setCameraRotate(value: Int) {
-        sharedPreferences.setPrefInt(PREF_CAMERA_ROTATE, value)
+    fun setCameraRotate(value: String) {
+        sharedPreferences.setPrefString(PREF_CAMERA_ROTATE, value)
     }
 
     /**
@@ -236,7 +236,7 @@ constructor(private val sharedPreferences: DPreference) {
         @JvmField val PREF_MAIL_API_KEY = "pref_mail_api_key"
         @JvmField val PREF_MAIL_URL = "pref_mail_url"
         @JvmField val PREF_DISABLE_DIALOG_TIME = "pref_disable_dialog_time" // this isn't configurable
-
+        @JvmField val PREF_IMAGE_CLIENT_ID = "pref_image_client_id"
         @JvmField val PREF_MODULE_CAMERA = "pref_module_camera"
         @JvmField val PREF_CAMERA_ROTATE = "pref_camera_rotate"
         @JvmField  val PREF_MODULE_WEATHER = "pref_module_weather"

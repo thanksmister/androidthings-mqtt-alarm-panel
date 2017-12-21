@@ -31,17 +31,15 @@ import android.view.MenuItem
 import android.view.View
 import com.google.android.things.device.ScreenManager
 import com.google.android.things.device.TimeManager
-import com.google.android.things.update.StatusListener
 import com.google.android.things.update.UpdateManager
 import com.google.android.things.update.UpdateManager.POLICY_APPLY_AND_REBOOT
 import com.google.android.things.update.UpdateManager.POLICY_CHECKS_ONLY
 import com.google.android.things.update.UpdateManagerStatus
 import com.google.android.things.update.UpdatePolicy
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
-import com.thanksmister.iot.mqtt.alarmpanel.network.InstagramOptions
+import com.thanksmister.iot.mqtt.alarmpanel.network.ImageOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
-import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.SettingsActivity
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ScreenSaverView
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
@@ -165,8 +163,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         return DarkSkyOptions.from(preferences)
     }
 
-    fun readImageOptions(): InstagramOptions {
-        return InstagramOptions.from(preferences)
+    fun readImageOptions(): ImageOptions {
+        return ImageOptions.from(preferences)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -182,17 +180,15 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * with the alarm disabled because the disable time will be longer than this.
      */
     open fun showScreenSaver() {
-        if (!viewModel.isAlarmTriggeredMode()) {
+        dialogUtils.clearDialogs()
+        if (!viewModel.isAlarmTriggeredMode() && viewModel.hasScreenSaver()) {
             inactivityHandler!!.removeCallbacks(inactivityCallback)
             if( configuration.showClockScreenSaverModule()) {
                 ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(40);
-            } else {
-                ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(0);
             }
             dialogUtils.showScreenSaver(this@BaseActivity,
                     configuration.showPhotoScreenSaver(), configuration.showClockScreenSaverModule(),
-                    readImageOptions().getImageSource()!!, readImageOptions().imageFitScreen,
-                    readImageOptions().imageRotation, object : ScreenSaverView.ViewListener {
+                    readImageOptions(), object : ScreenSaverView.ViewListener {
                 override fun onMotion() {
                     dialogUtils.hideScreenSaverDialog()
                     resetInactivityTimer()
@@ -201,6 +197,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                 dialogUtils.hideScreenSaverDialog()
                 resetInactivityTimer()
             })
+        } else if (!viewModel.isAlarmTriggeredMode()) {
+            ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(0);
         }
     }
 

@@ -99,6 +99,7 @@ class WeatherModule() : AutoCloseable {
         task!!.setOnExceptionListener(object : NetworkTask.OnExceptionListener {
             override fun onException(paramException: Exception) {
                 Timber.e("Weather Exception: " + paramException.message)
+                setHandler()
             }
         })
         task!!.setOnCompleteListener(object : NetworkTask.OnCompleteListener<Response<DarkSkyResponse>> {
