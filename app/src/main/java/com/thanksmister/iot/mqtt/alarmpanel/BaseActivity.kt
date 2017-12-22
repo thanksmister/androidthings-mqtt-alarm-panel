@@ -123,7 +123,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         dialogUtils.hideScreenSaverDialog()
         inactivityHandler?.removeCallbacks(inactivityCallback)
         inactivityHandler?.postDelayed(inactivityCallback, configuration.inactivityTime)
-        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
     }
 
     fun stopDisconnectTimer() {
@@ -134,6 +133,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     override fun onUserInteraction() {
         Timber.d("onUserInteraction")
         resetInactivityTimer()
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
     }
 
     public override fun onStop() {

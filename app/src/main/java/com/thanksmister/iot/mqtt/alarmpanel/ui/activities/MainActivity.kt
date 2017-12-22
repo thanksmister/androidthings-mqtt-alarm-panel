@@ -35,6 +35,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.google.android.things.device.ScreenManager
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
+import com.thanksmister.iot.mqtt.alarmpanel.BuildConfig
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.ControlsFragment
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.MainFragment
@@ -75,6 +76,29 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         view_pager.addOnPageChangeListener(this)
         view_pager.setPagingEnabled(false)
 
+        if(BuildConfig.DEBUG) {
+            configuration.alarmCode = BuildConfig.ALARM_CODE
+            readWeatherOptions().darkSkyKey = BuildConfig.DARK_SKY_KEY
+            readWeatherOptions().setLat(BuildConfig.LATITUDE)
+            readWeatherOptions().setLon(BuildConfig.LONGITUDE)
+            readMqttOptions().setBroker(BuildConfig.BROKER)
+            configuration.webUrl = BuildConfig.HASS_URL
+            configuration.setMailFrom(BuildConfig.MAIL_FROM)
+            configuration.setMailGunApiKey(BuildConfig.MAIL_GUN_KEY)
+            configuration.setMailTo(BuildConfig.MAIL_TO)
+            configuration.setMailGunUrl(BuildConfig.MAIL_GUN_URL)
+            readImageOptions().setClientId(BuildConfig.IMGUR_CLIENT_ID)
+            readImageOptions().setTag(BuildConfig.IMGUR_TAG) // Imgur tags
+            readWeatherOptions().setIsCelsius(true)
+            configuration.isFirstTime = false
+            configuration.setHasNotifications(true)
+            configuration.setPhotoScreenSaver(true)
+            configuration.setHasCamera(true)
+            configuration.setWebModule(true)
+            configuration.setShowWeatherModule(true)
+            configuration.setTssModule(true)
+        }
+
         if (configuration.isFirstTime) {
             alertDialog = AlertDialog.Builder(this@MainActivity, R.style.CustomAlertDialog)
                     .setMessage(getString(R.string.dialog_first_time))
@@ -97,13 +121,13 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({state ->
                     this@MainActivity.runOnUiThread({
+                        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
                         when (state) {
                             AlarmUtils.STATE_DISARM,
                             AlarmUtils.STATE_ARM_AWAY,
                             AlarmUtils.STATE_ARM_HOME -> {
                                 resetInactivityTimer()
                                 ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
-                                ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
                             }
                             AlarmUtils.STATE_TRIGGERED -> {
                                 awakenDeviceForAction()
