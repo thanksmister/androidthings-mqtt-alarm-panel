@@ -30,10 +30,6 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
-import android.view.Display
-import android.view.Menu
-import android.view.MenuItem
-import com.google.android.things.device.ScreenManager
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.BuildConfig
 import com.thanksmister.iot.mqtt.alarmpanel.R
@@ -49,7 +45,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 
 class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFragment.OnControlsFragmentListener,
@@ -121,20 +116,19 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({state ->
                     this@MainActivity.runOnUiThread({
-                        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
                         when (state) {
                             AlarmUtils.STATE_DISARM,
                             AlarmUtils.STATE_ARM_AWAY,
                             AlarmUtils.STATE_ARM_HOME -> {
+                                setScreenDefaults()
                                 resetInactivityTimer()
-                                ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
                             }
                             AlarmUtils.STATE_TRIGGERED -> {
                                 awakenDeviceForAction()
-                                stopDisconnectTimer()
-                                ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS);
+                                setScreenTriggered()
                             }
                             AlarmUtils.STATE_PENDING -> {
+                                setScreenDefaults()
                                 awakenDeviceForAction()
                             }
                         }
@@ -212,16 +206,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     private val initializeOnBackground = Runnable {
 
-        /*runOnUiThread {
-            if (!isFinishing && configuration.isFirstTime) {
-                dialogUtils.showAlertDialog(this@MainActivity, getString(R.string.dialog_first_time), DialogInterface.OnClickListener { _, _ ->
-                    configuration.isFirstTime = false;
-                    val intent = SettingsActivity.createStartIntent(this@MainActivity)
-                    startActivity(intent)
-                })
-            }
-        }*/
-
         if (textToSpeechModule == null) {
             textToSpeechModule = TextToSpeechModule(this@MainActivity, configuration)
             lifecycle.addObserver(textToSpeechModule!!)
@@ -264,6 +248,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         if(NOTIFICATION_STATE_TOPIC == topic) {
             this@MainActivity.runOnUiThread({
                 awakenDeviceForAction()
+                setScreenDefaults()
                 if (viewModel.hasAlerts()) {
                     dialogUtils.showAlertDialog(this@MainActivity, payload)
                 }

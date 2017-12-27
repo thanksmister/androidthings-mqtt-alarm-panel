@@ -137,17 +137,18 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
             return when (position) {
                 0 -> DeviceSettingsFragment()
                 1 -> AlarmSettingsFragment()
-                2 -> NotificationsSettingsFragment()
-                3 -> CameraSettingsFragment()
-                4 -> ScreenSettingsFragment()
-                5 -> WeatherSettingsFragment()
-                6 -> PlatformSettingsFragment()
-                7 -> AboutFragment()
+                2 -> MqttSettingsFragment()
+                3 -> NotificationsSettingsFragment()
+                4 -> CameraSettingsFragment()
+                5 -> ScreenSettingsFragment()
+                6 -> WeatherSettingsFragment()
+                7 -> PlatformSettingsFragment()
+                8 -> AboutFragment()
                 else -> AboutFragment()
             }
         }
         override fun getCount(): Int {
-            return 8
+            return 9
         }
     }
 

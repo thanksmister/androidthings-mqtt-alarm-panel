@@ -65,7 +65,11 @@ class AlarmUtils {
         @JvmField val STATE_ERROR = "error"
 
         @JvmField val PENDING_TIME = 60
-        @JvmField val TRIGGER_TIME = 120
+        @JvmField val PENDING_HOME_TIME = 60
+        @JvmField val PENDING_AWAY_TIME = 60
+        @JvmField val DELAY_TIME = 30
+        @JvmField val DELAY_HOME_TIME = 30
+        @JvmField val DELAY_AWAY_TIME = 30
         @JvmField val DISABLE_TIME = 30
 
         private val supportedCommands = ArrayList<String>()

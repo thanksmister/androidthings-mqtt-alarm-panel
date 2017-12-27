@@ -93,4 +93,7 @@ internal abstract class AndroidBindingModule {
 
     @ContributesAndroidInjector
     internal abstract fun deviceSettingsFragment(): DeviceSettingsFragment
+
+    @ContributesAndroidInjector
+    internal abstract fun mqttSettingsFragment(): MqttSettingsFragment
 }

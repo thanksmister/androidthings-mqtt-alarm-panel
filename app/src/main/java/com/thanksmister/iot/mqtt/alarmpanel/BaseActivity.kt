@@ -56,7 +56,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     @Inject lateinit var configuration: Configuration
     @Inject lateinit var preferences: DPreference
     @Inject lateinit var dialogUtils: DialogUtils
-
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     lateinit var viewModel: MessageViewModel
 
@@ -118,6 +117,26 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         disposable.dispose()
     }
 
+    /**
+     * Resets the screen timeout and brightness to the default (or user set) settings
+     */
+    fun setScreenDefaults() {
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Keeps the screen on extra long time if the alarm is triggered.
+     */
+    fun setScreenTriggered() {
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS);
+    }
+
+    fun setScreenBrightness(brightness: Int) {
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(brightness);
+    }
+
     fun resetInactivityTimer() {
         Timber.d("resetInactivityTimer")
         dialogUtils.hideScreenSaverDialog()
@@ -133,7 +152,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     override fun onUserInteraction() {
         Timber.d("onUserInteraction")
         resetInactivityTimer()
-        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+        setScreenDefaults()
     }
 
     public override fun onStop() {
@@ -184,9 +203,9 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         if (!viewModel.isAlarmTriggeredMode() && viewModel.hasScreenSaver()) {
             inactivityHandler!!.removeCallbacks(inactivityCallback)
             if(configuration.showClockScreenSaverModule()) {
-                ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(40);
+                setScreenBrightness(40);
             } else if (configuration.showPhotoScreenSaver()) {
-                ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(80);
+                setScreenBrightness(80);
             }
             dialogUtils.showScreenSaver(this@BaseActivity,
                     configuration.showPhotoScreenSaver(), configuration.showClockScreenSaverModule(),
@@ -200,7 +219,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                 resetInactivityTimer()
             })
         } else if (!viewModel.isAlarmTriggeredMode()) {
-            ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(0);
+            setScreenBrightness(0);
         }
     }
 

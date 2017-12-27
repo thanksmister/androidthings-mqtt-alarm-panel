@@ -41,6 +41,7 @@
     <string name="preference_title_password">Password</string>
     <string name="preference_summary_password">Set the service password (if needed).</string>
     <string name="preference_title_alarm">Alarm Settings</string>
+    <string name="preference_mqtt_alarm">MQTT Settings</string>
     <string name="preference_summary_alarm">Alarm code settings</string>
     <string name="preference_title_pending_time">Pending Time</string>
     <string name="preference_summary_pending_time">The time in seconds before arming the alarm. Currently %1$s seconds.</string>
@@ -229,6 +230,17 @@
     <string name="pref_reset_category">Reset</string>
     <string name="pref_reset_title">Clear settings</string>
     <string name="pref_reset_summary">Clears all settings and returns device to default settings.</string>
+    <string name="pref_delay_title">Disarm Delay Time</string>
+    <string name="pref_delay_summary">The time in seconds to display the disarm dialog before the alarm is triggered unless overriden by the home or away delay times. Currently %1$s seconds.</string>
+    <string name="pref_away_pending_title">Arm Away Pending Time</string>
+    <string name="pref_away_pending_summary">The time in seconds before the alarm is set to away mode. Currently %1$s seconds.</string>
+    <string name="pref_pending_times_description">These times should match those set in your home automation platform. If you do not want to use delay, pending home, pending away times, just set them all to be the same as your pending time. For Home Assistant, review the MQTT manual alarm control panel documentation at https://home-assistant.io/components/alarm_control_panel.manual_mqtt/.</string>
+    <string name="pref_home_delay_summary">The time in seconds to display the disarm dialog before the alarm is triggered in alarm home mode. Currently %1$s seconds.</string>
+    <string name="pref_home_delay_title">Disarm Home Delay Time</string>
+    <string name="pref_away_delay_summary">The time in seconds to display the disarm dialog before the alarm is triggered in alarm away mode. Currently %1$s seconds.</string>
+    <string name="pref_away_delay_title">Disarm Away Delay Time</string>
+    <string name="pref_home_pending_title">Arm Home Pending Time</string>
+    <string name="pref_home_pending_summary">The time in seconds before the alarm is set to home mode. Currently %1$s seconds.</string>
 
     <string name="pref_device_timeout_minutes_summary">After %1$s minute(s) the screen turns off.</string>
     <string name="pref_device_timeout_seconds_summary">After %1$s second(s) the screen turns off.</string>
@@ -240,6 +252,7 @@
     <string-array name="settings_titles">
         <item>@string/text_alarm_settings</item>
         <item>@string/preference_title_alarm</item>
+        <item>@string/preference_mqtt_alarm</item>
         <item>@string/preference_title_notification</item>
         <item>@string/preference_camera_title</item>
         <item>@string/preference_title_screen_saver_title</item>
