@@ -96,7 +96,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                     if (updateManagerStatus.currentState == UpdateManagerStatus.STATE_UPDATE_AVAILABLE) {
                         AlertDialog.Builder(this@BaseActivity, R.style.CustomAlertDialog)
                                 .setMessage(getString(R.string.text_update_available))
-                                .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { _, _ ->
+                                .setPositiveButton(android.R.string.ok, { _, _ ->
                                     UpdateManager().performUpdateNow(POLICY_APPLY_AND_REBOOT)
                                 })
                                 .show()
@@ -199,7 +199,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * with the alarm disabled because the disable time will be longer than this.
      */
     open fun showScreenSaver() {
-        dialogUtils.clearDialogs()
+        //dialogUtils.clearDialogs()
         if (!viewModel.isAlarmTriggeredMode() && viewModel.hasScreenSaver()) {
             inactivityHandler!!.removeCallbacks(inactivityCallback)
             if(configuration.showClockScreenSaverModule()) {
@@ -212,10 +212,12 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                     readImageOptions(), object : ScreenSaverView.ViewListener {
                 override fun onMotion() {
                     dialogUtils.hideScreenSaverDialog()
+                    setScreenDefaults()
                     resetInactivityTimer()
                 }
             }, View.OnClickListener {
                 dialogUtils.hideScreenSaverDialog()
+                setScreenDefaults()
                 resetInactivityTimer()
             })
         } else if (!viewModel.isAlarmTriggeredMode()) {

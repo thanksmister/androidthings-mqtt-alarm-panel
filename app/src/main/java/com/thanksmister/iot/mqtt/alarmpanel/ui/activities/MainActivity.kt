@@ -87,7 +87,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
             readWeatherOptions().setIsCelsius(true)
             configuration.isFirstTime = false
             configuration.setHasNotifications(true)
-            configuration.setPhotoScreenSaver(true)
+            configuration.setClockScreenSaverModule(true)
             configuration.setHasCamera(true)
             configuration.setWebModule(true)
             configuration.setShowWeatherModule(true)

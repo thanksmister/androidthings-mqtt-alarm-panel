@@ -92,14 +92,6 @@ constructor(application: Application, private val dataSource: MessageDao, privat
         return configuration.disableTime
     }
 
-    fun getNotificationMessage(): LiveData<String> {
-        return notificationMessage
-    }
-
-    fun setNotificationMessage(value: String) {
-        notificationMessage.value = value
-    }
-
     fun setAlarmMode(value: String) {
         configuration.alarmMode = value
     }

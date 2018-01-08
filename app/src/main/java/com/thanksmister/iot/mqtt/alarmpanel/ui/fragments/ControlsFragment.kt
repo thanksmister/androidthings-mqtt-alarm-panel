@@ -56,6 +56,7 @@ import javax.inject.Inject
 class ControlsFragment : BaseFragment() {
 
     @Inject lateinit var dialogUtils: DialogUtils
+    @Inject lateinit var configuration: Configuration
     private var alarmPendingView: AlarmPendingView? = null
     private var mListener: OnControlsFragmentListener? = null
 
@@ -209,16 +210,19 @@ class ControlsFragment : BaseFragment() {
             alarmText.setText(R.string.text_arm_home)
             alarmText.setTextColor(resources.getColor(R.color.yellow))
             alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_yellow))
+            showAlarmPendingView(configuration.pendingHomeTime)
         } else if (MODE_ARM_AWAY_PENDING == mode) {
             alarmText.setText(R.string.text_arm_away)
             alarmText.setTextColor(resources.getColor(R.color.red))
             alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_red))
+            showAlarmPendingView(configuration.pendingAwayTime)
         } else if (MODE_ARM_PENDING == mode) {
             alarmText.setText(R.string.text_alarm_pending)
             alarmText.setTextColor(resources.getColor(R.color.gray))
             alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_gray))
+            showAlarmPendingView(configuration.pendingTime)
+            Toast.makeText(activity, getString(R.string.text_alarm_set_externally), Toast.LENGTH_LONG).show()
         }
-        showAlarmPendingView()
     }
 
     private fun setDisarmedView() {
@@ -229,17 +233,17 @@ class ControlsFragment : BaseFragment() {
         alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_green))
     }
 
-    private fun showAlarmPendingView() {
-        if (alarmPendingLayout.isShown) {
+    private fun showAlarmPendingView(pendingTime : Int) {
+        if (alarmPendingLayout.isShown || pendingTime == 0) {
             return
         }
-        alarmPendingLayout.setVisibility(View.VISIBLE)
+        alarmPendingLayout.visibility = View.VISIBLE
         alarmPendingView!!.alarmListener = (object : AlarmPendingView.ViewListener {
             override fun onTimeOut() {
                 hideAlarmPendingView()
             }
         })
-        alarmPendingView!!.startCountDown(viewModel.getAlarmPendingTime())
+        alarmPendingView!!.startCountDown(pendingTime)
     }
 
     private fun hideAlarmPendingView() {

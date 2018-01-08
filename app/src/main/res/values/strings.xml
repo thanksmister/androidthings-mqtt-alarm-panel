@@ -248,6 +248,8 @@
 
     <string name="pref_device_timeout_title">Screen Timeout</string>
     <string name="text_update_available">There is a new update available, would you like to install it now?</string>
+    <string name="toast_screen_timeout">Screen timed out...</string>
+    <string name="text_alarm_set_externally">The alarm was set externally, using default pending time.</string>
 
     <string-array name="settings_titles">
         <item>@string/text_alarm_settings</item>
