@@ -47,7 +47,7 @@
             android:padding="8dp"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:text="@string/button_hide_text" />
+            android:text="@string/button_hide_text"/>
 
         <android.support.v4.widget.Space
             android:layout_width="16dp"

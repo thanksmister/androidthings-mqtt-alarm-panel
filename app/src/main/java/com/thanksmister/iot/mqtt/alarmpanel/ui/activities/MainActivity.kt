@@ -128,8 +128,8 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                                 setScreenTriggered()
                             }
                             AlarmUtils.STATE_PENDING -> {
-                                setScreenDefaults()
                                 awakenDeviceForAction()
+                                setScreenDefaults()
                             }
                         }
                     })
@@ -240,7 +240,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         stopDisconnectTimer() // stop screen saver mode
         if (view_pager != null && pagerAdapter.count > 0) {
             dialogUtils.hideAlertDialog()
-            view_pager.setCurrentItem(0)
+            view_pager.currentItem = 0
         }
     }
 

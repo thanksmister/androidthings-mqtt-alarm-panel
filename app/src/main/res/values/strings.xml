@@ -223,14 +223,15 @@
     <string name="pref_away_delay_title">Disarm Away Delay Time</string>
     <string name="pref_home_pending_title">Arm Home Pending Time</string>
     <string name="pref_home_pending_summary">The time in seconds before the alarm is set to home mode. Currently %1$s seconds.</string>
-
     <string name="pref_device_timeout_minutes_summary">After %1$s minute(s) the screen turns off.</string>
     <string name="pref_device_timeout_seconds_summary">After %1$s second(s) the screen turns off.</string>
     <string name="pref_device_timeout_hours_summary">After %1$s hour(s) the screen turns off.</string>
-
     <string name="pref_device_timeout_title">Screen Timeout</string>
     <string name="text_update_available">There is a new update available, would you like to install it now?</string>
     <string name="toast_screen_timeout">Screen timed out…</string>
+    <string name="button_hide_text">Hide</string>
+    <string name="pref_title_platform_bar">Show Bottom Bar</string>
+    <string name="pref_description_show_platform_bar">When checked, displays a bottom navigation buttons on the platform screen.</string>
     <string name="text_alarm_set_externally">The alarm was set externally, using default pending time.</string>
 
     <string-array name="inactivity_times">
