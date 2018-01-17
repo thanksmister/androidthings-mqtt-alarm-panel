@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2018. ThanksMister LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License. 
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed 
+  ~ under the License is distributed on an "AS IS" BASIS, 
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+  ~ See the License for the specific language governing permissions and 
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <string name="text_f" translatable="false">°F</string>
+    <string name="text_c" translatable="false">°C</string>
+
+    <string name="license" translatable="false"><![CDATA[
+        <br><b>Copyright 2017 ThanksMister LLC</b><br>
+        <br>
+        This application contains open source libraries under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+        <br>
+        <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
+        <br>
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+    ]]></string>
+
+    <string-array name="settings_titles">
+        <item>@string/text_alarm_settings</item>
+        <item>@string/preference_title_alarm</item>
+        <item>@string/preference_mqtt_alarm</item>
+        <item>@string/preference_title_notification</item>
+        <item>@string/preference_camera_title</item>
+        <item>@string/preference_title_screen_saver_title</item>
+        <item>@string/preference_title_weather_settings</item>
+        <item>@string/preference_title_web_settings</item>
+        <item>@string/text_about</item>
+    </string-array>
+
+    <string-array name="inactivity_values">
+        <item>15000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>180000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+    </string-array>
+
+    <string-array name="timeout_values">
+        <item>15000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>180000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+        <item>3600000</item>
+        <item>7200000</item>
+        <item>10800000</item>
+        <item>21600000</item>
+        <item>43200000</item>
+        <item>86400000</item>
+    </string-array>
+
+    <string-array name="flip_values">
+        <item>0F</item>
+        <item>-90f</item>
+        <item>90f</item>
+        <item>180f</item>
+    </string-array>
+
+    <string-array name="time_zones">
+        <item id="Pacific/Majuro">Marshall Islands</item>
+        <item id="Pacific/Midway">Midway Island</item>
+        <item id="Pacific/Honolulu">Hawaii</item>
+        <item id="America/Anchorage">Alaska</item>
+        <item id="America/Los_Angeles">Pacific Time</item>
+        <item id="America/Tijuana">Tijuana</item>
+        <item id="America/Phoenix">Arizona</item>
+        <item id="America/Chihuahua">Chihuahua</item>
+        <item id="America/Denver">Mountain Time</item>
+        <item id="America/Costa_Rica">Central America</item>
+        <item id="America/Chicago">Central Time</item>
+        <item id="America/Mexico_City">Mexico City</item>
+        <item id="America/Regina">Saskatchewan</item>
+        <item id="America/Bogota">Bogota</item>
+        <item id="America/New_York">Eastern Time</item>
+        <item id="America/Caracas">Venezuela</item>
+        <item id="America/Barbados">Atlantic Time (Barbados)</item>
+        <item id="America/Halifax">Atlantic Time (Canada)</item>
+        <item id="America/Manaus">Manaus</item>
+        <item id="America/Santiago">Santiago</item>
+        <item id="America/St_Johns">Newfoundland</item>
+        <item id="America/Sao_Paulo">Brasilia</item>
+        <item id="America/Argentina/Buenos_Aires">Buenos Aires</item>
+        <item id="America/Godthab">Greenland</item>
+        <item id="America/Montevideo">Montevideo</item>
+        <item id="Atlantic/South_Georgia">Mid-Atlantic</item>
+        <item id="Atlantic/Azores">Azores</item>
+        <item id="Atlantic/Cape_Verde">Cape Verde Islands</item>
+        <item id="Africa/Casablanca">Casablanca</item>
+        <item id="Europe/London">London, Dublin</item>
+        <item id="Europe/Amsterdam">Amsterdam, Berlin</item>
+        <item id="Europe/Belgrade">Belgrade</item>
+        <item id="Europe/Brussels">Brussels</item>
+        <item id="Europe/Sarajevo">Sarajevo</item>
+        <item id="Africa/Windhoek">Windhoek</item>
+        <item id="Africa/Brazzaville">W. Africa Time</item>
+        <item id="Asia/Amman">Amman, Jordan</item>
+        <item id="Europe/Athens">Athens, Istanbul</item>
+        <item id="Asia/Beirut">Beirut, Lebanon</item>
+        <item id="Africa/Cairo">Cairo</item>
+        <item id="Europe/Helsinki">Helsinki</item>
+        <item id="Asia/Jerusalem">Jerusalem</item>
+        <item id="Europe/Minsk">Minsk</item>
+        <item id="Africa/Harare">Harare</item>
+        <item id="Asia/Baghdad">Baghdad</item>
+        <item id="Europe/Moscow">Moscow</item>
+        <item id="Asia/Kuwait">Kuwait</item>
+        <item id="Africa/Nairobi">Nairobi</item>
+        <item id="Asia/Tehran">Tehran</item>
+        <item id="Asia/Baku">Baku</item>
+        <item id="Asia/Tbilisi">Tbilisi</item>
+        <item id="Asia/Yerevan">Yerevan</item>
+        <item id="Asia/Dubai">Dubai</item>
+        <item id="Asia/Kabul">Kabul</item>
+        <item id="Asia/Karachi">Islamabad, Karachi</item>
+        <item id="Asia/Oral">Ural'sk</item>
+        <item id="Asia/Yekaterinburg">Yekaterinburg</item>
+        <item id="Asia/Calcutta">Kolkata</item>
+        <item id="Asia/Colombo">Sri Lanka</item>
+        <item id="Asia/Katmandu">Kathmandu</item>
+        <item id="Asia/Almaty">Astana</item>
+        <item id="Asia/Rangoon">Yangon</item>
+        <item id="Asia/Krasnoyarsk">Krasnoyarsk</item>
+        <item id="Asia/Bangkok">Bangkok</item>
+        <item id="Asia/Jakarta">Jakarta</item>
+        <item id="Asia/Shanghai">Beijing</item>
+        <item id="Asia/Hong_Kong">Hong Kong</item>
+        <item id="Asia/Irkutsk">Irkutsk</item>
+        <item id="Asia/Kuala_Lumpur">Kuala Lumpur</item>
+        <item id="Australia/Perth">Perth</item>
+        <item id="Asia/Taipei">Taipei</item>
+        <item id="Asia/Seoul">Seoul</item>
+        <item id="Asia/Tokyo">Tokyo, Osaka</item>
+        <item id="Asia/Yakutsk">Yakutsk</item>
+        <item id="Australia/Adelaide">Adelaide</item>
+        <item id="Australia/Darwin">Darwin</item>
+        <item id="Australia/Brisbane">Brisbane</item>
+        <item id="Australia/Hobart">Hobart</item>
+        <item id="Australia/Sydney">Sydney, Canberra</item>
+        <item id="Asia/Vladivostok">Vladivostok</item>
+        <item id="Pacific/Guam">Guam</item>
+        <item id="Asia/Magadan">Magadan</item>
+        <item id="Pacific/Auckland">Auckland</item>
+        <item id="Pacific/Fiji">Fiji</item>
+        <item id="Pacific/Tongatapu">Tonga</item>
+    </string-array>
+
+    <string-array name="time_zones_values">
+        <item id="Pacific/Majuro">Pacific/Majuro</item>
+        <item id="Pacific/Midway">Pacific/Midway</item>
+        <item id="Pacific/Honolulu">Pacific/Honolulu</item>
+        <item id="America/Anchorage">America/Anchorage</item>
+        <item id="America/Los_Angeles">America/Los_Angeles</item>
+        <item id="America/Tijuana">America/Tijuana</item>
+        <item id="America/Phoenix">America/Phoenix</item>
+        <item id="America/Chihuahua">America/Chihuahua</item>
+        <item id="America/Denver">America/Denver</item>
+        <item id="America/Costa_Rica">America/Costa_Rica</item>
+        <item id="America/Chicago">America/Chicago</item>
+        <item id="America/Mexico_City">America/Mexico_City</item>
+        <item id="America/Regina">America/Regina</item>
+        <item id="America/Bogota">America/Bogota</item>
+        <item id="America/New_York">America/New_York</item>
+        <item id="America/Caracas">America/Caracas</item>
+        <item id="America/Barbados">America/Barbados</item>
+        <item id="America/Halifax">BaseActivity</item>
+        <item id="America/Manaus">America/Manaus</item>
+        <item id="America/Santiago">America/Santiago</item>
+        <item id="America/St_Johns">America/St_Johns</item>
+        <item id="America/Sao_Paulo">America/Sao_Paulo</item>
+        <item id="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires</item>
+        <item id="America/Godthab">America/Godthab</item>
+        <item id="America/Montevideo">America/Montevideo</item>
+        <item id="Atlantic/South_Georgia">Atlantic/South_Georgia</item>
+        <item id="Atlantic/Azores">Atlantic/Azore</item>
+        <item id="Atlantic/Cape_Verde">Atlantic/Cape_Verde</item>
+        <item id="Africa/Casablanca">Africa/Casablanca</item>
+        <item id="Europe/London">Europe/London</item>
+        <item id="Europe/Amsterdam">Europe/Amsterdam</item>
+        <item id="Europe/Belgrade">Europe/Belgrade</item>
+        <item id="Europe/Brussels">urope/Brussels</item>
+        <item id="Europe/Sarajevo">Europe/Sarajevo</item>
+        <item id="Africa/Windhoek">Africa/Windhoek</item>
+        <item id="Africa/Brazzaville">Africa/Brazzaville</item>
+        <item id="Asia/Amman">Asia/Amman</item>
+        <item id="Europe/Athens">Europe/Athens</item>
+        <item id="Asia/Beirut">Asia/Beirut</item>
+        <item id="Africa/Cairo">Africa/Cairo</item>
+        <item id="Europe/Helsinki">Europe/Helsinki</item>
+        <item id="Asia/Jerusalem">sia/Jerusalem</item>
+        <item id="Europe/Minsk">Europe/Minsk</item>
+        <item id="Africa/Harare">Africa/Harare</item>
+        <item id="Asia/Baghdad">Asia/Baghdad</item>
+        <item id="Europe/Moscow">Europe/Moscow</item>
+        <item id="Asia/Kuwait">Asia/Kuwait</item>
+        <item id="Africa/Nairobi">Africa/Nairobi</item>
+        <item id="Asia/Tehran">Asia/Tehran</item>
+        <item id="Asia/Baku">Asia/Baku"</item>
+        <item id="Asia/Tbilisi">Asia/Tbilisi</item>
+        <item id="Asia/Yerevan">Asia/Yerevan</item>
+        <item id="Asia/Dubai">Asia/Dubai</item>
+        <item id="Asia/Kabul">Asia/Kabul</item>
+        <item id="Asia/Karachi">Asia/Karachi</item>
+        <item id="Asia/Oral">Asia/Oral</item>
+        <item id="Asia/Yekaterinburg">Asia/Yekaterinburg</item>
+        <item id="Asia/Calcutta">Asia/Calcutta</item>
+        <item id="Asia/Colombo">Asia/Colombo</item>
+        <item id="Asia/Katmandu">Asia/Katmandu</item>
+        <item id="Asia/Almaty">Asia/Almaty</item>
+        <item id="Asia/Rangoon">Asia/Rangoon</item>
+        <item id="Asia/Krasnoyarsk">Asia/Krasnoyarsk</item>
+        <item id="Asia/Bangkok">Asia/Bangkok</item>
+        <item id="Asia/Jakarta">Asia/Jakarta</item>
+        <item id="Asia/Shanghai">Asia/Shanghai</item>
+        <item id="Asia/Hong_Kong">Asia/Hong_Kong</item>
+        <item id="Asia/Irkutsk">Asia/Irkutsk</item>
+        <item id="Asia/Kuala_Lumpur">Asia/Kuala_Lumpur</item>
+        <item id="Australia/Perth">Australia/Perth</item>
+        <item id="Asia/Taipei">Asia/Taipei</item>
+        <item id="Asia/Seoul">Asia/Seoul</item>
+        <item id="Asia/Tokyo">Asia/Tokyo</item>
+        <item id="Asia/Yakutsk">Asia/Yakutsk</item>
+        <item id="Australia/Adelaide">Australia/Adelaide</item>
+        <item id="Australia/Darwin">Australia/Darwin</item>
+        <item id="Australia/Brisbane">Australia/Brisbane</item>
+        <item id="Australia/Hobart">Australia/Hobart"</item>
+        <item id="Australia/Sydney">Australia/Sydney</item>
+        <item id="Asia/Vladivostok">Asia/Vladivostok</item>
+        <item id="Pacific/Guam">Pacific/Guam</item>
+        <item id="Asia/Magadan">Asia/Magadan</item>
+        <item id="Pacific/Auckland">Pacific/Auckland</item>
+        <item id="Pacific/Fiji">Pacific/Fiji</item>
+        <item id="Pacific/Tongatapu">Pacific/Tongatapu</item>
+    </string-array>
+
+</resources>

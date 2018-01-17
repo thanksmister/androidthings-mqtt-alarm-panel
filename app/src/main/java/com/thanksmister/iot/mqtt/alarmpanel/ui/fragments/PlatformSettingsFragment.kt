@@ -28,8 +28,10 @@ import android.view.View
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_MODULE_WEB
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_PLATFORM_BAR
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_WEB_URL
 import dagger.android.support.AndroidSupportInjection
+import timber.log.Timber
 import javax.inject.Inject
 
 class PlatformSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -37,10 +39,22 @@ class PlatformSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.O
     @Inject lateinit var configuration: Configuration
 
     private var webModulePreference: CheckBoxPreference? = null
+    private var platformbarPreference: CheckBoxPreference? = null
     private var webUrlPreference: EditTextPreference? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // Perform injection here for M (API 23) due to deprecation of onAttach(Activity).
+            AndroidSupportInjection.inject(this)
+        }
+    }
+
     override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Perform injection here for M (API 23) due to deprecation of onAttach(Activity).
+            AndroidSupportInjection.inject(this)
+        }
         super.onAttach(context)
     }
 
@@ -67,6 +81,7 @@ class PlatformSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.O
         super.onViewCreated(view, savedInstanceState)
 
         webModulePreference = findPreference(PREF_MODULE_WEB) as CheckBoxPreference
+        platformbarPreference = findPreference(PREF_PLATFORM_BAR) as CheckBoxPreference
         webUrlPreference = findPreference(PREF_WEB_URL) as EditTextPreference
 
         if (!TextUtils.isEmpty(configuration.webUrl)) {
@@ -75,7 +90,12 @@ class PlatformSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.O
         }
 
         webModulePreference!!.isChecked = configuration.hasPlatformModule()
+        platformbarPreference!!.isChecked = configuration.platformBar
+
+        Timber.d("platformBar: " + configuration.platformBar)
+
         webUrlPreference!!.isEnabled = configuration.hasPlatformModule()
+        platformbarPreference!!.isEnabled = configuration.hasPlatformModule()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -84,6 +104,11 @@ class PlatformSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.O
                 val checked = webModulePreference!!.isChecked
                 configuration.setWebModule(checked)
                 webUrlPreference!!.isEnabled = checked
+                platformbarPreference!!.isEnabled = checked
+            }
+            PREF_PLATFORM_BAR -> {
+                val checked = platformbarPreference!!.isChecked
+                configuration.platformBar = checked
             }
             PREF_WEB_URL -> {
                 val value = webUrlPreference!!.text

@@ -103,6 +103,10 @@ constructor(private val sharedPreferences: DPreference) {
         get() = sharedPreferences.getPrefBoolean(PREF_DEVICE_TIME_SERVER, true)
         set(value) = sharedPreferences.setPrefBoolean(PREF_DEVICE_TIME_SERVER, value)
 
+    var platformBar: Boolean
+        get() = this.sharedPreferences.getPrefBoolean(PREF_PLATFORM_BAR, true)
+        set(value) = this.sharedPreferences.setPrefBoolean(PREF_PLATFORM_BAR, value)
+
     fun hasPlatformModule(): Boolean {
         return sharedPreferences.getPrefBoolean(PREF_MODULE_WEB, false)
     }
@@ -245,6 +249,7 @@ constructor(private val sharedPreferences: DPreference) {
         sharedPreferences.removePreference(PREF_DELAY_TIME)
         sharedPreferences.removePreference(PREF_AWAY_PENDING_TIME)
         sharedPreferences.removePreference(PREF_HOME_PENDING_TIME)
+        sharedPreferences.removePreference(PREF_PLATFORM_BAR)
     }
 
     companion object {
@@ -285,5 +290,6 @@ constructor(private val sharedPreferences: DPreference) {
         @JvmField val PREF_DEVICE_SCREEN_DENSITY = "pref_device_screen_density"
         @JvmField val PREF_DEVICE_SCREEN_BRIGHTNESS = "pref_device_brightness"
         @JvmField val PREF_DEVICE_SCREEN_TIMEOUT = "pref_device_timeout"
+        @JvmField val PREF_PLATFORM_BAR = "pref_platform_bar"
     }
 }

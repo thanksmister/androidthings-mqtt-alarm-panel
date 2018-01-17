@@ -206,19 +206,25 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     private val initializeOnBackground = Runnable {
 
-        if (textToSpeechModule == null) {
+        if (textToSpeechModule == null && viewModel.hasTss()) {
             textToSpeechModule = TextToSpeechModule(this@MainActivity, configuration)
-            lifecycle.addObserver(textToSpeechModule!!)
+            runOnUiThread({
+                lifecycle.addObserver(textToSpeechModule!!)
+            })
         }
 
         if (mqttModule == null && readMqttOptions().isValid) {
             mqttModule = MQTTModule(this@MainActivity.applicationContext, readMqttOptions(),this@MainActivity)
-            lifecycle.addObserver(mqttModule!!)
+            runOnUiThread({
+                lifecycle.addObserver(mqttModule!!)
+            })
         }
 
         if (cameraModule == null && viewModel.hasCamera()) {
             cameraModule = CameraModule(this@MainActivity, mBackgroundHandler!!,this@MainActivity)
-            lifecycle.addObserver(cameraModule!!)
+            runOnUiThread({
+                lifecycle.addObserver(cameraModule!!)
+            })
         }
     }
 
