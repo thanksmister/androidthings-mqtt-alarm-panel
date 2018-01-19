@@ -13,7 +13,7 @@ The alarm control panel acts as an interface for your own home alarm system and 
 
 To use the application with Home Assistant, you need to use the [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component and have the MQTT service setup and configured. In the alarm control panel application you enter your MQTT broker address, port number, and credentials if necessary.   If you are using an automation system other than Home Assistant, you will need to use the same publish states and commands in your setup.
 
-# Features
+## Features
 - Externally powered speaker for sound and notificaitons.
 - Camera support for capturing and emailing images when alarm disabled (requires Mailgun api key).
 - Google Text-to-Speech support to speak MQTT notification messages.
@@ -21,34 +21,34 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 - 7 day Weather forecast (requires Darksky api key).
 - Home Automation Platform webpage support for viewing your home automation website.
 
-# Supported Command and Publish States
+## Supported Command and Publish States
 
 - Command topic:  home/alarm/set, home/notification
 - Command payloads: ARM_HOME, ARM_AWAY, DISARM
 - Publish topic: home/alarm
 - Publish payloads: disarmed, armed_away, armed_home, pending, triggered.
 
-# Hardware
+## Hardware
 
 - Raspberry Pi 3 and SD Card.
 - [7" Touchscreen Display for display](https://www.adafruit.com/product/2718).
 - (Optional) Externally powered speaker for sound.
 - (Optional) [Raspberry Pi Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/)
 
-# Software to Build from Codebase (only if building from code)
+## Software to Build from Codebase (only if building from code)
 
 - [Android Things 0.6.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html) from the site or using the [Android Things Setup Utility](https://partner.android.com/things/console/u/0/#/tools).
 
 - Android Studio with Android SDK N or above.
 
-# Home Assistant Setup
+## Home Assistant Setup
 
 - Setup [Home Assistant](https://home-assistant.io/getting-started/)
 - Configure the [MQTT service](https://home-assistant.io/components/mqtt/) note the broker address, port and username/password if applicable.
 - Add the [MQTT Alarm Control Panel] (https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) to your configuraiton with the default settings for now.
 - Add any sensors (like Zwave door sensors or sirens) and configure automations to trigger the alarm.
 
-# Raspberry PI Setup
+## Raspberry PI Setup
 
 Make sure you properly setup the RPi3 with the 7" Touchscreen Display.  You won't need any special software setup if you use the The Raspberry Pi Foundation 7" Touchscreen as it's compatible with Android Things. Other compatible touch screens may require additional configuration for Android Things. There are two options for installing the setting up your RPi 3 and installing the application. 
 
@@ -88,19 +88,19 @@ $ adb shell date 123112002017.00
 $ adb shell setprop persist.sys.timezone "America/Denver"
 ```
 
-# Device Settings
+## Device Settings
 
 - Under the settings (gear icon) you can change the screen timeout time, screen brightness, and the screen density (for the official screen use a DPI of 160).
 - Additionally you can set the time and timezone for the application. 
 
-# Alarm Setup
+## Alarm Setup
 
 - Under the settings (gear icon) enter the MQTT information that you configured in Home Assistant for your MQTT service.
 - Be sure you adjust the time intervals to match those set (other than defaults) in the Home Assistant MQTT alarm control panel.
 - If you choose to get weather updates, enter your [DarkSky API key](https://darksky.net/dev) and your latitude and longitude location. You can get your lat/lon by using maps.google.com and copy them from the url (they look like -34.6156624,-58.5035102).
 - To use a screen saver other than the digital clock, turn this feature on in the screen saver settings. Optionally you can load other Instagram images by changing the Instagram profile name.  
 
-# Alarm Application Setup 
+## Alarm Application Setup 
 
 When you first start the application you will be asked to go to the setting screen to setup the device. You also need to enter the MQTT information that you configured in Home Assistant for your MQTT service. Be sure you adjust the time intervals to match those set in the Home Assistant MQTT alarm control panel. Alsop reset your alarm pin code, the default is 1234. 
 
