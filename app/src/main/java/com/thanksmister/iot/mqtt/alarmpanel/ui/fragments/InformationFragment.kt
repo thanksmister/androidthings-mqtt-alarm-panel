@@ -38,7 +38,6 @@ import java.text.DateFormat
 import javax.inject.Inject
 
 import android.os.Looper.getMainLooper
-import com.google.android.things.device.TimeManager
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
 import kotlinx.android.synthetic.main.fragment_information.*

@@ -24,6 +24,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment_MembersInjector
 import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.LogActivity
 import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.MainActivity
 import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.SettingsActivity
+import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.SupportActivity
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.*
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
 import dagger.Binds
@@ -51,6 +52,12 @@ internal abstract class AndroidBindingModule {
 
     @ContributesAndroidInjector
     internal abstract fun settingsActivity(): SettingsActivity
+
+    @ContributesAndroidInjector
+    internal abstract fun supportActivity(): SupportActivity
+
+    @ContributesAndroidInjector
+    internal abstract fun supportFragment(): SupportFragment
 
     @ContributesAndroidInjector
     internal abstract fun baseFragment(): BaseFragment

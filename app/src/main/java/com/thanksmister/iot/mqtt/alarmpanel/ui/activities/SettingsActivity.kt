@@ -1,19 +1,17 @@
 /*
- * <!--
- *   ~ Copyright (c) 2017. ThanksMister LLC
- *   ~
- *   ~ Licensed under the Apache License, Version 2.0 (the "License");
- *   ~ you may not use this file except in compliance with the License. 
- *   ~ You may obtain a copy of the License at
- *   ~
- *   ~ http://www.apache.org/licenses/LICENSE-2.0
- *   ~
- *   ~ Unless required by applicable law or agreed to in writing, software distributed 
- *   ~ under the License is distributed on an "AS IS" BASIS, 
- *   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- *   ~ See the License for the specific language governing permissions and 
- *   ~ limitations under the License.
- *   -->
+ * Copyright (c) 2018. ThanksMister LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.activities
@@ -21,6 +19,7 @@ package com.thanksmister.iot.mqtt.alarmpanel.ui.activities
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
@@ -29,13 +28,13 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.ActionBar
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.R
-import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import timber.log.Timber
@@ -85,6 +84,8 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         if (id == android.R.id.home) {
             onBackPressed()
             return true
+        } else if (id == R.id.action_help) {
+            support()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -98,6 +99,13 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
             // Otherwise, select the previous step.
             viewPager.currentItem = viewPager.getCurrentItem() - 1
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if (toolbar != null)
+            toolbar.inflateMenu(R.menu.menu_settings)
+
+        return true
     }
 
     override fun onResume() {
@@ -121,6 +129,11 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener {
      */
     override fun showScreenSaver() {
         //na-da
+    }
+
+    private fun support() {
+        val intent = SupportActivity.createStartIntent(this@SettingsActivity)
+        startActivity(intent)
     }
 
     private fun setPageViewController() {

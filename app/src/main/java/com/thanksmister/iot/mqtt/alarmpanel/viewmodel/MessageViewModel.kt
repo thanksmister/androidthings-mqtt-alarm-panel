@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.text.TextUtils
+import android.widget.Toast
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.Message
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.MessageDao
@@ -14,6 +15,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.tasks.NetworkTask
 import com.thanksmister.iot.mqtt.alarmpanel.tasks.SubscriptionDataTask
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.MailGunModule
+import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.TelegramModule
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.ALARM_STATE_TOPIC
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.ALARM_TYPE
@@ -42,9 +44,10 @@ class MessageViewModel @Inject
 constructor(application: Application, private val dataSource: MessageDao, private val configuration: Configuration) : AndroidViewModel(application) {
 
     private var mailSubscription: Disposable? = null
+    private var telegramSubscription: Disposable? = null
 
     private var armed: Boolean = false
-    private val notificationMessage = MutableLiveData<String>()
+
 
     @AlarmUtils.AlarmStates
     private fun setAlarmModeFromState(state: String) {
@@ -165,8 +168,6 @@ constructor(application: Application, private val dataSource: MessageDao, privat
      * Insert new message into the database.
      */
     fun insertMessage(messageId: String,topic: String, payload: String): Completable {
-        Timber.d("insertMessage: " + topic)
-        Timber.d("insertMessage: " + payload)
         val type = if(ALARM_STATE_TOPIC == topic) {
             ALARM_TYPE
         } else {
@@ -184,16 +185,45 @@ constructor(application: Application, private val dataSource: MessageDao, privat
         }
     }
 
-    fun emailImage(bitmap: Bitmap) {
+    fun sendCapturedImage(bitmap: Bitmap) {
+        if(configuration.hasMailGunCredentials()) {
+            emailImage(bitmap)
+        }
+        if(configuration.hasTelegramCredentials()) {
+            sendTelegram(bitmap)
+        }
+    }
 
+    private fun sendTelegram(bitmap: Bitmap) {
+        val token = configuration.telegramToken
+        val chatId = configuration.telegramChatId
+        val observable = Observable.create { emitter: ObservableEmitter<Any> ->
+            val module = TelegramModule(getApplication())
+            module.emailImage(token, chatId, bitmap, object : TelegramModule.CallbackListener {
+                override fun onComplete() {
+                    emitter.onNext(true)  // Pass on the data to subscriber
+                }
+                override fun onException(message: String?) {
+                    emitter.onError(Throwable(message))
+                }
+            })
+        }
+        telegramSubscription = observable
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { Timber.d("Telegram Message posted successfully!"); }
+                .doOnError({ throwable -> Timber.e("Telegram Message error: " + throwable.message); })
+                .subscribe( );
+    }
+
+    private fun emailImage(bitmap: Bitmap) {
         val domain = configuration.getMailGunUrl()
         val key = configuration.getMailGunApiKey()
         val from = configuration.getMailFrom()
         val to = configuration.getMailTo()
-
         val observable = Observable.create { emitter: ObservableEmitter<Any> ->
             val mailGunModule = MailGunModule(getApplication())
-            val fromSubject = getApplication<Application>().getString(R.string.text_camera_image_subject, from)
+            val fromSubject = getApplication<Application>().getString(R.string.text_camera_image_subject, "<$from>")
             mailGunModule.emailImage(domain!!, key!!, fromSubject, to!!, bitmap, object : MailGunModule.CallbackListener {
                 override fun onComplete() {
                     emitter.onNext(true)  // Pass on the data to subscriber
@@ -203,31 +233,13 @@ constructor(application: Application, private val dataSource: MessageDao, privat
                 }
             })
         }
-
         mailSubscription = observable
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { Timber.d("Image posted successfully!"); }
                 .doOnError({ throwable -> Timber.e("Image error: " + throwable.message); })
+                .onErrorReturn { Toast.makeText(getApplication<Application>(), R.string.error_mailgun_credentials, Toast.LENGTH_LONG).show() }
                 .subscribe( );
-    }
-
-    @Deprecated("moving over to RxJava")
-    fun getUpdateMqttDataTask(storeManager: StoreManager): SubscriptionDataTask {
-        val dataTask = SubscriptionDataTask(storeManager)
-        dataTask.setOnExceptionListener(object : NetworkTask.OnExceptionListener {
-            override fun onException(paramException: Exception) {
-                Timber.e("Update Exception: " + paramException.message)
-            }
-        })
-        dataTask.setOnCompleteListener(object : NetworkTask.OnCompleteListener<Boolean> {
-            override fun onComplete(paramResult: Boolean) {
-                if ((!paramResult)) {
-                    Timber.e("Update Exception response: " + paramResult)
-                }
-            }
-        })
-        return dataTask
     }
 
     /**

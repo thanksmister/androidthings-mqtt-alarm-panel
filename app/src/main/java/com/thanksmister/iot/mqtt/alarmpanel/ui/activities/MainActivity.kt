@@ -82,6 +82,8 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
             configuration.setMailGunApiKey(BuildConfig.MAIL_GUN_KEY)
             configuration.setMailTo(BuildConfig.MAIL_TO)
             configuration.setMailGunUrl(BuildConfig.MAIL_GUN_URL)
+            configuration.telegramChatId = BuildConfig.TELEGRAM_CHAT_ID
+            configuration.telegramToken = BuildConfig.TELEGRAM_TOKEN
             readImageOptions().setClientId(BuildConfig.IMGUR_CLIENT_ID)
             readImageOptions().setTag(BuildConfig.IMGUR_TAG) // Imgur tags
             readWeatherOptions().setIsCelsius(true)
@@ -293,7 +295,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     override fun onCameraComplete(bitmap: Bitmap) {
-        viewModel.emailImage(bitmap)
+        viewModel.sendCapturedImage(bitmap)
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {

@@ -190,12 +190,12 @@
     <string name="progress_location">Acquiring location…</string>  
     <string name="text_error_only_numbers">Be sure the value only contains numbers and is not blank.</string>
     <string name="text_error_blank_entry">The value should not blank, please enter a valid value</string>
-    <string name="text_alarm_disabled_email">Your home alarm has been disabled, here is an image taken at that moment.</string>
+    <string name="text_alarm_disabled_email">The alarm has been deactivated, here\'s an image.</string>
     <string name="text_alarm_disabled_email_subject">Alarm Deactivated</string>
     <string name="text_camera_failed_configuration">Failed to configure camera, do you have a camera?</string>
     <string name="text_camera_failed_session">Capture session failed, do you have a camera?</string>
     <string name="text_error_camera_device">Camera error, couldn\'t open the device.</string>
-    <string name="text_camera_image_subject">Alarm Panel &lt;%1$s&gt;</string>
+    <string name="text_camera_image_subject">\"Alarm Panel\" %1$s</string>
     <string name="pref_mqtt_settings_category">MQTT Settings</string>
     <string name="dialog_loading">Loading…</string>
     <string name="pref_time_update_title">Update Time</string>
@@ -233,6 +233,14 @@
     <string name="pref_title_platform_bar">Show Bottom Bar</string>
     <string name="pref_description_show_platform_bar">When checked, displays a bottom navigation buttons on the platform screen.</string>
     <string name="text_alarm_set_externally">The alarm was set externally, using default pending time.</string>
+    <string name="pref_telegram_title">Telegram</string>
+    <string name="pref_telegram_chat_id_summary">Enter your Telegram bot chat id.</string>
+    <string name="pref_telegram_token_summary">Enter your Telegram bot API token.</string>
+    <string name="pref_telegram_chat_id_title">Telegram Chat Id</string>
+    <string name="pref_telegram_api_title">Telegram API Token</string>
+    <string name="pref_camera_send_image_notes">You can use Telegram, Mailgun, or both to send captured images.</string>
+    <string name="menu_item_help">Help</string>
+    <string name="error_mailgun_credentials">There was an problem mailing the image, please check your Mailgun credentials.</string>
 
     <string-array name="inactivity_times">
         <item>15 seconds</item>
