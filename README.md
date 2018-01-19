@@ -157,11 +157,11 @@ You can load your Home Assistant (or any web page) as alternative view by enteri
 
 This feature uses an Android web view component and may not work on older SDK versions.  There is also a limitation when saving username/passwords and screen reloading.  The username/passwords are not rememebered, and you will need to login again. I recommend using this application as on a dedicated tablet rather than your day-to-day device for best results.
 
-# Enclosure
+## Enclosure
 
 Originally I 3D printed an enclosure: https://www.thingiverse.com/thing:1082431. However, I ended up you want to buying a SmartPi Touch case which is a great option especially if you have the [Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/).
 
-# Notes 
+## Notes 
 
 - I have also made a version of the same software that runs on Android devices which can be found on [Google Play] (https://play.google.com/store/apps/details?id=com.thanksmister.iot.mqtt.alarmpanel).
 
