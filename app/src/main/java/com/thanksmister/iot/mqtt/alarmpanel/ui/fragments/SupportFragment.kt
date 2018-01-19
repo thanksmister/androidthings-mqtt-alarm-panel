@@ -16,10 +16,7 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.fragments
 
-import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,10 +29,6 @@ import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
 import kotlinx.android.synthetic.main.fragment_platform.*
 import timber.log.Timber
 import javax.inject.Inject
-import android.widget.Toast
-import android.widget.CheckBox
-
-
 
 class SupportFragment : BaseFragment(){
 
