@@ -102,7 +102,6 @@
     <string name="preference_summary_mqtt_notifications">Mostrar o hablar las notificaciones MQTT.</string>
 
     <string name="preference_title_alert">Notificaciones de alertas</string>
-    <string name="preference_title_system_notifications">Notificaciones del sistema</string>
     <string name="preference_summary_alert">Usa un cuadro de diálogo para mostrar las notificaciones del sistema</string>
 
     <string name="preference_tts_voice"> Voz TTS</string>
@@ -232,8 +231,6 @@
     <string name="pref_home_delay_title">Tiempo de espera para la descativación del modo "En casa"</string>
     <string name="pref_away_delay_summary">Tiempo en segundos en el que se mostrará el cuadro de diálogo para la desactivación antes de que se dispare, para el modo "Fuera de casa". Actualmente es de %1$s seconds.</string>
     <string name="pref_away_delay_title">Tiempo de espera para la descativación del modo "Fuera de casa"</string>
-    <string name="dialog_no_camera_permissions">Esta característica requiere permisos de utilización de la cámara. En Ajustes, activa los permisos para esta aplicación.</string>
-    <string name="dialog_no_location_permissions">Esta característica requiere permisos para el uso de la ubicación. En Ajustes, activa los permisos para esta aplicación.</string>
     <string name="toast_screen_timeout">Pantalla retardada…</string>
     <string name="button_hide_text">Esconder</string>
     <string name="pref_title_platform_bar">Mostrar navegación</string>
