@@ -39,7 +39,7 @@ repositories {
 
 def versionMajor = 1
 def versionMinor = 4
-def versionPatch = 3
+def versionPatch = 4
 def versionBuild = 0 // bump for dog food builds, public betas, etc.
 
 def ALARM_CODE() {
@@ -283,5 +283,5 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

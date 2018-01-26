@@ -35,8 +35,10 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
 
 import com.thanksmister.iot.mqtt.alarmpanel.R.xml.preferences_screen_saver
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_INACTIVITY_TIME
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils.SECONDS_VALUE
 import dagger.android.support.AndroidSupportInjection
+import timber.log.Timber
 import javax.inject.Inject
 
 class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -85,9 +87,7 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         urlPreference = findPreference(Configuration.PREF_IMAGE_SOURCE) as EditTextPreference
         imageFitPreference = findPreference(Configuration.PREF_IMAGE_FIT_SIZE) as CheckBoxPreference
         rotationPreference = findPreference(Configuration.PREF_IMAGE_ROTATION) as EditTextPreference
-        inactivityPreference = findPreference(Configuration.PREF_INACTIVITY_TIME) as ListPreference
-
-        inactivityPreference!!.isPersistent = false
+        inactivityPreference = findPreference(PREF_INACTIVITY_TIME) as ListPreference
 
         if (isAdded && activity != null) {
             imageOptions = (activity as BaseActivity).readImageOptions()
@@ -103,13 +103,16 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         clientIdPreference!!.summary = getString(R.string.preference_summary_image_client_id)
 
         inactivityPreference!!.setDefaultValue(configuration.inactivityTime)
-        if (configuration.inactivityTime <= SECONDS_VALUE) {
+
+        Timber.d("inactivity time: " + configuration.inactivityTime)
+        if (configuration.inactivityTime < SECONDS_VALUE) {
             inactivityPreference!!.summary = getString(R.string.preference_summary_inactivity_seconds,
                     DateUtils.convertInactivityTime(configuration.inactivityTime))
         } else {
             inactivityPreference!!.summary = getString(R.string.preference_summary_inactivity_minutes,
                     DateUtils.convertInactivityTime(configuration.inactivityTime))
         }
+
         imageFitPreference!!.isChecked = imageOptions!!.imageFitScreen
 
         if(configuration.showPhotoScreenSaver() && configuration.showClockScreenSaverModule()) {
@@ -169,10 +172,11 @@ class ScreenSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 imageOptions!!.imageRotation = rotation
                 rotationPreference!!.summary = getString(R.string.preference_summary_image_rotation, rotation.toString())
             }
-            Configuration.PREF_INACTIVITY_TIME -> {
+            PREF_INACTIVITY_TIME -> {
                 val inactivity = inactivityPreference!!.value!!.toLong()
+                Timber.d("inactivity time: " + inactivity)
                 configuration.inactivityTime = inactivity
-                if (inactivity <= SECONDS_VALUE) {
+                if (inactivity < SECONDS_VALUE) {
                     inactivityPreference!!.summary = getString(R.string.preference_summary_inactivity_seconds, DateUtils.convertInactivityTime(inactivity))
                 } else {
                     inactivityPreference!!.summary = getString(R.string.preference_summary_inactivity_minutes, DateUtils.convertInactivityTime(inactivity))

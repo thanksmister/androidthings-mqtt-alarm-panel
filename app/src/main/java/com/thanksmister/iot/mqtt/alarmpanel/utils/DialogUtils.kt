@@ -80,6 +80,7 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
 
     fun hideScreenSaverDialog() {
         if (screenSaverDialog != null && screenSaverDialog!!.isShowing) {
+            Timber.d("hideScreenSaverDialog")
             screenSaverDialog!!.dismiss()
             screenSaverDialog = null
         }

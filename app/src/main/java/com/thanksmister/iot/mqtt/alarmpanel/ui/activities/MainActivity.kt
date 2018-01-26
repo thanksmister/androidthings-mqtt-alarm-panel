@@ -110,28 +110,31 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     public override fun onStart() {
         super.onStart()
-
         lifecycle.addObserver(dialogUtils)
-
         disposable.add(viewModel.getAlarmState()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({state ->
+                .subscribe({ state ->
+                    Timber.e("Alarm state: " + state)
+                    Timber.e("Alarm mode: " + viewModel.getAlarmMode())
                     this@MainActivity.runOnUiThread({
                         when (state) {
                             AlarmUtils.STATE_DISARM,
                             AlarmUtils.STATE_ARM_AWAY,
                             AlarmUtils.STATE_ARM_HOME -> {
+                                acquireTemporaryWakeLock()
                                 setScreenDefaults()
                                 resetInactivityTimer()
                             }
                             AlarmUtils.STATE_TRIGGERED -> {
-                                awakenDeviceForAction()
+                                acquireTemporaryWakeLock()
                                 setScreenTriggered()
+                                awakenDeviceForAction()
                             }
                             AlarmUtils.STATE_PENDING -> {
-                                awakenDeviceForAction()
+                                acquireTemporaryWakeLock()
                                 setScreenDefaults()
+                                awakenDeviceForAction()
                             }
                         }
                     })
@@ -239,6 +242,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
      * We need to awaken the device and allow the user to take action.
      */
     private fun awakenDeviceForAction() {
+        Timber.d("awakenDeviceForAction")
         stopDisconnectTimer() // stop screen saver mode
         if (view_pager != null && pagerAdapter.count > 0) {
             dialogUtils.hideAlertDialog()
@@ -247,7 +251,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     private fun captureImage() {
-        if (cameraModule != null) {
+        if (cameraModule != null && viewModel.hasCamera()) {
             cameraModule?.takePicture(configuration.getCameraRotate()!!)
         }
     }

@@ -2,17 +2,12 @@ package com.thanksmister.iot.mqtt.alarmpanel.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.text.TextUtils
 import android.widget.Toast
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.Message
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.MessageDao
-import com.thanksmister.iot.mqtt.alarmpanel.persistence.stores.StoreManager
-import com.thanksmister.iot.mqtt.alarmpanel.tasks.NetworkTask
-import com.thanksmister.iot.mqtt.alarmpanel.tasks.SubscriptionDataTask
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.MailGunModule
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.TelegramModule
@@ -24,7 +19,6 @@ import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_ARM_
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_ARM_HOME
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_ARM_HOME_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_AWAY_TRIGGERED_PENDING
-import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_DISARM
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_HOME_TRIGGERED_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_TRIGGERED
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_TRIGGERED_PENDING
@@ -75,8 +69,7 @@ constructor(application: Application, private val dataSource: MessageDao, privat
     }
 
     fun hasCamera() : Boolean {
-        return (configuration.hasCamera()
-                && configuration.hasMailGunCredentials())
+        return (configuration.hasCamera() && (configuration.hasMailGunCredentials() || configuration.hasTelegramCredentials()))
     }
 
     fun hasScreenSaver() : Boolean {

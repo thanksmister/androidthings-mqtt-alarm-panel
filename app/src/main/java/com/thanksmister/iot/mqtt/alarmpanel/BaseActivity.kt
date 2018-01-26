@@ -20,10 +20,14 @@ package com.thanksmister.iot.mqtt.alarmpanel
 
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.PowerManager
 import android.support.v7.app.AlertDialog
 import android.view.Display
 import android.view.Menu
@@ -58,7 +62,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     @Inject lateinit var dialogUtils: DialogUtils
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     lateinit var viewModel: MessageViewModel
-
+    private var wakeLock: PowerManager.WakeLock? = null
     private var inactivityHandler: Handler? = Handler()
     private var hasNetwork = AtomicBoolean(true)
     val disposable = CompositeDisposable()
@@ -115,12 +119,16 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             inactivityHandler = null
         }
         disposable.dispose()
+        releaseTemporaryWakeLock()
     }
 
     /**
      * Resets the screen timeout and brightness to the default (or user set) settings
      */
     fun setScreenDefaults() {
+        Timber.d("setScreenDefaults")
+        Timber.d("screenBirghness: " + configuration.screenBrightness)
+        Timber.d("setScreenOffTimeout: " + configuration.screenTimeout)
         ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
         ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
     }
@@ -129,12 +137,42 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * Keeps the screen on extra long time if the alarm is triggered.
      */
     fun setScreenTriggered() {
+        Timber.d("setScreenTriggered")
         ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS);
+        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS); // 3 hours
     }
 
-    fun setScreenBrightness(brightness: Int) {
+    private fun setScreenBrightness(brightness: Int) {
         ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(brightness);
+        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Wakes the device temporarily (or always if triggered) when the alarm requires attention.
+     * We should hold the wakelock the same amount of time as the screen off timeout.
+     */
+    fun acquireTemporaryWakeLock() {
+        Timber.d("acquireTemporaryWakeLock")
+        if (wakeLock == null) {
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP, "ALARM_WAKE_TAG")
+        }
+        if (wakeLock != null && !wakeLock!!.isHeld()) {  // but we don't hold it
+            if (viewModel.isAlarmTriggeredMode()) {
+                wakeLock!!.acquire(10800000) // 3 hours in milliseconds
+            } else {
+                wakeLock!!.acquire(configuration.screenTimeout)
+            }
+        }
+    }
+
+    /**
+     * Wakelock used to temporarily bring application to foreground if alarm needs attention.
+     */
+    fun releaseTemporaryWakeLock() {
+        if (wakeLock != null && wakeLock!!.isHeld()) {
+            wakeLock!!.release()
+        }
     }
 
     fun resetInactivityTimer() {
@@ -145,6 +183,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     }
 
     fun stopDisconnectTimer() {
+        Timber.d("stopDisconnectTimer")
         dialogUtils.hideScreenSaverDialog()
         inactivityHandler!!.removeCallbacks(inactivityCallback)
     }
@@ -153,15 +192,16 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         Timber.d("onUserInteraction")
         resetInactivityTimer()
         setScreenDefaults()
+        releaseTemporaryWakeLock()
     }
 
     public override fun onStop() {
         super.onStop()
-        //stopDisconnectTimer()
     }
 
     public override fun onResume() {
         super.onResume()
+        acquireTemporaryWakeLock()
         registerReceiver(connReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
@@ -199,6 +239,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * with the alarm disabled because the disable time will be longer than this.
      */
     open fun showScreenSaver() {
+        Timber.d("showScreenSaver")
         //dialogUtils.clearDialogs()
         if (!viewModel.isAlarmTriggeredMode() && viewModel.hasScreenSaver()) {
             inactivityHandler!!.removeCallbacks(inactivityCallback)
@@ -211,14 +252,12 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                     configuration.showPhotoScreenSaver(), configuration.showClockScreenSaverModule(),
                     readImageOptions(), object : ScreenSaverView.ViewListener {
                 override fun onMotion() {
-                    dialogUtils.hideScreenSaverDialog()
-                    setScreenDefaults()
                     resetInactivityTimer()
+                    setScreenDefaults()
                 }
             }, View.OnClickListener {
-                dialogUtils.hideScreenSaverDialog()
-                setScreenDefaults()
                 resetInactivityTimer()
+                setScreenDefaults()
             })
         } else if (!viewModel.isAlarmTriggeredMode()) {
             setScreenBrightness(0);
@@ -232,6 +271,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * into foreground.
      */
     fun handleNetworkDisconnect() {
+        acquireTemporaryWakeLock()
         dialogUtils.hideScreenSaverDialog()
         dialogUtils.showAlertDialogToDismiss(this@BaseActivity, getString(R.string.text_notification_network_title),
                     getString(R.string.text_notification_network_description))

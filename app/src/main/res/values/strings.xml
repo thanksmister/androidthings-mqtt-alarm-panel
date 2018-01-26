@@ -110,7 +110,7 @@
 
     <string name="preference_tts_topic">TTS Topic</string>
     <string name="preference_tts_topic_title">Set Topic Value</string>
-    <string name="preference_tts_topic_summary">Example format for the message topic and alarmState to be spoken (note that externally powered speakers are required for TTS): \n\n"{'topic':'home/notification', 'payload':'Hello!'}"</string>
+    <string name="preference_tts_topic_summary">Example format for the message topic and alarmState to be spoken (note that externally powered speakers are required for TTS): \n\n"{\"topic\":\"home/notification\", \"payload\":\"Hello!\"}"</string>
 
 
     <string name="preference_camera">Camera Capture</string>
