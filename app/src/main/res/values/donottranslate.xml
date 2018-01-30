@@ -39,7 +39,7 @@
     <string-array name="settings_titles">
         <item>@string/text_alarm_settings</item>
         <item>@string/preference_title_alarm</item>
-        <item>@string/preference_mqtt_alarm</item>
+        <item>@string/text_mqtt_settings</item>
         <item>@string/preference_title_notification</item>
         <item>@string/preference_camera_title</item>
         <item>@string/preference_title_screen_saver_title</item>

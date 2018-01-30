@@ -58,7 +58,7 @@ class AlarmCodeView : BaseAlarmView {
         codeTitle.setText(R.string.text_enter_alarm_code_title)
     }
 
-   override fun onCancel() {
+    override fun onCancel() {
         codeComplete = false
         enteredCode = ""
         showFilledPins(0)

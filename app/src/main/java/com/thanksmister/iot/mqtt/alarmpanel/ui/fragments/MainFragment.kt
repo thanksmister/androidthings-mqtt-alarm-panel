@@ -117,6 +117,7 @@ class MainFragment : BaseFragment() {
                         when (state) {
                             AlarmUtils.STATE_ARM_AWAY, AlarmUtils.STATE_ARM_HOME -> {
                                 dialogUtils.clearDialogs()
+                                showAlarmTriggered()
                             }
                             AlarmUtils.STATE_DISARM -> {
                                 dialogUtils.clearDialogs()
@@ -182,19 +183,18 @@ class MainFragment : BaseFragment() {
 
     private fun showAlarmTriggered() {
         if (isAdded) {
-            mainView!!.visibility = View.GONE
-            triggeredView!!.visibility = View.VISIBLE
+            mainView.visibility = View.GONE
+            triggeredView.visibility = View.VISIBLE
             val code = configuration.alarmCode
             val disarmView = activity!!.findViewById<AlarmTriggeredView>(R.id.alarmTriggeredView)
-            disarmView.code = (code)
+            disarmView.setCode(code)
             disarmView.listener = object : AlarmTriggeredView.ViewListener {
-                override fun onComplete(code: Int) {
+                override fun onComplete() {
                     listener!!.publishDisarmed()
                 }
                 override fun onError() {
                     Toast.makeText(activity, R.string.toast_code_invalid, Toast.LENGTH_SHORT).show()
                 }
-                override fun onCancel() {}
             }
         }
     }

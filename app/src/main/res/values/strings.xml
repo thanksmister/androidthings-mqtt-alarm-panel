@@ -174,6 +174,7 @@
     <string name="text_github_code">GitHub code</string>
     <string name="text_about">About</string>
     <string name="text_alarm_settings">Device Settings</string>
+    <string name="text_mqtt_settings">MQTT Settings</string>
     <string name="notification_channel_name">Entry Detection / Alarm Triggered</string>
     <string name="text_channel_description">Alarm Panel Notifications</string>
     <string name="text_notification_entry_title">Entry Detected</string>

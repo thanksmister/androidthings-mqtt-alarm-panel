@@ -13,24 +13,24 @@ import kotlinx.android.synthetic.main.view_keypad.view.*
 
 abstract class BaseAlarmView : LinearLayout {
 
-    var code: Int = 0
+    var currentCode: Int = 0
     var codeComplete = false
     var enteredCode = ""
 
     private var soundUtils: SoundUtils? = null
 
-    constructor(context: Context) : super(context) {}
+    constructor(context: Context) : super(context) {
+        // let's play the sound as loud as we can
+        val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val amStreamMusicMaxVol = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, amStreamMusicMaxVol, 0)
+    }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}
 
     override fun onFinishInflate() {
 
         super.onFinishInflate()
-
-        // let's play the sound as loud as we can
-        val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val amStreamMusicMaxVol = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        am.setStreamVolume(AudioManager.STREAM_MUSIC, amStreamMusicMaxVol, 0)
 
         button0.setOnClickListener {
             playButtonPress()
@@ -105,6 +105,10 @@ abstract class BaseAlarmView : LinearLayout {
         destroySoundUtils()
     }
 
+    fun setCode(code: Int) {
+        currentCode = code
+    }
+
     abstract fun onCancel()
     abstract fun removePinCode()
     abstract fun addPinCode(code: String)
@@ -112,21 +116,23 @@ abstract class BaseAlarmView : LinearLayout {
 
     fun destroySoundUtils() {
         if (soundUtils != null) {
-            soundUtils!!.destroyBuzzer()
+            soundUtils?.destroyBuzzer()
         }
     }
 
-    fun playButtonPress() {
+    private fun playButtonPress() {
         if (soundUtils == null) {
             soundUtils = SoundUtils(context)
+            soundUtils?.init()
         }
-        soundUtils!!.playBuzzerOnButtonPress()
+        soundUtils?.playBuzzerOnButtonPress()
     }
 
     fun playContinuousBeep() {
         if (soundUtils == null) {
             soundUtils = SoundUtils(context)
-            soundUtils!!.playBuzzerRepeat()
+            soundUtils?.init()
+            soundUtils?.playBuzzerRepeat()
         }
     }
 

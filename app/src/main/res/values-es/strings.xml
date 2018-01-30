@@ -175,6 +175,7 @@
     <string name="text_github_code">GitHub code</string>
     <string name="text_about">Acerca de</string>
     <string name="text_alarm_settings">Ajustes de la alarma</string>
+    <string name="text_mqtt_settings">Ajustes MQTT</string>
     <string name="notification_channel_name">Detección de intrusión / Disparo de la alarma</string>
     <string name="text_channel_description">Panel de notificaciones de la alarma</string>
     <string name="text_notification_entry_title">Intrusión detectada</string>
