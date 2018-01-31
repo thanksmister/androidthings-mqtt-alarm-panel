@@ -117,7 +117,6 @@ class MainFragment : BaseFragment() {
                         when (state) {
                             AlarmUtils.STATE_ARM_AWAY, AlarmUtils.STATE_ARM_HOME -> {
                                 dialogUtils.clearDialogs()
-                                showAlarmTriggered()
                             }
                             AlarmUtils.STATE_DISARM -> {
                                 dialogUtils.clearDialogs()
