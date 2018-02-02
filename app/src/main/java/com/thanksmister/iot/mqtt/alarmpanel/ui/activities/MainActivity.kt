@@ -238,6 +238,20 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         return R.layout.activity_main
     }
 
+    override fun handleNetworkConnect() {
+        super.handleNetworkConnect()
+        if (mqttModule != null) {
+            mqttModule?.restart()
+        }
+    }
+
+    override fun handleNetworkDisconnect() {
+        super.handleNetworkDisconnect()
+        if (mqttModule != null) {
+            mqttModule?.pause()
+        }
+    }
+
     /**
      * We need to awaken the device and allow the user to take action.
      */
