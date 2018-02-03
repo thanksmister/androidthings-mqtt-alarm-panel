@@ -1,37 +1,22 @@
 package com.thanksmister.iot.mqtt.alarmpanel.network
 
 
+import android.R.id.message
 import android.content.Context
 import android.text.TextUtils
-
+import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.utils.MqttUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.StringUtils
-
 import org.eclipse.paho.android.service.MqttAndroidClient
-import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
-import org.eclipse.paho.client.mqttv3.IMqttActionListener
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener
-import org.eclipse.paho.client.mqttv3.IMqttToken
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions
-import org.eclipse.paho.client.mqttv3.MqttException
-import org.eclipse.paho.client.mqttv3.MqttMessage
-
+import org.eclipse.paho.client.mqttv3.*
+import timber.log.Timber
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.NoSuchAlgorithmException
 import java.security.spec.InvalidKeySpecException
-import java.util.ArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
-import timber.log.Timber
-
-import android.R.id.message
-import android.arch.lifecycle.LifecycleObserver
-
-class MQTTService(private var context: Context?,
-                  options: MQTTOptions,
+class MQTTService(private var context: Context, options: MQTTOptions,
                   private var listener: MqttManagerListener?) : MQTTServiceInterface {
 
     private var mqttClient: MqttAndroidClient? = null
@@ -71,14 +56,16 @@ class MQTTService(private var context: Context?,
 
     @Throws(MqttException::class)
     override fun close() {
-        listener = null
-        mqttOptions = null
+        Timber.d("close")
         if (mqttClient != null) {
             // TODO IllegalArgumentException: Invalid ClientHandle and no dialog showing sound stuck
+            mqttClient?.setCallback(null)
             if (mqttClient!!.isConnected) {
-                mqttClient!!.disconnect()
+                mqttClient!!.disconnect(0)
             }
             mqttClient = null
+            listener = null
+            mqttOptions = null
         }
         mReady.set(false)
     }
@@ -146,15 +133,18 @@ class MQTTService(private var context: Context?,
             }
         } catch (e: MqttException) {
             if (listener != null) {
-                listener!!.handleMqttException("Could not initialize MQTT: " + e.message)
+                //listener!!.handleMqttException("Could not initialize MQTT: " + e.message)
+                listener!!.handleMqttException(context.getString(R.string.error_mqtt_connection))
             }
         } catch (e: IOException) {
             if (listener != null) {
-                listener!!.handleMqttException("Could not initialize MQTT: " + e.message)
+                //listener!!.handleMqttException("Could not initialize MQTT: " + e.message)
+                listener!!.handleMqttException(context.getString(R.string.error_mqtt_connection))
             }
         } catch (e: GeneralSecurityException) {
             if (listener != null) {
-                listener!!.handleMqttException("Could not initialize MQTT: " + e.message)
+                //listener!!.handleMqttException("Could not initialize MQTT: " + e.message)
+                listener!!.handleMqttException(context.getString(R.string.error_mqtt_connection))
             }
         }
 
@@ -162,39 +152,14 @@ class MQTTService(private var context: Context?,
 
     @Throws(MqttException::class, IOException::class, NoSuchAlgorithmException::class, InvalidKeySpecException::class)
     private fun initializeMqttClient() {
-
         Timber.d("initializeMqttClient")
-
         try {
-            mqttClient = MqttAndroidClient(context, mqttOptions!!.brokerUrl, mqttOptions!!.getClientId())
-
+            mqttClient = MqttAndroidClient(context, mqttOptions?.brokerUrl, mqttOptions!!.getClientId())
             val options = MqttConnectOptions()
             if (!TextUtils.isEmpty(mqttOptions!!.getUsername()) && !TextUtils.isEmpty(mqttOptions!!.getPassword())) {
                 options.userName = mqttOptions!!.getUsername()
                 options.password = mqttOptions!!.getPassword()!!.toCharArray()
             }
-            mqttClient = MqttUtils.getMqttAndroidClient(context!!, mqttOptions!!.brokerUrl, mqttOptions!!.getClientId()!!, object : MqttCallbackExtended {
-                override fun connectComplete(reconnect: Boolean, serverURI: String) {
-                    if (reconnect) {
-                        Timber.d("Reconnected to : " + serverURI)
-                        // Because Clean Session is true, we need to re-subscribe
-                        subscribeToTopics(mqttOptions!!.stateTopics)
-                    } else {
-                        Timber.d("Connected to: " + serverURI)
-                    }
-                }
-
-                override fun connectionLost(cause: Throwable) {
-                    Timber.d("The Connection was lost.")
-                }
-
-                @Throws(Exception::class)
-                override fun messageArrived(topic: String, message: MqttMessage) {
-                    Timber.i("Received Message : " + topic + " : " + String(message.payload))
-                }
-
-                override fun deliveryComplete(token: IMqttDeliveryToken) {}
-            })
 
             options.isAutomaticReconnect = true
             options.isCleanSession = false
@@ -218,24 +183,27 @@ class MQTTService(private var context: Context?,
                     override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
                         if (listener != null && mqttOptions != null) {
                             Timber.e("Failed to connect to: " + mqttOptions!!.brokerUrl + " exception: " + exception)
-                            listener!!.handleMqttException("Error connecting to the broker and port: " + mqttOptions!!.brokerUrl)
+                            //listener!!.handleMqttException("Error connecting to the broker and port: " + mqttOptions!!.brokerUrl)
+                            listener!!.handleMqttException(context.getString(R.string.error_mqtt_subscription))
                         }
                     }
                 })
             } catch (e: MqttException) {
-                e.printStackTrace()
+                Timber.e(e, "MqttException")
                 if (listener != null) {
-                    listener!!.handleMqttException("Error while connecting: " + e.message)
+                    listener?.handleMqttException("" + e.message)
                 }
             }
 
             mReady.set(true)
-
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
         } catch (e: Exception) {
-
             e.printStackTrace()
             if (listener != null) {
-                listener!!.handleMqttException("Error while connecting: " + e.message)
+                listener!!.handleMqttException("" + e.message)
             }
         }
     }
@@ -251,7 +219,8 @@ class MQTTService(private var context: Context?,
                 Timber.e("Error Sending Command: " + e.message)
                 e.printStackTrace()
                 if (listener != null) {
-                    listener!!.handleMqttException("Error Sending Command: " + e.message)
+                    //listener!!.handleMqttException("Error Sending Command: " + e.message)
+                    listener!!.handleMqttException(context.getString(R.string.error_mqtt_subscription))
                 }
             }
         }

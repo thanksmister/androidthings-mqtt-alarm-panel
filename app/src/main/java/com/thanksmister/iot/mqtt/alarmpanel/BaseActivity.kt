@@ -21,11 +21,7 @@ package com.thanksmister.iot.mqtt.alarmpanel
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
@@ -112,6 +108,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     // These are Android Things specific settings for setting the time, display, and update manager
     private fun setSystemInformation() {
         try {
+
             ScreenManager(Display.DEFAULT_DISPLAY).setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
             ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
             ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);

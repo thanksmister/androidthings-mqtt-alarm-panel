@@ -21,9 +21,9 @@ abstract class BaseAlarmView : LinearLayout {
 
     constructor(context: Context) : super(context) {
         // let's play the sound as loud as we can
-        val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        /* val am = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val amStreamMusicMaxVol = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        am.setStreamVolume(AudioManager.STREAM_MUSIC, amStreamMusicMaxVol, 0)
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, amStreamMusicMaxVol, 0)*/
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}

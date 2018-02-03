@@ -80,7 +80,7 @@ class TextToSpeechModule( base: Context?, private val configuration: Configurati
     fun speakText(message: String) {
         if(configuration.hasTssModule()) {
             val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            am.setStreamVolume(AudioManager.STREAM_MUSIC, 11, 0)
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0)
             if (textToSpeech != null && isInitialized) {
                 Timber.d("Speak this: " + message)
                 textToSpeech?.speak(message, TextToSpeech.QUEUE_ADD, null, UTTERANCE_ID)
