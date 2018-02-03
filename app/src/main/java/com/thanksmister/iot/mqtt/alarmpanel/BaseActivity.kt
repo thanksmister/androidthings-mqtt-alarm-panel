@@ -77,6 +77,11 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(getLayoutId())
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MessageViewModel::class.java)
+
+        UpdateManager()
+                .setPolicy(UpdatePolicy.Builder()
+                        .setPolicy(POLICY_APPLY_AND_REBOOT)
+                        .build())
     }
 
     override fun onStart(){
@@ -116,11 +121,11 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
             TimeManager().setTimeZone(configuration.timeZone)
 
-            UpdateManager()
-                    .setPolicy(UpdatePolicy.Builder()
-                            .setPolicy(POLICY_CHECKS_ONLY)
-                            .setApplyDeadline(2, TimeUnit.DAYS)
-                            .build())
+            /*
+             UpdateManager()
+                .setPolicy(UpdatePolicy.Builder()
+                        .setPolicy(POLICY_APPLY_AND_REBOOT)
+                        .build())
 
             UpdateManager()
                     .addStatusListener { updateManagerStatus ->
@@ -132,7 +137,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                                     })
                                     .show()
                         }
-                    }
+                    }*/
         } catch (e:IllegalStateException) {
             Timber.e(e.message)
         }
