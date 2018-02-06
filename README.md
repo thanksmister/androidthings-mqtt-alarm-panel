@@ -7,7 +7,7 @@ This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual
 - [Android Device Version](https://github.com/thanksmister/android-mqtt-alarm-panel)
 - [Home Assistant Community Dsicussion](https://community.home-assistant.io/t/mqtt-alarm-control-panel-for-raspberry-pi-and-android/26484/94)
 
-For issues, feature requests, questions, use the [Github issues tracker] (https://github.com/thanksmister/androidthings-mqtt-alarm-panel/issues). 
+For issues, feature requests, questions, use the [Github issues tracker](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/issues). 
 
 ![alarm_panel](https://user-images.githubusercontent.com/142340/34173863-a2a8a4e4-e4d5-11e7-96b4-15a59a163243.jpg)
 
