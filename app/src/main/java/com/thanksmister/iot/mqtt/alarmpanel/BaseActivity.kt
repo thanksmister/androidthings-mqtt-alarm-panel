@@ -230,7 +230,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     }
 
     fun readMqttOptions(): MQTTOptions {
-        return MQTTOptions.from(preferences)
+        return MQTTOptions(preferences)
     }
 
     fun readWeatherOptions(): DarkSkyOptions {

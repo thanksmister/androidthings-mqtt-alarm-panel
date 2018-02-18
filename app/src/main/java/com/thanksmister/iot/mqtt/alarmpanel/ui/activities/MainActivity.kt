@@ -239,17 +239,19 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     override fun handleNetworkConnect() {
-        super.handleNetworkConnect()
-        if (mqttModule != null) {
+        Timber.d("handleNetworkConnect")
+        if (mqttModule != null && !hasNetworkConnectivity()) {
             mqttModule?.restart()
         }
+        super.handleNetworkConnect()
     }
 
     override fun handleNetworkDisconnect() {
-        super.handleNetworkDisconnect()
-        if (mqttModule != null) {
+        Timber.d("handleNetworkDisconnect")
+        if (mqttModule != null && hasNetworkConnectivity()) {
             mqttModule?.pause()
         }
+        super.handleNetworkDisconnect()
     }
 
     /**
