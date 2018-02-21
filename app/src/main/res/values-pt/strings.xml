@@ -243,6 +243,7 @@
     <string name="pref_camera_send_image_notes">Poderá utilizar o Telegram, o Mailgun, ou ambos para enviar as imagens capturadas.</string>
     <string name="menu_item_help">Ajuda</string>
     <string name="error_mailgun_credentials">Ocorreu um problema ao enviar a imagem por email. Por favor, verifique as suas credenciais do Mailgun.</string>
+    <string name="preference_mqtt_alarm">Configurações do MQTT</string>
 
     <string-array name="inactivity_times">
         <item>15 segundos</item>
