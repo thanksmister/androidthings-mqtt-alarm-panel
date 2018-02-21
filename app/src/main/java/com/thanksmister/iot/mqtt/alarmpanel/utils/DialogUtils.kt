@@ -19,7 +19,6 @@
 package com.thanksmister.iot.mqtt.alarmpanel.utils
 
 import android.app.Dialog
-import android.app.ProgressDialog
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent

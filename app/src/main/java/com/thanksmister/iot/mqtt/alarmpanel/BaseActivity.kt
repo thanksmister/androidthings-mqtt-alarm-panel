@@ -80,7 +80,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
         UpdateManager()
                 .setPolicy(UpdatePolicy.Builder()
-                        .setPolicy(POLICY_APPLY_AND_REBOOT)
+                        .setPolicy(POLICY_CHECKS_ONLY)
+                        .setApplyDeadline(2, TimeUnit.DAYS)
                         .build())
     }
 
