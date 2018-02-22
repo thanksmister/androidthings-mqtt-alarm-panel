@@ -77,12 +77,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(getLayoutId())
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MessageViewModel::class.java)
-
-        UpdateManager()
-                .setPolicy(UpdatePolicy.Builder()
-                        .setPolicy(POLICY_CHECKS_ONLY)
-                        .setApplyDeadline(2, TimeUnit.DAYS)
-                        .build())
     }
 
     override fun onStart(){
@@ -114,7 +108,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     // These are Android Things specific settings for setting the time, display, and update manager
     private fun setSystemInformation() {
         try {
-
             ScreenManager(Display.DEFAULT_DISPLAY).setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
             ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
             ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
@@ -122,11 +115,11 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
             TimeManager().setTimeZone(configuration.timeZone)
 
-            /*
-             UpdateManager()
-                .setPolicy(UpdatePolicy.Builder()
-                        .setPolicy(POLICY_APPLY_AND_REBOOT)
-                        .build())
+            UpdateManager()
+                    .setPolicy(UpdatePolicy.Builder()
+                            .setPolicy(POLICY_CHECKS_ONLY)
+                            .setApplyDeadline(2, TimeUnit.DAYS)
+                            .build())
 
             UpdateManager()
                     .addStatusListener { updateManagerStatus ->
@@ -138,7 +131,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                                     })
                                     .show()
                         }
-                    }*/
+                    }
         } catch (e:IllegalStateException) {
             Timber.e(e.message)
         }

@@ -27,7 +27,9 @@ import android.support.v7.preference.ListPreference
 import android.support.v7.preference.Preference
 import android.support.v7.preference.Preference.OnPreferenceClickListener
 import android.support.v7.preference.PreferenceFragmentCompat
+import android.text.TextUtils
 import android.view.View
+import android.widget.Toast
 import com.google.android.things.device.ScreenManager
 import com.google.android.things.device.TimeManager
 import com.thanksmister.iot.mqtt.alarmpanel.R
@@ -210,16 +212,26 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 timeZonePreference!!.summary = configuration.timeZone
             }
             PREF_DEVICE_SCREEN_DENSITY -> {
-                val density = densityPreference!!.text.toInt()
-                configuration.screenDensity = density
-                densityPreference!!.summary = getString(R.string.pref_density_summary, density.toString())
-                screenManager.setDisplayDensity(density)
+                val value = densityPreference!!.text
+                if(!TextUtils.isEmpty(value)) {
+                    val density = densityPreference!!.text.toInt()
+                    configuration.screenDensity = density
+                    densityPreference!!.summary = getString(R.string.pref_density_summary, density.toString())
+                    screenManager.setDisplayDensity(density)
+                } else {
+                    Toast.makeText(activity, R.string.text_error_only_numbers, Toast.LENGTH_LONG).show()
+                }
             }
             PREF_DEVICE_SCREEN_BRIGHTNESS -> {
-                val brightness = brightnessPreference!!.text.toInt()
-                configuration.screenBrightness = brightness
-                brightnessPreference!!.summary = getString(R.string.pref_device_brightness_summary, brightness.toString())
-                screenManager.setBrightness(brightness)
+                val value = brightnessPreference!!.text
+                if(!TextUtils.isEmpty(value)) {
+                    val brightness = brightnessPreference!!.text.toInt()
+                    configuration.screenBrightness = brightness
+                    brightnessPreference!!.summary = getString(R.string.pref_device_brightness_summary, brightness.toString())
+                    screenManager.setBrightness(brightness)
+                } else {
+                    Toast.makeText(activity, R.string.text_error_only_numbers, Toast.LENGTH_LONG).show()
+                }
             }
             PREF_DEVICE_SCREEN_TIMEOUT -> {
                 val timeout = screenTimeoutPreference!!.value.toLong()
