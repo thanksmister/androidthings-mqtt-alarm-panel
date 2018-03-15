@@ -28,6 +28,7 @@ import android.support.v7.preference.Preference
 import android.support.v7.preference.Preference.OnPreferenceClickListener
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.text.TextUtils
+import android.view.Display
 import android.view.View
 import android.widget.Toast
 import com.google.android.things.device.ScreenManager
@@ -56,14 +57,13 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
     private var serverPreference: SwitchPreference? = null
     private var formatPreference: SwitchPreference? = null
-    //private var timePreference: Preference? = null
     private var resetPreference: Preference? = null
     private var densityPreference: EditTextPreference? = null
     private var brightnessPreference: EditTextPreference? = null
     private var timeZonePreference: ListPreference? = null
     private var screenTimeoutPreference: ListPreference? = null
-    private val timeManager = TimeManager()
-    private val screenManager = ScreenManager(ScreenManager.BRIGHTNESS_MODE_MANUAL)
+    private val timeManager = TimeManager.getInstance()
+    private val screenManager = ScreenManager.getInstance(Display.DEFAULT_DISPLAY)
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -236,7 +236,7 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             PREF_DEVICE_SCREEN_TIMEOUT -> {
                 val timeout = screenTimeoutPreference!!.value.toLong()
                 configuration.screenTimeout = timeout
-                screenManager.setScreenOffTimeout(timeout, TimeUnit.MILLISECONDS)
+                // FIXME screenManager.setScreenOffTimeout(timeout, TimeUnit.MILLISECONDS)
                 if (configuration.screenTimeout < DateUtils.SECONDS_VALUE) {
                     screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_seconds_summary,
                             DateUtils.convertInactivityTime(configuration.screenTimeout))

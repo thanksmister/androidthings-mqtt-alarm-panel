@@ -22,6 +22,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_AWAY
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_HOME_TRIGGERED_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_TRIGGERED
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_TRIGGERED_PENDING
+import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.IMAGE_CAPTURE_TYPE
 import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.NOTIFICATION_TYPE
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
 import io.reactivex.Completable
@@ -161,10 +162,12 @@ constructor(application: Application, private val dataSource: MessageDao, privat
      * Insert new message into the database.
      */
     fun insertMessage(messageId: String,topic: String, payload: String): Completable {
-        val type = if(ALARM_STATE_TOPIC == topic) {
-            ALARM_TYPE
-        } else {
+        val type = if (IMAGE_CAPTURE_TYPE == topic) {
+            IMAGE_CAPTURE_TYPE
+        } else if (NOTIFICATION_TYPE == topic) {
             NOTIFICATION_TYPE
+        } else {
+            ALARM_TYPE
         }
         return Completable.fromAction {
             val createdAt = DateUtils.generateCreatedAtDate()

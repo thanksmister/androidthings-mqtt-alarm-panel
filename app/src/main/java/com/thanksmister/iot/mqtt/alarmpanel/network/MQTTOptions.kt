@@ -4,7 +4,7 @@ import android.text.TextUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.ALARM_COMMAND_TOPIC
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.ALARM_STATE_TOPIC
-import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.NOTIFICATION_STATE_TOPIC
+import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.*
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DeviceUtils
 import dpreference.DPreference
 import timber.log.Timber
@@ -64,11 +64,16 @@ class MQTTOptions constructor(private val sharedPreferences: DPreference) {
         val topics = ArrayList<String>()
         topics.add(sharedPreferences.getPrefString(PREF_STATE_TOPIC, ALARM_STATE_TOPIC))
         topics.add(sharedPreferences.getPrefString(PREF_NOTIFICATION_TOPIC, NOTIFICATION_STATE_TOPIC))
+        topics.add(sharedPreferences.getPrefString(PREF_CAPTURE_TOPIC, IMAGE_CAPTURE_STATE_TOPIC))
         return topics.toArray(arrayOf<String>())
     }
 
     fun getNotificationTopic(): String? {
         return sharedPreferences.getPrefString(PREF_NOTIFICATION_TOPIC, NOTIFICATION_STATE_TOPIC)
+    }
+
+    fun getCameraTopic(): String? {
+        return sharedPreferences.getPrefString(PREF_CAPTURE_TOPIC, IMAGE_CAPTURE_STATE_TOPIC)
     }
 
     fun getUsername(): String {
@@ -127,6 +132,11 @@ class MQTTOptions constructor(private val sharedPreferences: DPreference) {
         setOptionsUpdated(true)
     }
 
+    fun setCaptureTopic(value: String) {
+        this.sharedPreferences.setPrefString(PREF_CAPTURE_TOPIC, value)
+        setOptionsUpdated(true)
+    }
+
     fun setTlsConnection(value: Boolean) {
         this.sharedPreferences.setPrefBoolean(PREF_TLS_CONNECTION, value)
         setOptionsUpdated(true)
@@ -148,6 +158,7 @@ class MQTTOptions constructor(private val sharedPreferences: DPreference) {
         const val HTTP_BROKER_URL_FORMAT = "%s:%d"
         const val PREF_STATE_TOPIC = "pref_alarm_topic"
         const val PREF_NOTIFICATION_TOPIC = "pref_notification_topic"
+        const val PREF_CAPTURE_TOPIC = "pref_capture_topic"
         const val PREF_USERNAME = "pref_username"
         const val PREF_COMMAND_TOPIC = "pref_command_topic"
         const val PREF_TLS_CONNECTION = "pref_tls_connection"

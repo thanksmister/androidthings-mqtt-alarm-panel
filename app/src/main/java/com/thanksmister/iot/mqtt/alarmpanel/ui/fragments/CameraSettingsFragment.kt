@@ -16,13 +16,9 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.fragments
 
-import android.Manifest
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v7.preference.CheckBoxPreference
 import android.support.v7.preference.EditTextPreference
 import android.support.v7.preference.ListPreference
@@ -30,12 +26,11 @@ import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.text.TextUtils
 import android.view.View
-import android.widget.Toast
-
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
+
 import com.thanksmister.iot.mqtt.alarmpanel.R
+import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
-import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.CameraModule
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
@@ -44,6 +39,8 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
     @Inject lateinit var configuration: Configuration
     @Inject lateinit var dialogUtils: DialogUtils
+
+    private var mqttOptions: MQTTOptions? = null
 
     private var tolPreference: EditTextPreference? = null
     private var fromPreference: EditTextPreference? = null
@@ -54,6 +51,8 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
     private var rotatePreference: ListPreference? = null
     private var telegramTokenPreference: EditTextPreference? = null
     private var telegramChatIdPreference: EditTextPreference? = null
+    private var mqttImagePreference: CheckBoxPreference? = null
+    private var mqttImageTopicPreference: EditTextPreference? = null
     private var notesPreference: Preference? = null
 
     override fun onAttach(context: Context) {
@@ -87,6 +86,12 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
         super.onViewCreated(view, savedInstanceState)
 
+        if (isAdded && activity != null) {
+            mqttOptions = (activity as BaseActivity).readMqttOptions()
+        }
+
+        mqttImagePreference = findPreference(Configuration.PREF_MQTT_IMAGE) as CheckBoxPreference
+        mqttImageTopicPreference = findPreference(Configuration.PREF_MQTT_IMAGE_TOPIC) as EditTextPreference
         telegramChatIdPreference = findPreference(Configuration.PREF_TELEGRAM_CHAT_ID) as EditTextPreference
         telegramTokenPreference = findPreference(Configuration.PREF_TELEGRAM_TOKEN) as EditTextPreference
         tolPreference = findPreference(Configuration.PREF_MAIL_TO) as EditTextPreference
@@ -130,40 +135,45 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             telegramTokenPreference!!.summary = configuration.telegramToken
         }
 
+        if (!TextUtils.isEmpty(mqttOptions!!.getCameraTopic())) {
+            mqttImageTopicPreference!!.text = mqttOptions!!.getCameraTopic()
+            mqttImageTopicPreference!!.summary = mqttOptions!!.getCameraTopic()
+        }
+
+        mqttImagePreference!!.isChecked = configuration.mqttImage
         rotatePreference!!.setDefaultValue(configuration.getCameraRotate())
         rotatePreference!!.value = configuration.getCameraRotate().toString()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        val value: String
         when (key) {
             Configuration.PREF_MAIL_TO -> {
-                value = tolPreference!!.text
+                val value = tolPreference!!.text
                 configuration.setMailTo(value)
                 tolPreference!!.summary = value
             }
             Configuration.PREF_MAIL_FROM -> {
-                value = fromPreference!!.text
+                val value = fromPreference!!.text
                 configuration.setMailFrom(value)
                 fromPreference!!.summary = value
             }
             Configuration.PREF_MAIL_URL -> {
-                value = domainPreference!!.text
+                val value = domainPreference!!.text
                 configuration.setMailGunUrl(value)
                 domainPreference!!.summary = value
             }
             Configuration.PREF_MAIL_API_KEY -> {
-                value = keyPreference!!.text
+                val value = keyPreference!!.text
                 configuration.setMailGunApiKey(value)
                 keyPreference!!.summary = value
             }
             Configuration.PREF_TELEGRAM_CHAT_ID -> {
-                value = telegramChatIdPreference!!.text
+                val value = telegramChatIdPreference!!.text
                 configuration.telegramChatId = value
                 telegramChatIdPreference!!.summary = value
             }
             Configuration.PREF_TELEGRAM_TOKEN -> {
-                value = telegramTokenPreference!!.text
+                val value = telegramTokenPreference!!.text
                 configuration.telegramToken = value
                 telegramTokenPreference!!.summary = value
             }
@@ -176,6 +186,15 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 val valueName = rotatePreference!!.entry.toString()
                 rotatePreference!!.summary = getString(R.string.preference_camera_flip_summary, valueName)
                 configuration.setCameraRotate(valueFloat)
+            }
+            Configuration.PREF_MQTT_IMAGE -> {
+                val checked = mqttImagePreference!!.isChecked
+                configuration.mqttImage = checked
+            }
+            Configuration.PREF_MQTT_IMAGE_TOPIC -> {
+                val value = mqttImageTopicPreference!!.text
+                mqttOptions!!.setCaptureTopic(value)
+                mqttImageTopicPreference!!.summary = value
             }
         }
     }

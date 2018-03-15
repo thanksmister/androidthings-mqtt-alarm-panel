@@ -102,36 +102,25 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             inactivityHandler = null
         }
         disposable.dispose()
-        releaseTemporaryWakeLock()
+        //releaseTemporaryWakeLock()
     }
 
     // These are Android Things specific settings for setting the time, display, and update manager
     private fun setSystemInformation() {
         try {
-            ScreenManager(Display.DEFAULT_DISPLAY).setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
-            ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
-            ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-            ScreenManager(Display.DEFAULT_DISPLAY).setDisplayDensity(configuration.screenDensity);
+            //FIXME ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
+            //FIXME ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+            ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+            ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setDisplayDensity(configuration.screenDensity);
 
-            TimeManager().setTimeZone(configuration.timeZone)
+            TimeManager.getInstance().setTimeZone(configuration.timeZone)
 
-            UpdateManager()
+            UpdateManager.getInstance()
                     .setPolicy(UpdatePolicy.Builder()
-                            .setPolicy(POLICY_CHECKS_ONLY)
-                            .setApplyDeadline(2, TimeUnit.DAYS)
+                            .setPolicy(POLICY_APPLY_AND_REBOOT)
+                            .setApplyDeadline(1, TimeUnit.DAYS)
                             .build())
 
-            UpdateManager()
-                    .addStatusListener { updateManagerStatus ->
-                        if (updateManagerStatus.currentState == UpdateManagerStatus.STATE_UPDATE_AVAILABLE) {
-                            AlertDialog.Builder(this@BaseActivity, R.style.CustomAlertDialog)
-                                    .setMessage(getString(R.string.text_update_available))
-                                    .setPositiveButton(android.R.string.ok, { _, _ ->
-                                        UpdateManager().performUpdateNow(POLICY_APPLY_AND_REBOOT)
-                                    })
-                                    .show()
-                        }
-                    }
         } catch (e:IllegalStateException) {
             Timber.e(e.message)
         }
@@ -144,8 +133,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         Timber.d("setScreenDefaults")
         Timber.d("screenBirghness: " + configuration.screenBrightness)
         Timber.d("setScreenOffTimeout: " + configuration.screenTimeout)
-        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+        ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+        //FIXME ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -153,19 +142,20 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      */
     fun setScreenTriggered() {
         Timber.d("setScreenTriggered")
-        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS); // 3 hours
+        ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+        //FIXME ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS); // 3 hours
     }
 
     private fun setScreenBrightness(brightness: Int) {
-        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(brightness);
-        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+        ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightness(brightness);
+        //FIXME ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
     }
 
     /**
      * Wakes the device temporarily (or always if triggered) when the alarm requires attention.
      * We should hold the wakelock the same amount of time as the screen off timeout.
      */
+    @Deprecated ("Not needed for Android Things")
     fun acquireTemporaryWakeLock() {
         Timber.d("acquireTemporaryWakeLock")
         if (wakeLock == null) {
@@ -184,6 +174,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     /**
      * Wakelock used to temporarily bring application to foreground if alarm needs attention.
      */
+    @Deprecated ("Not needed for Android Things")
     fun releaseTemporaryWakeLock() {
         if (wakeLock != null && wakeLock!!.isHeld()) {
             wakeLock!!.release()
@@ -207,7 +198,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         Timber.d("onUserInteraction")
         resetInactivityTimer()
         setScreenDefaults()
-        releaseTemporaryWakeLock()
+        //releaseTemporaryWakeLock()
     }
 
     public override fun onStop() {
@@ -216,7 +207,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
     public override fun onResume() {
         super.onResume()
-        acquireTemporaryWakeLock()
+        //acquireTemporaryWakeLock()
     }
 
     override fun onPause() {
@@ -280,7 +271,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * into foreground.
      */
     open fun handleNetworkDisconnect() {
-        acquireTemporaryWakeLock()
+        //acquireTemporaryWakeLock()
         dialogUtils.hideScreenSaverDialog()
         dialogUtils.showAlertDialogToDismiss(this@BaseActivity, getString(R.string.text_notification_network_title),
                     getString(R.string.text_notification_network_description))

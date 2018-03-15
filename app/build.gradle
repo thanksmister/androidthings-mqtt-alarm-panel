@@ -199,13 +199,18 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 ext {
-    archVersion = '1.0.0'
+    archVersion = '1.1.0'
+    archRoomVersion = '1.0.0'
     supporVersion = "27.+"
     dagger = "2.12"
     retrofit = "2.2.0"
     stetho = "1.3.1"
-    things = "0.6.1-devpreview"
+    things = "0.7-devpreview"
 }
 
 dependencies {
@@ -215,6 +220,7 @@ dependencies {
     })
 
     compile "com.android.support:appcompat-v7:${supporVersion}"
+    compile "com.android.support:gridlayout-v7:${supporVersion}"
     compile "com.android.support:support-v4:${supporVersion}"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile "com.android.support:cardview-v7:${supporVersion}"
@@ -230,13 +236,12 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
     // Android architecture
-    implementation "android.arch.lifecycle:runtime:${archVersion}"
     implementation "android.arch.lifecycle:extensions:${archVersion}"
     annotationProcessor "android.arch.lifecycle:compiler:${archVersion}"
     implementation "android.arch.lifecycle:reactivestreams:${archVersion}"
-    implementation "android.arch.persistence.room:runtime:${archVersion}"
-    kapt "android.arch.persistence.room:compiler:${archVersion}"
-    implementation "android.arch.persistence.room:rxjava2:${archVersion}"
+    implementation "android.arch.persistence.room:runtime:${archRoomVersion}"
+    kapt "android.arch.persistence.room:compiler:${archRoomVersion}"
+    implementation "android.arch.persistence.room:rxjava2:${archRoomVersion}"
 
     // MQTT
     compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
@@ -269,6 +274,9 @@ dependencies {
     compile "com.facebook.stetho:stetho:${stetho}"
     compile "com.facebook.stetho:stetho-okhttp3:${stetho}"
     compile "com.facebook.stetho:stetho-urlconnection:${stetho}"
+
+    // Home Assistant WebView
+    compile 'com.github.sjvc:Home-Assistant-WebView:master-SNAPSHOT'
 
     // Android Things
     compileOnly "com.google.android.things:androidthings:${things}"

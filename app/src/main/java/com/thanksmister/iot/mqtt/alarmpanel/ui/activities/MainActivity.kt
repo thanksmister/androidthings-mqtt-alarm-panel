@@ -30,7 +30,9 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
+import android.view.ViewGroup
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
+import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment
 import com.thanksmister.iot.mqtt.alarmpanel.BuildConfig
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.ControlsFragment
@@ -38,8 +40,10 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.MainFragment
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.PlatformFragment
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.CameraModule
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.MQTTModule
+import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.MotionSensor
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.TextToSpeechModule
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils
+import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.IMAGE_CAPTURE_STATE_TOPIC
 import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.NOTIFICATION_STATE_TOPIC
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -48,7 +52,8 @@ import timber.log.Timber
 
 
 class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFragment.OnControlsFragmentListener,
-        MQTTModule.MQTTListener, CameraModule.CallbackListener, MainFragment.OnMainFragmentListener, PlatformFragment.OnPlatformFragmentListener {
+        MQTTModule.MQTTListener, CameraModule.CallbackListener, MainFragment.OnMainFragmentListener, PlatformFragment.OnPlatformFragmentListener,
+        MotionSensor.MotionListener {
 
     private lateinit var pagerAdapter: PagerAdapter
 
@@ -58,6 +63,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     private var mBackgroundHandler: Handler? = null
     private var cameraModule: CameraModule? = null
     private var alertDialog: AlertDialog? = null
+    private var motionSensorModule: MotionSensor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,17 +128,14 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                             AlarmUtils.STATE_DISARM,
                             AlarmUtils.STATE_ARM_AWAY,
                             AlarmUtils.STATE_ARM_HOME -> {
-                                acquireTemporaryWakeLock()
                                 setScreenDefaults()
                                 resetInactivityTimer()
                             }
                             AlarmUtils.STATE_TRIGGERED -> {
-                                acquireTemporaryWakeLock()
                                 setScreenTriggered()
                                 awakenDeviceForAction()
                             }
                             AlarmUtils.STATE_PENDING -> {
-                                acquireTemporaryWakeLock()
                                 setScreenDefaults()
                                 awakenDeviceForAction()
                             }
@@ -168,8 +171,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed()
+        } else if ((pagerAdapter as MainSlidePagerAdapter).getCurrentFragment()!!.onBackPressed()){
+            // backpress handled by fragment do nothing
         } else {
-            // Otherwise, select the previous step.
+            // Otherwise, if back key press is not handled by fragment, select the previous step.
             view_pager.currentItem = view_pager.currentItem - 1
         }
     }
@@ -180,6 +185,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun navigatePlatformPanel() {
         view_pager.currentItem = 1
+    }
+
+    override fun setPagingEnabled(value: Boolean) {
+        view_pager.setPagingEnabled(value)
     }
 
     private fun setViewPagerState() {
@@ -230,6 +239,11 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
             runOnUiThread({
                 lifecycle.addObserver(cameraModule!!)
             })
+        }
+
+        if (motionSensorModule == null) {
+            motionSensorModule = MotionSensor(this, MotionSensor.MOTION_SENSOR_GPIO_PIN)
+            lifecycle.addObserver(motionSensorModule!!)
         }
     }
 
@@ -284,6 +298,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                     textToSpeechModule!!.speakText(payload)
                 }
             })
+        } else if(IMAGE_CAPTURE_STATE_TOPIC == topic) {
+            this@MainActivity.runOnUiThread({
+                captureImage()
+            })
         }
         disposable.add(viewModel.insertMessage(id, topic, payload)
                 .subscribeOn(Schedulers.io())
@@ -331,7 +349,19 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         showScreenSaver()
     }
 
+    override fun onMotionDetected() {
+        Timber.d("onMotionDetected")
+        setScreenDefaults()
+        stopDisconnectTimer() // stop screen saver mode
+    }
+
+    override fun onMotionStopped() {
+        Timber.d("onMotionStopped")
+    }
+
     private inner class MainSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+        private var currentFragment : BaseFragment? = null
+
         override fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> return MainFragment.newInstance()
@@ -342,5 +372,15 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         override fun getCount(): Int {
             return 2
         }
+
+        override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
+            super.setPrimaryItem(container, position, `object`)
+
+            if (currentFragment != `object`){
+                currentFragment = `object` as BaseFragment
+            }
+        }
+
+        fun getCurrentFragment() = currentFragment
     }
 }

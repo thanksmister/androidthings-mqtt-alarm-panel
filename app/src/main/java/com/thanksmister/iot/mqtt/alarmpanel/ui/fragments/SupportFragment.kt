@@ -22,6 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import com.baviux.homeassistant.HassWebView
 import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
@@ -31,8 +32,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class SupportFragment : BaseFragment(){
-
-    private val SUPPORT_URL:String = "https://thanksmister.com/androidthings-mqtt-alarm-panel/"
 
     @Inject lateinit var configuration: Configuration
     @Inject lateinit var dialogUtils: DialogUtils
@@ -52,10 +51,8 @@ class SupportFragment : BaseFragment(){
     }
 
     private fun loadWebPage() {
-        val settings = webView.getSettings()
-        settings.setJavaScriptEnabled(true)
-        Timber.d("load web url: " + SUPPORT_URL)
-        webView.webChromeClient = PlatformWebViewClient()
+        webView.setAdjustBackKeyBehavior(true)
+        webView.setHideAdminMenuItems(false)
         webView.loadUrl(SUPPORT_URL)
     }
 
@@ -67,20 +64,8 @@ class SupportFragment : BaseFragment(){
         super.onDetach()
     }
 
-    private inner class PlatformWebViewClient : WebChromeClient() {
-        override fun onProgressChanged(view: WebView?, newProgress: Int) {
-            super.onProgressChanged(view, newProgress)
-            if(newProgress == 100 && parentFragment != null) {
-                // na-da
-            }
-        }
-    }
-
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         */
+        const val SUPPORT_URL:String = "https://thanksmister.com/androidthings-mqtt-alarm-panel/"
         fun newInstance(): SupportFragment {
             return SupportFragment()
         }

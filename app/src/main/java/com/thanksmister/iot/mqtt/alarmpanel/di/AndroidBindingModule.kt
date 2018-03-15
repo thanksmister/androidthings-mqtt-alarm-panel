@@ -66,6 +66,9 @@ internal abstract class AndroidBindingModule {
     internal abstract fun mainFragment(): MainFragment
 
     @ContributesAndroidInjector
+    internal abstract fun settingsFragment(): SettingsFragment
+
+    @ContributesAndroidInjector
     internal abstract fun platformFragment(): PlatformFragment
 
     @ContributesAndroidInjector

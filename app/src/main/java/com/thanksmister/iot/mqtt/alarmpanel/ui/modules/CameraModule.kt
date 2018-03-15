@@ -18,6 +18,10 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import timber.log.Timber
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
+import android.util.Rational
+
 
 /**
  * Module to take photo and email when alarm is disabled if camera available.
@@ -29,6 +33,7 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
     private var mCaptureSession: CameraCaptureSession? = null
     private var hasCamera:Boolean = false
     private var rotation:Float = 0f
+    private var cameraId:String? = null
 
     interface CallbackListener {
         fun onCameraComplete(bitmap: Bitmap)
@@ -54,13 +59,13 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
             return
         }
 
-        val id = camIds[0]
+        cameraId = camIds[0]
         mImageReader = ImageReader.newInstance(IMAGE_WIDTH, IMAGE_HEIGHT,
                 ImageFormat.JPEG, MAX_IMAGES)
 
         mImageReader?.setOnImageAvailableListener(imageAvailableListener, backgroundHandler)
         try {
-            manager.openCamera(id, mStateCallback, backgroundHandler)
+            manager.openCamera(cameraId, mStateCallback, backgroundHandler)
             hasCamera = true;
         } catch (cae: Exception) {
             Timber.d("Camera access exception"  + cae)
@@ -95,7 +100,6 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
     private fun getBitmapFromByteArray(imageBytes: ByteArray): Bitmap {
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         val matrix = Matrix()
-        //For some reason the bitmap is rotated the incorrect way
         matrix.postRotate(rotation)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }

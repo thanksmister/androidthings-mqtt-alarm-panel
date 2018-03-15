@@ -61,7 +61,7 @@ class SupportActivity : BaseActivity() {
             supportActionBar!!.show()
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             supportActionBar!!.setDisplayShowHomeEnabled(true)
-            //supportActionBar!!.setTitle(R.string.menu_item_help)
+            supportActionBar!!.setTitle(R.string.menu_item_help)
             actionBar = supportActionBar
         }
 

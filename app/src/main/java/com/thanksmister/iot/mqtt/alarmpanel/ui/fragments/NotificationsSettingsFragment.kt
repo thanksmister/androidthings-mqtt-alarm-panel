@@ -100,11 +100,6 @@ class NotificationsSettingsFragment : PreferenceFragmentCompat(), SharedPreferen
             topicPreference!!.text = mqttOptions!!.getNotificationTopic()
             topicPreference!!.summary = mqttOptions!!.getNotificationTopic()
         }
-
-        topicPreference!!.isEnabled = configuration.hasNotifications()
-        alertsPreference!!.isEnabled = configuration.hasNotifications()
-        tssPreference!!.isEnabled = configuration.hasNotifications()
-        descriptionPreference!!.isEnabled = configuration.hasNotifications()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
@@ -122,10 +117,6 @@ class NotificationsSettingsFragment : PreferenceFragmentCompat(), SharedPreferen
             Configuration.PREF_MODULE_NOTIFICATION -> {
                 val checked = notificationsPreference!!.isChecked
                 configuration.setHasNotifications(checked)
-                topicPreference!!.isEnabled = checked
-                descriptionPreference!!.isEnabled = checked
-                tssPreference!!.isEnabled = checked
-                alertsPreference!!.isEnabled = checked
             }
             Configuration.PREF_MODULE_TSS -> {
                 val tss = tssPreference!!.isChecked

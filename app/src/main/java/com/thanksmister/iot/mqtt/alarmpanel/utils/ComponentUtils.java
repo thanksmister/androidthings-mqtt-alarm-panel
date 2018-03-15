@@ -29,7 +29,9 @@ import java.util.List;
 public class ComponentUtils {
 
     public static final String NOTIFICATION_STATE_TOPIC = "home/notification";
+    public static final String IMAGE_CAPTURE_STATE_TOPIC = "home/capture";
     public static final String NOTIFICATION_TYPE = "NOTIFICATION";
+    public static final String IMAGE_CAPTURE_TYPE = "CAPTURE";
 
     public ComponentUtils(){
     }

@@ -29,13 +29,11 @@
 
         <CheckBoxPreference
             android:key="pref_module_tss"
-            android:enabled="false"
             android:summary="@string/preference_summary_tts"
             android:title="@string/preference_tts" />
 
         <CheckBoxPreference
             android:key="pref_module_alerts"
-            android:enabled="false"
             android:summary="@string/preference_summary_alert"
             android:title="@string/preference_summary_alert" />
 
@@ -48,13 +46,11 @@
             android:negativeButtonText="@android:string/cancel"
             android:positiveButtonText="@android:string/ok"
             android:summary="home/notification"
-            android:enabled="false"
             android:title="@string/preference_tts_topic_title" />
 
         <Preference
             android:key="pref_description"
             android:selectable="false"
-            android:enabled="false"
             android:summary="@string/preference_tts_topic_summary" />
 
     </PreferenceCategory>

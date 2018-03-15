@@ -173,7 +173,7 @@
     <string name="text_license_information">License information</string>
     <string name="text_github_code">GitHub code</string>
     <string name="text_about">About</string>
-    <string name="text_alarm_settings">Device Settings</string>
+    <string name="text_device_settings">Device Settings</string>
     <string name="text_mqtt_settings">MQTT Settings</string>
     <string name="notification_channel_name">Entry Detection / Alarm Triggered</string>
     <string name="text_channel_description">Alarm Panel Notifications</string>
@@ -242,6 +242,11 @@
     <string name="pref_camera_send_image_notes">You can use Telegram, Mailgun, or both to send captured images.</string>
     <string name="menu_item_help">Help</string>
     <string name="error_mailgun_credentials">There was an problem mailing the image, please check your Mailgun credentials.</string>
+    <string name="pref_hass_settings">Home Assistant Settings</string>
+    <string name="pref_hide_menu_title">Hide Menu</string>
+    <string name="pref_hide_menu_summary">Hides the administrator menu items.</string>
+    <string name="pref_back_behavior_title">Override Back Behavior</string>
+    <string name="pref_back_behavior_summary">Android button behaves like browser back button.</string>
 
     <string-array name="inactivity_times">
         <item>15 seconds</item>

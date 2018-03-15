@@ -34,6 +34,23 @@
             android:entries="@array/flip_directions"
             android:entryValues="@array/flip_values"/>
 
+        <CheckBoxPreference
+            android:key="pref_mqtt_image"
+            android:summary="Capture an image when a specific MQTT message is received."
+            android:title="MQTT Image Capture"/>
+
+        <EditTextPreference
+            android:key="pref_mqtt_image_topic"
+            android:negativeButtonText="@android:string/cancel"
+            android:positiveButtonText="@android:string/ok"
+            android:summary="home/capture"
+            android:title="Set Image Capture Topic"/>
+
+        <Preference
+            android:key="pref_description"
+            android:selectable="false"
+            android:summary="Example format for the message topic: {'topic':'home/capture', 'payload':'capture image'}" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/preference_mail_title">
