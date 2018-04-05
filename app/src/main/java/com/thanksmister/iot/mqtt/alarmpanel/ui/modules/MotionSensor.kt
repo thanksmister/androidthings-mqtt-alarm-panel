@@ -21,15 +21,14 @@ import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.GpioCallback
-import com.google.android.things.pio.PeripheralManager
+import com.google.android.things.pio.PeripheralManagerService
 
 /**
- * Original code from https://github.com/riggaroo/android-things-motion-camera
  * Modified by Michael Ritchie 2018
  */
 class MotionSensor(private val motionListener: MotionListener, motionSensorPinNumber: String) : LifecycleObserver {
 
-    private val motionSensorGpioPin: Gpio = PeripheralManager.getInstance().openGpio(motionSensorPinNumber)
+    private val motionSensorGpioPin: Gpio = PeripheralManagerService().openGpio(motionSensorPinNumber)
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun start() {
@@ -37,23 +36,28 @@ class MotionSensor(private val motionListener: MotionListener, motionSensorPinNu
         motionSensorGpioPin.setDirection(Gpio.DIRECTION_IN)
         //High voltage means movement has been detected
         motionSensorGpioPin.setActiveType(Gpio.ACTIVE_HIGH)
-        //The trigger we want to receive both low and high triggers so EDGE_BOTH
+        //We don't want to receive both low and high triggers so EDGE_RISING
         motionSensorGpioPin.setEdgeTriggerType(Gpio.EDGE_BOTH)
-        motionSensorGpioPin.registerGpioCallback { gpio ->
-            gpio?.let {
+        motionSensorGpioPin.registerGpioCallback(gpiCallback)
+    }
+
+    private val gpiCallback = object : GpioCallback() {
+        override fun onGpioEdge(gpio: Gpio?): Boolean {
+            if (gpio != null) {
                 if (gpio.value) {
                     motionListener.onMotionDetected()
                 } else {
                     motionListener.onMotionStopped()
                 }
             }
-            true
+            return true
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun stop() {
         motionSensorGpioPin.close()
+        motionSensorGpioPin.unregisterGpioCallback(gpiCallback)
     }
 
     interface MotionListener {

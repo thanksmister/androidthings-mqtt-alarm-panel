@@ -250,6 +250,14 @@
     <string name="pref_hide_menu_summary">Oculta los elementos del menú de administrador.</string>
     <string name="pref_back_behavior_title">Modificar el comportamiento del botón volver</string>
     <string name="pref_back_behavior_summary">El botón volver de Android se comporta como el botón de retroceso del navegador.</string>
+    <string name="pref_display_settings">Configuración de pantalla</string>
+    <string name="pref_wifi_settings">Configuración de la red</string>
+    <string name="dialog_network_name">Nombre de red</string>
+    <string name="dialog_network_password">Contraseña de red</string>
+    <string name="pref_wifi_settings_title">Conectar la red</string>
+    <string name="pref_wifi_settings_summary">Ingrese su nombre de red y contraseña para conectar el dispositivo a WiFi.</string>
+    <string name="pref_wifi_settings_summary_filled">%1$s Actualmente conectado a %2$s.</string>
+    <string name="toast_network_settings_unchanged">Configuración de red sin cambios...</string>
 
     <string-array name="inactivity_times">
         <item>15 segundos</item>

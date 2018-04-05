@@ -192,7 +192,7 @@ ext {
     dagger = "2.12"
     retrofit = "2.2.0"
     stetho = "1.3.1"
-    things = "0.7-devpreview"
+    things = "0.6.1-devpreview"
 }
 
 dependencies {

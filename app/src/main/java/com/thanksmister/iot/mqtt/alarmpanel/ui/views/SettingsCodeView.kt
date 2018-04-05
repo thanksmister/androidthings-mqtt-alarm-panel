@@ -19,6 +19,7 @@
 package com.thanksmister.iot.mqtt.alarmpanel.ui.views
 
 import android.content.Context
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.View
 
@@ -50,8 +51,6 @@ class SettingsCodeView : BaseAlarmView {
     override fun onFinishInflate() {
         super.onFinishInflate()
         settings_code_title.setText(R.string.text_settings_code_title)
-        buttonDel.isEnabled = false
-        buttonDel.visibility = View.INVISIBLE
     }
 
     fun setListener(listener: ViewListener) {
@@ -64,6 +63,7 @@ class SettingsCodeView : BaseAlarmView {
         }
         codeComplete = false
         enteredCode = ""
+        showFilledPins(0)
     }
 
     override fun onDetachedFromWindow() {
@@ -80,7 +80,8 @@ class SettingsCodeView : BaseAlarmView {
         if (codeComplete)
             return
 
-        enteredCode = enteredCode + code
+        enteredCode += code
+        showFilledPins(enteredCode.length)
 
         if (enteredCode.length == BaseAlarmView.Companion.MAX_CODE_LENGTH) {
             codeComplete = true
@@ -88,7 +89,13 @@ class SettingsCodeView : BaseAlarmView {
         }
     }
 
-    override fun removePinCode() {}
+    override fun removePinCode() {
+        if (codeComplete) return
+        if (!TextUtils.isEmpty(enteredCode)) {
+            enteredCode = enteredCode.substring(0, enteredCode.length - 1)
+            showFilledPins(enteredCode.length)
+        }
+    }
 
     private fun validateCode(validateCode: String) {
         val codeInt = Integer.parseInt(validateCode)

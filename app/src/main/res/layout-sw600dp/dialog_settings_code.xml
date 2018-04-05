@@ -36,10 +36,9 @@
             android:layout_height="match_parent"/>
 
     <RelativeLayout
-            android:layout_width="320dp"
-            android:paddingTop="16dp"
-            android:layout_height="360dp"
-            android:orientation="vertical">
+        android:layout_width="320dp"
+        android:paddingTop="16dp"
+        android:layout_height="360dp">
 
         <TextView
                 android:id="@+id/settings_code_title"
@@ -50,6 +49,50 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 tools:text="Please enter the new alarm code."/>
+
+        <LinearLayout
+            android:id="@+id/imageLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:padding="12dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:tint="@color/dark_gray"
+                android:id="@+id/pinCode1"
+                android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
+
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:tint="@color/dark_gray"
+                android:id="@+id/pinCode2"
+                android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:tint="@color/dark_gray"
+                android:id="@+id/pinCode3"
+                android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:tint="@color/dark_gray"
+                android:id="@+id/pinCode4"
+                android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

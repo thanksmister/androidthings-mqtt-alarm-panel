@@ -18,40 +18,88 @@
   -->
 
 <com.thanksmister.iot.mqtt.alarmpanel.ui.views.SettingsCodeView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/settingsCodeView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        android:orientation="horizontal">
-    
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingsCodeView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="16dp"
+    android:orientation="horizontal">
+
     <include layout="@layout/view_keypad"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_weight="2"/>
-    
+        android:layout_width="280dp"
+        android:layout_height="360dp"/>
+
     <android.support.v4.widget.Space
-            android:layout_width="8dp"
-            android:layout_height="match_parent"/>
-    
+        android:layout_width="8dp"
+        android:layout_height="match_parent"/>
+
+
     <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="16dp"
-            android:layout_weight="3">
+        android:layout_width="280dp"
+        android:paddingTop="16dp"
+        android:layout_height="360dp"
+        android:orientation="vertical">
+
+
 
         <TextView
-                android:id="@+id/settings_code_title"
-                style="@style/WizardPageTitle"
-                android:textSize="18sp"
-                android:textAllCaps="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                tools:text="To access this area, please enter your code."/>
+            android:id="@+id/settings_code_title"
+            style="@style/WizardPageTitle"
+            android:textSize="18sp"
+            android:textAllCaps="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:text="Please enter the new alarm code."/>
+
+
+        <LinearLayout
+            android:id="@+id/imageLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:padding="12dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:tint="@color/dark_gray"
+                android:id="@+id/pinCode1"
+                android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
+
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:tint="@color/dark_gray"
+                android:id="@+id/pinCode2"
+                android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:tint="@color/dark_gray"
+                android:id="@+id/pinCode3"
+                android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:tint="@color/dark_gray"
+                android:id="@+id/pinCode4"
+                android:src="@drawable/ic_radio_button_unchecked_black_32dp"/>
+
+        </LinearLayout>
 
     </RelativeLayout>
-    
+
 </com.thanksmister.iot.mqtt.alarmpanel.ui.views.SettingsCodeView>

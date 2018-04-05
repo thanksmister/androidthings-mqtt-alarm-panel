@@ -31,6 +31,15 @@ import javax.inject.Inject
 class Configuration @Inject
 constructor(private val sharedPreferences: DPreference) {
 
+    var networkId: String?
+        get() = this.sharedPreferences.getPrefString(PREF_NETWORK_ID, null)
+        set(value) = this.sharedPreferences.setPrefString(PREF_NETWORK_ID, value)
+
+    var networkPassword: String?
+        get() = this.sharedPreferences.getPrefString(PREF_NETWORK_PASSWORD, null)
+        set(value) = this.sharedPreferences.setPrefString(PREF_NETWORK_PASSWORD, value)
+
+
     var webUrl: String?
         get() = this.sharedPreferences.getPrefString(PREF_WEB_URL, null)
         set(value) = this.sharedPreferences.setPrefString(PREF_WEB_URL, value)
@@ -280,6 +289,8 @@ constructor(private val sharedPreferences: DPreference) {
         sharedPreferences.removePreference(PREF_PLATFORM_BACK_BEHAVIOR)
         sharedPreferences.removePreference(PREF_PLATFORM_ADMIN_MENU)
         sharedPreferences.removePreference(PREF_MQTT_IMAGE)
+        sharedPreferences.removePreference(PREF_NETWORK_ID)
+        sharedPreferences.removePreference(PREF_NETWORK_PASSWORD)
     }
 
     companion object {
@@ -313,7 +324,7 @@ constructor(private val sharedPreferences: DPreference) {
         const  val PREF_MODULE_WEATHER = "pref_module_weather"
         const val PREF_MODULE_WEB = "pref_module_web"
         const val PREF_WEB_URL = "pref_web_url"
-        private val PREF_FIRST_TIME = "pref_first_time"
+        const val PREF_FIRST_TIME = "pref_first_time"
         const val PREF_DEVICE_TIME_SERVER = "pref_device_time_server"
         const val PREF_DEVICE_TIME_FORMAT = "pref_device_time_format"
         const val PREF_DEVICE_TIME = "pref_device_time"
@@ -327,5 +338,7 @@ constructor(private val sharedPreferences: DPreference) {
         const val PREF_TELEGRAM_TOKEN = "pref_telegram_token"
         const val PREF_MQTT_IMAGE = "pref_mqtt_image"
         const val PREF_MQTT_IMAGE_TOPIC = "pref_mqtt_image_topic"
+        const val PREF_NETWORK_ID = "pref_network_id"
+        const val PREF_NETWORK_PASSWORD = "pref_network_pass"
     }
 }

@@ -21,11 +21,16 @@ package com.thanksmister.iot.mqtt.alarmpanel
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.wifi.WifiConfiguration
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
-import android.support.v7.app.AlertDialog
+import android.text.TextUtils
 import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
@@ -34,8 +39,6 @@ import com.google.android.things.device.ScreenManager
 import com.google.android.things.device.TimeManager
 import com.google.android.things.update.UpdateManager
 import com.google.android.things.update.UpdateManager.POLICY_APPLY_AND_REBOOT
-import com.google.android.things.update.UpdateManager.POLICY_CHECKS_ONLY
-import com.google.android.things.update.UpdateManagerStatus
 import com.google.android.things.update.UpdatePolicy
 import com.thanksmister.iot.mqtt.alarmpanel.managers.ConnectionLiveData
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
@@ -65,6 +68,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     private var hasNetwork = AtomicBoolean(true)
     val disposable = CompositeDisposable()
     private var connectionLiveData: ConnectionLiveData? = null
+    private var wifiManager: WifiManager? = null
+
 
     abstract fun getLayoutId(): Int
 
@@ -77,6 +82,13 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(getLayoutId())
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MessageViewModel::class.java)
+
+        Timber.d("Network SSID: " + configuration.networkId)
+        Timber.d("Network Password: " + configuration.networkPassword)
+
+        if( !TextUtils.isEmpty(configuration.networkId) && !TextUtils.isEmpty(configuration.networkPassword)) {
+            connectNetwork(configuration.networkId, configuration.networkPassword )
+        }
     }
 
     override fun onStart(){
@@ -84,15 +96,20 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         // These are Android Things specific settings for setting the time, display, and update manager
         val handler = Handler()
         handler.postDelayed({ setSystemInformation() }, 1000)
+        application.registerReceiver(wifiConnectionReceiver, intentFilterForWifiConnectionReceiver)
+    }
 
-        connectionLiveData = ConnectionLiveData(this)
-        connectionLiveData?.observe(this, Observer { connected ->
-            if(connected!!) {
-                handleNetworkConnect()
-            } else {
-                handleNetworkDisconnect()
-            }
-        })
+    public override fun onStop() {
+        super.onStop()
+        application.unregisterReceiver(wifiConnectionReceiver)
+    }
+
+    public override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
     }
 
     override fun onDestroy() {
@@ -108,14 +125,14 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     // These are Android Things specific settings for setting the time, display, and update manager
     private fun setSystemInformation() {
         try {
-            //FIXME ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
-            //FIXME ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
-            ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-            ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setDisplayDensity(configuration.screenDensity);
+            ScreenManager(Display.DEFAULT_DISPLAY).setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
+            ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+            ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+            ScreenManager(Display.DEFAULT_DISPLAY).setDisplayDensity(configuration.screenDensity);
 
-            TimeManager.getInstance().setTimeZone(configuration.timeZone)
+            TimeManager().setTimeZone(configuration.timeZone)
 
-            UpdateManager.getInstance()
+            UpdateManager()
                     .setPolicy(UpdatePolicy.Builder()
                             .setPolicy(POLICY_APPLY_AND_REBOOT)
                             .setApplyDeadline(1, TimeUnit.DAYS)
@@ -124,6 +141,15 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         } catch (e:IllegalStateException) {
             Timber.e(e.message)
         }
+
+        connectionLiveData = ConnectionLiveData(this)
+        connectionLiveData?.observe(this, Observer { connected ->
+            if(connected!!) {
+                handleNetworkConnect()
+            } else {
+                handleNetworkDisconnect()
+            }
+        })
     }
 
     /**
@@ -133,8 +159,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         Timber.d("setScreenDefaults")
         Timber.d("screenBirghness: " + configuration.screenBrightness)
         Timber.d("setScreenOffTimeout: " + configuration.screenTimeout)
-        ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-        //FIXME ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -142,13 +168,13 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      */
     fun setScreenTriggered() {
         Timber.d("setScreenTriggered")
-        ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-        //FIXME ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS); // 3 hours
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
+        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS); // 3 hours
     }
 
     private fun setScreenBrightness(brightness: Int) {
-        ScreenManager.getInstance(Display.DEFAULT_DISPLAY).setBrightness(brightness);
-        //FIXME ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(brightness);
+        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -199,19 +225,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         resetInactivityTimer()
         setScreenDefaults()
         //releaseTemporaryWakeLock()
-    }
-
-    public override fun onStop() {
-        super.onStop()
-    }
-
-    public override fun onResume() {
-        super.onResume()
-        //acquireTemporaryWakeLock()
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     fun readMqttOptions(): MQTTOptions {
@@ -289,5 +302,74 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
     open fun hasNetworkConnectivity(): Boolean {
         return hasNetwork.get()
+    }
+
+    open fun connectNetwork(networkSSID: String?, networkPassword: String?) {
+        Timber.d("connectNetwork")
+
+        wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager;
+        if (!wifiManager!!.isWifiEnabled) {
+            wifiManager!!.isWifiEnabled = true
+        }
+
+        // don't connect if the currently connected network is the same
+        val wifiInfo = wifiManager!!.connectionInfo
+        if(wifiInfo.ssid == networkSSID) {
+            return
+        }
+
+        Timber.d("WiFi connectToWifi")
+        val conf = WifiConfiguration()
+        conf.SSID = String.format("\"%s\"", networkSSID);
+        conf.preSharedKey = String.format("\"%s\"", networkPassword);
+        conf.status = WifiConfiguration.Status.ENABLED;
+
+        var networkId = wifiManager!!.addNetwork(conf)
+        if(networkId == -1) {
+            networkId = getNetworkId(networkSSID)
+        }
+
+        wifiManager!!.disconnect()
+        wifiManager!!.enableNetwork(networkId, true)
+        wifiManager!!.reconnect()
+    }
+
+    private fun getNetworkId(networkSSID: String?): Int {
+        val list = wifiManager!!.configuredNetworks
+        for (i in list) {
+            if (i.SSID != null && i.SSID == "\"" + networkSSID + "\"") {
+                return i.networkId
+            }
+        }
+        return -1
+    }
+
+    private val intentFilterForWifiConnectionReceiver: IntentFilter
+        get() {
+            val randomIntentFilter = IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION)
+            randomIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
+            randomIntentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)
+            return randomIntentFilter
+        }
+
+    private val wifiConnectionReceiver = object : BroadcastReceiver() {
+        override fun onReceive(c: Context, intent: Intent) {
+            val action = intent.action
+            if (!TextUtils.isEmpty(action)) {
+                when (action) {
+                    WifiManager.WIFI_STATE_CHANGED_ACTION,
+                    WifiManager.SUPPLICANT_STATE_CHANGED_ACTION -> {
+                        val wifiInfo = wifiManager?.connectionInfo
+                        var wirelessNetworkName = wifiInfo?.ssid
+                        wirelessNetworkName = wirelessNetworkName?.replace("\"", "");
+                        if(configuration.networkId == wirelessNetworkName) {
+                            Timber.d("WiFi connected to " + configuration.networkId)
+                        } else {
+                            Timber.d("WiFi not connected to " + configuration.networkId)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -64,7 +64,7 @@ class AlarmSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSh
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey : String?) {
-        addPreferencesFromResource(R.xml.alarm_preferences)
+        addPreferencesFromResource(R.xml.preferences_alarm)
         lifecycle.addObserver(dialogUtils)
     }
 

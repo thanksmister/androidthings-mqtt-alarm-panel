@@ -14,10 +14,18 @@
   ~ limitations under the License.
   -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:tools="http://schemas.android.com/tools"
                   android:id="@+id/preferenceView">
 
-    <PreferenceCategory android:title="Display Settings">
+    <PreferenceCategory android:title="@string/pref_wifi_settings">
+
+        <Preference
+            android:key="pref_wifi_settings"
+            android:title="@string/pref_wifi_settings_title"
+            android:summary="@string/pref_wifi_settings_summary"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_display_settings">
 
         <ListPreference
             android:key="pref_device_timeout"

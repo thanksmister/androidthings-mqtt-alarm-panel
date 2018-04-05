@@ -38,8 +38,8 @@ class AboutFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_about, container, false)
     }
 
-    override fun onViewCreated(fragmentView: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(fragmentView, savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         try {
             val packageInfo = activity!!.packageManager.getPackageInfo(activity!!.packageName, 0)
@@ -56,10 +56,6 @@ class AboutFragment : BaseFragment() {
     }
 
     companion object {
-        val GOOGLE_PLAY_RATING = "com.thanksmister.iot.mqtt.alarmpanel"
-        val GITHUB_URL = "https://github.com/thanksmister/android-mqtt-alarm-panel"
-        val EMAIL_ADDRESS = "mister@thanksmister.com"
-
         fun newInstance(): AboutFragment {
             return AboutFragment()
         }

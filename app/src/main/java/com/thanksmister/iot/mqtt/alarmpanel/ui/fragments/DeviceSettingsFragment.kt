@@ -18,8 +18,9 @@ package com.thanksmister.iot.mqtt.alarmpanel.ui.fragments
 
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.Context.WIFI_SERVICE
 import android.content.SharedPreferences
-import android.os.Build
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.v14.preference.SwitchPreference
 import android.support.v7.preference.EditTextPreference
@@ -33,19 +34,20 @@ import android.view.View
 import android.widget.Toast
 import com.google.android.things.device.ScreenManager
 import com.google.android.things.device.TimeManager
+import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_BRIGHTNESS
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_DENSITY
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_SCREEN_TIMEOUT
-import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_FORMAT
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_SERVER
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_DEVICE_TIME_ZONE
+import com.thanksmister.iot.mqtt.alarmpanel.ui.views.NetworkSettingsView
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
+import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
 import dagger.android.support.AndroidSupportInjection
 import timber.log.Timber
-import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -54,16 +56,20 @@ import javax.inject.Inject
 class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject lateinit var configuration: Configuration
+    @Inject lateinit var dialogUtils: DialogUtils
+
+    private var wifiManager: WifiManager? = null
 
     private var serverPreference: SwitchPreference? = null
     private var formatPreference: SwitchPreference? = null
     private var resetPreference: Preference? = null
+    private var networkPreference: Preference? = null
     private var densityPreference: EditTextPreference? = null
     private var brightnessPreference: EditTextPreference? = null
     private var timeZonePreference: ListPreference? = null
     private var screenTimeoutPreference: ListPreference? = null
-    private val timeManager = TimeManager.getInstance()
-    private val screenManager = ScreenManager.getInstance(Display.DEFAULT_DISPLAY)
+    private val timeManager = TimeManager()
+    private val screenManager = ScreenManager(Display.DEFAULT_DISPLAY)
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -96,6 +102,13 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
         super.onViewCreated(view, savedInstanceState)
 
+        networkPreference = findPreference("pref_wifi_settings") as Preference
+        networkPreference!!.isPersistent = false
+        networkPreference!!.onPreferenceClickListener = OnPreferenceClickListener {
+            showNetworkDialog()
+            true
+        }
+
         resetPreference = findPreference("pref_device_reset") as Preference
         resetPreference!!.isPersistent = false
         resetPreference!!.onPreferenceClickListener = OnPreferenceClickListener {
@@ -117,6 +130,12 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             showTimePicker();
             true
         }*/
+
+        val currentNetworkName = getCurrentNetworkName()
+        if(!TextUtils.isEmpty(currentNetworkName)) {
+            val prefix = getString(R.string.pref_wifi_settings_summary)
+            networkPreference?.summary = getString(R.string.pref_wifi_settings_summary_filled, prefix, currentNetworkName)
+        }
 
         timeZonePreference = findPreference(PREF_DEVICE_TIME_ZONE) as ListPreference
         timeZonePreference!!.setDefaultValue(configuration.timeZone)
@@ -236,7 +255,7 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             PREF_DEVICE_SCREEN_TIMEOUT -> {
                 val timeout = screenTimeoutPreference!!.value.toLong()
                 configuration.screenTimeout = timeout
-                // FIXME screenManager.setScreenOffTimeout(timeout, TimeUnit.MILLISECONDS)
+                //screenManager.setScreenOffTimeout(timeout, TimeUnit.MILLISECONDS)
                 if (configuration.screenTimeout < DateUtils.SECONDS_VALUE) {
                     screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_seconds_summary,
                             DateUtils.convertInactivityTime(configuration.screenTimeout))
@@ -246,9 +265,43 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                 } else {
                     screenTimeoutPreference!!.summary = getString(R.string.pref_device_timeout_minutes_summary,
                             DateUtils.convertInactivityTime(configuration.screenTimeout))
-
                 }
             }
         }
+    }
+
+    private fun showNetworkDialog() {
+        val networkId: String? = configuration.networkId
+        val networkPass: String? = configuration.networkPassword
+        if (isAdded) {
+            dialogUtils.showNetworkSettingsDialog(activity as BaseActivity, networkId, networkPass, object: NetworkSettingsView.ViewListener {
+                override fun onCancel() {
+                    // na-da
+                }
+                override fun onComplete(id: String, pass: String) {
+                    if(!TextUtils.isEmpty(id) && !TextUtils.isEmpty(pass) ) {
+                        if(networkId.equals(id) && networkPass.equals(pass) ) {
+                            Toast.makeText(activity, getString(R.string.toast_network_settings_unchanged), Toast.LENGTH_LONG).show()
+                        } else {
+                            configuration.networkId = id
+                            configuration.networkPassword = pass
+                        }
+                    } else {
+                        Toast.makeText(activity, R.string.text_error_blank_entry, Toast.LENGTH_LONG).show()
+                    }
+                }
+            })
+        }
+    }
+
+    /**
+     * Get the current network name.
+     */
+    private fun getCurrentNetworkName(): String? {
+        wifiManager = context!!.getSystemService(WIFI_SERVICE) as WifiManager;
+        val wifiInfo = wifiManager?.connectionInfo
+        val wirelessNetworkName = wifiInfo?.ssid
+        val name = wirelessNetworkName?.replace("\"", "");
+        return name
     }
 }

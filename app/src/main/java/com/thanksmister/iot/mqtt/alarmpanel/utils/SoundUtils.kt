@@ -2,6 +2,7 @@ package com.thanksmister.iot.mqtt.alarmpanel.utils
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.HandlerThread
@@ -22,6 +23,9 @@ class SoundUtils(base: Context) : ContextWrapper(base) {
         Timber.d("init")
         soundThread.start();
         soundHandler = Handler(soundThread.looper);
+
+        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0)
     }
 
     fun destroyBuzzer() {

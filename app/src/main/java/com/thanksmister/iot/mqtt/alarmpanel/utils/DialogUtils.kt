@@ -28,24 +28,21 @@ import android.content.DialogInterface
 import android.graphics.Rect
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.text.Html
+import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
-import android.view.Window
 import android.view.WindowManager
 import android.widget.TextView
 
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.network.ImageOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.model.Daily
-import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmCodeView
-import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmDisableView
-import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ArmOptionsView
-import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ExtendedForecastView
-import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ScreenSaverView
-import com.thanksmister.iot.mqtt.alarmpanel.ui.views.SettingsCodeView
+import com.thanksmister.iot.mqtt.alarmpanel.ui.views.*
 import timber.log.Timber
+import android.widget.EditText
+
+
 
 /**
  * Dialog utils
@@ -179,6 +176,32 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         settingsCodeView.setCode(code)
         settingsCodeView.setListener(listener)
         dialog = buildImmersiveDialog(activity, true, view, false)
+    }
+
+    fun showNetworkSettingsDialog(context: Context, name: String?, password: String?, listener: NetworkSettingsView.ViewListener) : AlertDialog {
+        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val view = inflater.inflate(R.layout.dialog_network_settings, null, false)
+        val dialogView = view.findViewById<NetworkSettingsView>(R.id.networkSettingsView)
+        val networkNameText = dialogView.findViewById(R.id.networkNameText) as EditText
+        val networkPassText = dialogView.findViewById(R.id.networkPassText) as EditText
+        networkNameText.setText(name)
+        networkPassText.setText(password)
+        val dialog = AlertDialog.Builder(context)
+        dialog.setTitle("Network Settings")
+        dialog.setView(view)
+        dialog.setPositiveButton(android.R.string.ok) { _, _ ->
+            val networkName = networkNameText.text.toString()
+            val networkPass = networkPassText.text.toString()
+            if(!TextUtils.isEmpty(networkName) && !TextUtils.isEmpty(networkPass)) {
+                listener.onComplete(networkName, networkPass)
+            } else {
+                Timber.d("Empty values")
+            }
+        }
+        dialog.setNegativeButton(android.R.string.cancel) { _, _ ->
+            listener.onCancel()
+        }
+        return dialog.show()
     }
 
     fun showCodeDialog(activity: AppCompatActivity, confirmCode: Boolean, listener: AlarmCodeView.ViewListener,

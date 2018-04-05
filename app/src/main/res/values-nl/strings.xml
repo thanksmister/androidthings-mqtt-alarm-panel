@@ -250,6 +250,14 @@
     <string name="pref_hide_menu_summary">Verbergt de menu-items van de beheerder.</string>
     <string name="pref_back_behavior_title">Negeer het achtergedrag</string>
     <string name="pref_back_behavior_summary">Android-knop gedraagt zich als browser-terugknop.</string>
+    <string name="pref_display_settings">Beeldscherminstellingen</string>
+    <string name="pref_wifi_settings">Netwerkinstellingen</string>
+    <string name="dialog_network_name">Netwerknaam</string>
+    <string name="dialog_network_password">Netwerkwachtwoord</string>
+    <string name="pref_wifi_settings_title">Connect Network</string>
+    <string name="pref_wifi_settings_summary">Voer uw netwerknaam en wachtwoord in om het apparaat met WiFi te verbinden.</string>
+    <string name="pref_wifi_settings_summary_filled">%1$s Momenteel verbonden met %2$s.</string>
+    <string name="toast_network_settings_unchanged">Netwerkinstellingen ongewijzigd...</string>
 
     <string-array name="inactivity_times">
         <item>15 seconden</item>

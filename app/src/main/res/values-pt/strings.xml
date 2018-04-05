@@ -287,5 +287,13 @@
     <string name="text_alarm_set_externally">O alarme foi configurado externamente, usando o tempo pendente padrão.</string>
     <string name="preference_title_alert">Notificações de alertas</string>
     <string name="preference_summary_alert">Use uma caixa de diálogo de alerta para mostrar o conteúdo da notificação.</string>
+    <string name="pref_display_settings">Configurações do visor</string>
+    <string name="pref_wifi_settings">Configurações de rede</string>
+    <string name="dialog_network_name">Nome da rede</string>
+    <string name="dialog_network_password">Senha de Rede</string>
+    <string name="pref_wifi_settings_title">Conectar Rede</string>
+    <string name="pref_wifi_settings_summary">Digite o nome da sua rede e senha para conectar o dispositivo ao WiFi.</string>
+    <string name="pref_wifi_settings_summary_filled">%1$s Atualmente conectado a %2$s.</string>
+    <string name="toast_network_settings_unchanged">Configurações de rede inalteradas...</string>
 
 </resources>
