@@ -95,6 +95,12 @@ $ adb shell date 123112002017.00
 $ adb shell setprop persist.sys.timezone "America/Denver"
 ```
 
+## PIR Sensor (Optional)
+
+If you would like the alarm panel to awake when motion is detected then add a PIR sensor following the Fritzing diagram provided.
+
+
+
 ## Device Settings
 
 - Under the settings (gear icon) you can change the screen timeout time, screen brightness, and the screen density (for the official screen use a DPI of 160).
