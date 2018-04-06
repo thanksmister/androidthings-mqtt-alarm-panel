@@ -187,36 +187,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
     }
 
-    /**
-     * Wakes the device temporarily (or always if triggered) when the alarm requires attention.
-     * We should hold the wakelock the same amount of time as the screen off timeout.
-     */
-    @Deprecated ("Not needed for Android Things")
-    fun acquireTemporaryWakeLock() {
-        Timber.d("acquireTemporaryWakeLock")
-        if (wakeLock == null) {
-            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-            wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP, "ALARM_WAKE_TAG")
-        }
-        if (wakeLock != null && !wakeLock!!.isHeld()) {  // but we don't hold it
-            if (viewModel.isAlarmTriggeredMode()) {
-                wakeLock!!.acquire(10800000) // 3 hours in milliseconds
-            } else {
-                wakeLock!!.acquire(configuration.screenTimeout)
-            }
-        }
-    }
-
-    /**
-     * Wakelock used to temporarily bring application to foreground if alarm needs attention.
-     */
-    @Deprecated ("Not needed for Android Things")
-    fun releaseTemporaryWakeLock() {
-        if (wakeLock != null && wakeLock!!.isHeld()) {
-            wakeLock!!.release()
-        }
-    }
-
     fun resetInactivityTimer() {
         Timber.d("resetInactivityTimer")
         dialogUtils.hideScreenSaverDialog()
@@ -234,7 +204,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         Timber.d("onUserInteraction")
         resetInactivityTimer()
         setScreenDefaults()
-        //releaseTemporaryWakeLock()
     }
 
     fun readMqttOptions(): MQTTOptions {
@@ -263,7 +232,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      */
     open fun showScreenSaver() {
         Timber.d("showScreenSaver")
-        //dialogUtils.clearDialogs()
         if (!viewModel.isAlarmTriggeredMode() && viewModel.hasScreenSaver()) {
             inactivityHandler!!.removeCallbacks(inactivityCallback)
             if(configuration.showClockScreenSaverModule()) {
@@ -294,7 +262,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * into foreground.
      */
     open fun handleNetworkDisconnect() {
-        //acquireTemporaryWakeLock()
         dialogUtils.hideScreenSaverDialog()
         dialogUtils.showAlertDialogToDismiss(this@BaseActivity, getString(R.string.text_notification_network_title),
                     getString(R.string.text_notification_network_description))
