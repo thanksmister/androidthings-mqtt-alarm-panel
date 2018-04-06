@@ -95,12 +95,6 @@ $ adb shell date 123112002017.00
 $ adb shell setprop persist.sys.timezone "America/Denver"
 ```
 
-## PIR Sensor (Optional)
-
-If you would like the alarm panel to awake when motion is detected then add a PIR sensor following the Fritzing diagram provided.
-
-![pir_rpi3_bb](https://user-images.githubusercontent.com/142340/38437807-007ba368-39af-11e8-82ae-09e10959e743.png)
-
 ## Device Settings
 
 - Under the settings (gear icon) you can change the screen timeout time, screen brightness, and the screen density (for the official screen use a DPI of 160).
@@ -145,6 +139,12 @@ You can also load your home automation platfgorm website by entering the address
 ![platform_panel](https://user-images.githubusercontent.com/142340/34175188-53419a14-e4da-11e7-970a-77d2ff753d31.png)
 
 To use a screen saver other than the black, turn this feature on in the screen saver settings. 
+
+## PIR Sensor (Optional)
+
+If you would like the alarm panel to awake when motion is detected then add a PIR sensor following the Fritzing diagram provided.
+
+![pir_rpi3_bb](https://user-images.githubusercontent.com/142340/38437807-007ba368-39af-11e8-82ae-09e10959e743.png)
 
 ## Weather Updates (Darksky)
 
