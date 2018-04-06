@@ -254,7 +254,12 @@
     <string name="pref_wifi_settings_title">Connect Network</string>
     <string name="pref_wifi_settings_summary">Enter your network name and password to connect the device to WiFi.</string>
     <string name="pref_wifi_settings_summary_filled">%1$s Currently connected to %2$s.</string>
-    <string name="toast_network_settings_unchanged">Network settings unchanged...</string>
+    <string name="toast_network_settings_unchanged">Network settings unchanged…</string>
+    <string name="toast_connecting_network">Connecting to network…</string>
+    <string name="progress_updating">Updating…</string>
+    <string name="pref_update_settings">Update</string>
+    <string name="pref_update_settings_title">Check for updates</string>
+    <string name="pref_update_settings_summary">Checks for updates and install them if available.</string>
 
     <string-array name="inactivity_times">
         <item>15 seconds</item>

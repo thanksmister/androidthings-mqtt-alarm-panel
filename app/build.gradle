@@ -25,7 +25,7 @@ apply plugin: 'io.fabric'
 def versionMajor = 1
 def versionMinor = 4
 def versionPatch = 8
-def versionBuild = 0 // bump for dog food builds, public betas, etc.
+def versionBuild = 3 // bump for dog food builds, public betas, etc.
 
 def ALARM_CODE() {
     Properties properties = new Properties()
@@ -162,7 +162,7 @@ android {
             dimension "default"
             buildConfigField "String", BASE_ENVIRONMENT, '"PROD_ENVIRONMENT"'
             applicationId "com.thanksmister.iot.mqtt.alarmpanel"
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch} Build ${versionBuild}"
             buildConfigField 'Integer', 'ALARM_CODE', '1234'
             buildConfigField 'String', 'DARK_SKY_KEY', '""'
             buildConfigField 'String', 'MAIL_GUN_KEY', '""'

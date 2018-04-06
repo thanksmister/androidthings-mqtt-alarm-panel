@@ -257,7 +257,12 @@
     <string name="pref_wifi_settings_title">Connect Network</string>
     <string name="pref_wifi_settings_summary">Voer uw netwerknaam en wachtwoord in om het apparaat met WiFi te verbinden.</string>
     <string name="pref_wifi_settings_summary_filled">%1$s Momenteel verbonden met %2$s.</string>
-    <string name="toast_network_settings_unchanged">Netwerkinstellingen ongewijzigd...</string>
+    <string name="toast_network_settings_unchanged">Netwerkinstellingen ongewijzigd…</string>
+    <string name="toast_connecting_network">Verbinden met netwerk…</string>
+    <string name="progress_updating">Updaten…</string>
+    <string name="pref_update_settings">Bijwerken</string>
+    <string name="pref_update_settings_title">Controleer op updates</string>
+    <string name="pref_update_settings_summary">Controleert op updates en installeert ze indien beschikbaar.</string>
 
     <string-array name="inactivity_times">
         <item>15 seconden</item>

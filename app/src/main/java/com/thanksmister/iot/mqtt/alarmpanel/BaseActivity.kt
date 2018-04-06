@@ -35,10 +35,13 @@ import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.google.android.things.device.ScreenManager
 import com.google.android.things.device.TimeManager
+import com.google.android.things.update.StatusListener
 import com.google.android.things.update.UpdateManager
 import com.google.android.things.update.UpdateManager.POLICY_APPLY_AND_REBOOT
+import com.google.android.things.update.UpdateManagerStatus
 import com.google.android.things.update.UpdatePolicy
 import com.thanksmister.iot.mqtt.alarmpanel.managers.ConnectionLiveData
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
@@ -47,6 +50,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ScreenSaverView
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
+import com.thanksmister.iot.mqtt.alarmpanel.utils.NetworkUtils
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
 import dagger.android.support.DaggerAppCompatActivity
 import dpreference.DPreference
@@ -87,7 +91,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         Timber.d("Network Password: " + configuration.networkPassword)
 
         if( !TextUtils.isEmpty(configuration.networkId) && !TextUtils.isEmpty(configuration.networkPassword)) {
-            connectNetwork(configuration.networkId, configuration.networkPassword )
+            NetworkUtils.connectNetwork(this@BaseActivity, configuration.networkId, configuration.networkPassword )
         }
     }
 
@@ -108,7 +112,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         super.onResume()
     }
 
-    override fun onPause() {
+    public override fun onPause() {
         super.onPause()
     }
 
@@ -119,7 +123,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             inactivityHandler = null
         }
         disposable.dispose()
-        //releaseTemporaryWakeLock()
     }
 
     // These are Android Things specific settings for setting the time, display, and update manager
@@ -129,15 +132,22 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
             ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
             ScreenManager(Display.DEFAULT_DISPLAY).setDisplayDensity(configuration.screenDensity);
-
             TimeManager().setTimeZone(configuration.timeZone)
-
-            UpdateManager()
-                    .setPolicy(UpdatePolicy.Builder()
-                            .setPolicy(POLICY_APPLY_AND_REBOOT)
-                            .setApplyDeadline(1, TimeUnit.DAYS)
-                            .build())
-
+            UpdateManager().addStatusListener(object: StatusListener {
+                override fun onStatusUpdate(status: UpdateManagerStatus?) {
+                    when (status?.currentState) {
+                        UpdateManagerStatus.STATE_UPDATE_AVAILABLE -> {
+                            Timber.d("Update available")
+                            dialogUtils.showProgressDialog(this@BaseActivity, getString(R.string.progress_updating), false)
+                        }
+                        UpdateManagerStatus.STATE_DOWNLOADING_UPDATE -> {
+                            Timber.d("Update downloading")
+                            dialogUtils.showProgressDialog(this@BaseActivity, getString(R.string.progress_updating), false)
+                        }
+                    }
+                }
+            });
+            UpdateManager().performUpdateNow(POLICY_APPLY_AND_REBOOT) // always apply update and reboot
         } catch (e:IllegalStateException) {
             Timber.e(e.message)
         }
@@ -304,46 +314,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         return hasNetwork.get()
     }
 
-    open fun connectNetwork(networkSSID: String?, networkPassword: String?) {
-        Timber.d("connectNetwork")
-
-        wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager;
-        if (!wifiManager!!.isWifiEnabled) {
-            wifiManager!!.isWifiEnabled = true
-        }
-
-        // don't connect if the currently connected network is the same
-        val wifiInfo = wifiManager!!.connectionInfo
-        if(wifiInfo.ssid == networkSSID) {
-            return
-        }
-
-        Timber.d("WiFi connectToWifi")
-        val conf = WifiConfiguration()
-        conf.SSID = String.format("\"%s\"", networkSSID);
-        conf.preSharedKey = String.format("\"%s\"", networkPassword);
-        conf.status = WifiConfiguration.Status.ENABLED;
-
-        var networkId = wifiManager!!.addNetwork(conf)
-        if(networkId == -1) {
-            networkId = getNetworkId(networkSSID)
-        }
-
-        wifiManager!!.disconnect()
-        wifiManager!!.enableNetwork(networkId, true)
-        wifiManager!!.reconnect()
-    }
-
-    private fun getNetworkId(networkSSID: String?): Int {
-        val list = wifiManager!!.configuredNetworks
-        for (i in list) {
-            if (i.SSID != null && i.SSID == "\"" + networkSSID + "\"") {
-                return i.networkId
-            }
-        }
-        return -1
-    }
-
     private val intentFilterForWifiConnectionReceiver: IntentFilter
         get() {
             val randomIntentFilter = IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION)
@@ -364,6 +334,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                         wirelessNetworkName = wirelessNetworkName?.replace("\"", "");
                         if(configuration.networkId == wirelessNetworkName) {
                             Timber.d("WiFi connected to " + configuration.networkId)
+                            Toast.makeText(this@BaseActivity, getString(R.string.toast_connecting_network), Toast.LENGTH_LONG).show()
                         } else {
                             Timber.d("WiFi not connected to " + configuration.networkId)
                         }

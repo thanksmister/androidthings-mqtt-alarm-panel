@@ -53,6 +53,7 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
     private var dialog: Dialog? = null
     private var disableDialog: Dialog? = null
     private var screenSaverDialog: Dialog? = null
+    private var progressDialog: AlertDialog? = null
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun clearDialogs() {
@@ -64,14 +65,9 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
             disableDialog!!.dismiss()
             disableDialog = null
         }
-        if (alertDialog != null && alertDialog!!.isShowing) {
-            alertDialog!!.dismiss()
-            alertDialog = null
-        }
-        if (screenSaverDialog != null && screenSaverDialog!!.isShowing) {
-            screenSaverDialog!!.dismiss()
-            screenSaverDialog = null
-        }
+        hideAlertDialog()
+        hideScreenSaverDialog()
+        hideProgressDialog();
     }
 
     fun hideScreenSaverDialog() {
@@ -86,6 +82,13 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         if (alertDialog != null && alertDialog!!.isShowing) {
             alertDialog!!.dismiss()
             alertDialog = null
+        }
+    }
+
+    fun hideProgressDialog() {
+        if (progressDialog != null && progressDialog!!.isShowing) {
+            progressDialog!!.dismiss()
+            progressDialog = null
         }
     }
 
@@ -121,6 +124,20 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         alertDialog = AlertDialog.Builder(context, R.style.CustomAlertDialog)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok, onClickListener)
+                .show()
+    }
+
+    fun showProgressDialog(context: Context, message: String, cancelable: Boolean) {
+        if (progressDialog != null) {
+            return
+        }
+        val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_progress, null, false)
+        val progressDialogMessage = dialogView.findViewById(R.id.progressDialogMessage) as TextView
+        progressDialogMessage.text = message
+        progressDialog = AlertDialog.Builder(context, R.style.CustomAlertDialog)
+                .setCancelable(cancelable)
+                .setView(dialogView)
                 .show()
     }
 
