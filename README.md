@@ -26,6 +26,7 @@ For issues, feature requests, comments or questions, use the [Github issues trac
 - 7 day Weather forecast (requires Darksky api key).
 - Home Automation Platform webpage support for viewing your home automation website.
 - Capture images on demand using MQTT message
+- Support for PIR sensor to wake screen on motion detection (see Fritzing diagram below)
 
 ## Supported Command and Publish States
 
@@ -58,16 +59,16 @@ For issues, feature requests, comments or questions, use the [Github issues trac
 
 Make sure you properly setup the RPi3 with the 7" Touchscreen Display.  You won't need any special software setup if you use the The Raspberry Pi Foundation 7" Touchscreen as it's compatible with Android Things. Other compatible touch screens may require additional configuration for Android Things. There are two options for installing the setting up your RPi 3 and installing the application. 
 
-- (1) The first is to set up your RPi3 to use [Android Things 0.6.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Clone the repository and compile the APK using Android Studio, then side load the APK file onto your device running Android Things Preview 0.6.1 using the ADB tool. 
-
-- (2) The second option is to download the latest build from the [release](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/releases/) section on Github which includes both the Android Things Preview 0.6.1 and the APK file for the MQTT control panel application. This also allows for future OTA updates.
+- (1)  The second option is to download the latest build from the [release](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/releases/) section on Github which includes both the Android Things Preview 0.6.1 and the APK file for the MQTT control panel application. This also allows for future OTA updates.
 
  * Download the latest release zip: MQTT_Alarm_Control_Panel_1.x.x.zip.
  * Unzip the file to get the the image: iot_rpi3.img. 
  * Burn the image to your SD card using a tool like Etcher. 
  * Insert the SD card into RPi3 and boot.
 
-- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use WiFi and ethernet at the same time.  You can use the [Android Things Setup Utility](https://partner.android.com/things/console/u/0/#/tools) or use the adb command line tool.
+- (2) The first (and more complicated) is to set up your RPi3 to use [Android Things 0.6.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Clone the repository and compile the APK using Android Studio, then side load the APK file onto your device running Android Things Preview 0.6.1 using the ADB tool. 
+
+- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use WiFi and ethernet at the same time.  Once you have the application running, go to Settings -> Device Settings and enter your WiFi SSID and password to connect to your WiFi netowrk. It should connect automatically if the credentials are correct.   Optionally, you can use the [Android Things Setup Utility](https://partner.android.com/things/console/u/0/#/tools) or use the adb command line tool. 
 
 ```
 # Use the adb tool to connect over ethernet to the device
@@ -81,7 +82,7 @@ adb shell am startservice \
     -e passphrase <Network_Passcode>
 ```
 
-- You probably also want to set the time and [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) of the device. This can be done from within the application settings or manually using the adb command line tool:
+- You probably also want to set the time and [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) of the device as well as the 24 hour clock option. You can do this within the applicaiton by going to Settings -> Device Settings and set the time zone and 24 hour clock options. This can also be done from within the application settings or manually using the adb command line tool:
 
 ```
 # Reboot ADB into root mode
