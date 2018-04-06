@@ -7,6 +7,7 @@ This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual
 - [Android Device Version](https://github.com/thanksmister/android-mqtt-alarm-panel)
 
 
+
 ![alarm_panel](https://user-images.githubusercontent.com/142340/34173863-a2a8a4e4-e4d5-11e7-96b4-15a59a163243.jpg)
 
 The alarm control panel acts as an interface for your own home alarm system and allows for two way communication using MQTT messaging.  You can set the alarm state to away or home, or disarm the alarm using a code.  Your home automation system will controls the sensors or automation that triggers the siren or notifies users of possible intrusion.  
@@ -24,6 +25,7 @@ For issues, feature requests, comments or questions, use the [Github issues trac
 - Screen timout and brightness control with optional clock screensaver mode. 
 - 7 day Weather forecast (requires Darksky api key).
 - Home Automation Platform webpage support for viewing your home automation website.
+- Capture images on demand using MQTT message
 
 ## Supported Command and Publish States
 
