@@ -68,7 +68,7 @@ Make sure you properly setup the RPi3 with the 7" Touchscreen Display.  You won'
 
 - (2) The first (and more complicated) is to set up your RPi3 to use [Android Things 0.6.1-devpreview for Raspbery Pi 3](https://developer.android.com/things/hardware/raspberrypi.html). Clone the repository and compile the APK using Android Studio, then side load the APK file onto your device running Android Things Preview 0.6.1 using the ADB tool. 
 
-- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the Ethernet cable, at this time Android Things can't use WiFi and ethernet at the same time.  Once you have the application running, go to Settings -> Device Settings and enter your WiFi SSID and password to connect to your WiFi netowrk. It should connect automatically if the credentials are correct.   Optionally, you can use the [Android Things Setup Utility](https://partner.android.com/things/console/u/0/#/tools) or use the adb command line tool. 
+- Be sure to set up network access either using WiFi or ethernet. If you setup WiFi be sure to unplug the ethernet cable, at this time Android Things can't use WiFi and ethernet at the same time.  Once you have the application running, go to Settings -> Device Settings and enter your WiFi SSID (name) and password, it should connect automatically. Optionally, you can use the [Android Things Setup Utility](https://partner.android.com/things/console/u/0/#/tools) or use the adb command line tool. 
 
 ```
 # Use the adb tool to connect over ethernet to the device
@@ -82,7 +82,7 @@ adb shell am startservice \
     -e passphrase <Network_Passcode>
 ```
 
-- You probably also want to set the time and [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) of the device as well as the 24 hour clock option. You can do this within the applicaiton by going to Settings -> Device Settings and set the time zone and 24 hour clock options. This can also be done from within the application settings or manually using the adb command line tool:
+- You probably also want to set the time and [timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) of the device. You can do this within the application by going to Settings -> Device Settings and set the time zone. This can also be done from within the application settings or manually using the adb command line tool:
 
 ```
 # Reboot ADB into root mode
@@ -148,7 +148,9 @@ To use a photo screensaver rather than the digital clock, turn this feature on, 
 
 ## Capture Images (Telegram/Mailgun)
 
-If you would like to capture and email images when the alarm is deactivated then you need to setup a [Mailgun](https://www.mailgun.com/) account. You will need to enter the domain address and API key from your Mailgun accoint into the application setting screen along with other information. 
+If you would like to capture and email images when the alarm is deactivated then you will need a camera that works with Raspberry Pi 3 (I am using the Raspberry Pi Camera Module v2). 
+
+To receive an email with the captured image, you also need to setup a [Mailgun](https://www.mailgun.com/) account. You will need to enter the domain address and API key from your Mailgun account into the application setting screen along with other information. 
 
 You may also use Telegram to recieve a notification with the image when the alarm is deactivated.  To use Telegram you need a chat Id and a Telegram Bot API token.  Follow the [Telegram guide on Home Assistant](https://home-assistant.io/components/notify.telegram/) to setup Telegram.  Enter the chat Id and token into the application settings screen.
 
