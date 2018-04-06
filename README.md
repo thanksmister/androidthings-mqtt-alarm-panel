@@ -99,7 +99,7 @@ $ adb shell setprop persist.sys.timezone "America/Denver"
 
 If you would like the alarm panel to awake when motion is detected then add a PIR sensor following the Fritzing diagram provided.
 
-
+![pir_rpi3_bb](https://user-images.githubusercontent.com/142340/38437807-007ba368-39af-11e8-82ae-09e10959e743.png)
 
 ## Device Settings
 
