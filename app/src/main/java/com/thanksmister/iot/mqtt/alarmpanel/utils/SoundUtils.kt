@@ -9,6 +9,10 @@ import android.os.HandlerThread
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import timber.log.Timber
 import java.lang.IllegalStateException
+import android.media.AudioDeviceInfo
+import android.media.AudioTrack
+import java.io.IOException
+
 
 class SoundUtils(base: Context) : ContextWrapper(base) {
 
@@ -18,14 +22,15 @@ class SoundUtils(base: Context) : ContextWrapper(base) {
 
     private val soundThread: HandlerThread = HandlerThread("buttonSound");
     private var soundHandler: Handler? = null
+    private var audioOutputDevice: AudioDeviceInfo? = null
+    private var audioTrack: AudioTrack? = null
 
     fun init(){
         Timber.d("init")
         soundThread.start();
         soundHandler = Handler(soundThread.looper);
-
         val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        am.setStreamVolume(AudioManager.STREAM_MUSIC, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0)
+        am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0)
     }
 
     fun destroyBuzzer() {
@@ -44,7 +49,7 @@ class SoundUtils(base: Context) : ContextWrapper(base) {
     }
 
     private val streamAudioRunnable = Runnable {
-        val speaker = MediaPlayer.create(applicationContext, R.raw.beep)
+        val speaker = MediaPlayer.create(applicationContext, R.raw.beep7)
         speaker.setOnCompletionListener { mp ->
             mp.stop()
             mp.release()
@@ -57,7 +62,7 @@ class SoundUtils(base: Context) : ContextWrapper(base) {
     private val repeatAudioRunnable = Runnable {
         Timber.d("repeatAudioRunnable")
         if(repeating) {
-            speaker = MediaPlayer.create(applicationContext, R.raw.beep_loop)
+            speaker = MediaPlayer.create(applicationContext, R.raw.beep7_loop)
             speaker?.isLooping = true
             speaker?.start()
         }

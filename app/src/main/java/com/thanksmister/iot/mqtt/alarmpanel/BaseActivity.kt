@@ -138,11 +138,11 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                     when (status?.currentState) {
                         UpdateManagerStatus.STATE_UPDATE_AVAILABLE -> {
                             Timber.d("Update available")
-                            dialogUtils.showProgressDialog(this@BaseActivity, getString(R.string.progress_updating), false)
+                            Toast.makeText(this@BaseActivity, getString(R.string.progress_updating), Toast.LENGTH_LONG).show()
                         }
                         UpdateManagerStatus.STATE_DOWNLOADING_UPDATE -> {
                             Timber.d("Update downloading")
-                            dialogUtils.showProgressDialog(this@BaseActivity, getString(R.string.progress_updating), false)
+                            Toast.makeText(this@BaseActivity, getString(R.string.progress_updating), Toast.LENGTH_LONG).show()
                         }
                     }
                 }
