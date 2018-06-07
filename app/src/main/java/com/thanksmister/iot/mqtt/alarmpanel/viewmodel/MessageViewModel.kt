@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.text.TextUtils
 import android.widget.Toast
 import com.thanksmister.iot.mqtt.alarmpanel.R
+import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.Message
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.MessageDao
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
@@ -36,7 +37,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class MessageViewModel @Inject
-constructor(application: Application, private val dataSource: MessageDao, private val configuration: Configuration) : AndroidViewModel(application) {
+constructor(application: Application, private val dataSource: MessageDao, private val configuration: Configuration, private val mqttOptions: MQTTOptions) : AndroidViewModel(application) {
 
     private var mailSubscription: Disposable? = null
     private var telegramSubscription: Disposable? = null
@@ -161,13 +162,11 @@ constructor(application: Application, private val dataSource: MessageDao, privat
     /**
      * Insert new message into the database.
      */
-    fun insertMessage(messageId: String,topic: String, payload: String): Completable {
-        val type = if (IMAGE_CAPTURE_TYPE == topic) {
-            IMAGE_CAPTURE_TYPE
-        } else if (NOTIFICATION_TYPE == topic) {
-            NOTIFICATION_TYPE
-        } else {
-            ALARM_TYPE
+    fun insertMessage(messageId: String, topic: String, payload: String): Completable {
+        val type = when (topic) {
+            mqttOptions.getCameraTopic() -> IMAGE_CAPTURE_TYPE
+            mqttOptions.getNotificationTopic() -> NOTIFICATION_TYPE
+            else -> ALARM_TYPE
         }
         return Completable.fromAction {
             val createdAt = DateUtils.generateCreatedAtDate()

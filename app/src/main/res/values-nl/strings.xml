@@ -207,7 +207,7 @@
     <string name="pref_time_format_title">Gebruik het 24-uurs formaat</string>
     <string name="text_dialog_select_time">Selecteer tijd</string>
     <string name="pref_density_summary">Verander de scherm dichtheid. Momenteel %1$s dpi.</string>
-    <string name="pref_device_brightness_summary">Zet de schermhelderheid tussen de 0 en 255. Momenteel %1$s.</string>
+    <string name="pref_device_brightness_summary">Zet de schermhelderheid tussen de 1 en 5. Momenteel %1$s.</string>
     <string name="pref_device_density_title">Scherm dichtheid</string>
     <string name="pref_device_brightness_title">Scherm helderheid</string>
     <string name="pref_reset_category">Herstellen</string>
@@ -263,6 +263,8 @@
     <string name="pref_update_settings">Bijwerken</string>
     <string name="pref_update_settings_title">Controleer op updates</string>
     <string name="pref_update_settings_summary">Controleert op updates en installeert ze indien beschikbaar.</string>
+    <string name="pref_rotate_screen_title">Portrait</string>
+    <string name="pref_rotate_screen_description">Display the screen in portrait (the default is landscape).</string>
 
     <string-array name="inactivity_times">
         <item>15 seconden</item>

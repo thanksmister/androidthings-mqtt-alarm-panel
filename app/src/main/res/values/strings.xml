@@ -207,7 +207,7 @@
     <string name="pref_time_format_title">Use 24-hour format</string>
     <string name="text_dialog_select_time">Select Time</string>
     <string name="pref_density_summary">Change the screen density. Currently %1$s dpi.</string>
-    <string name="pref_device_brightness_summary">Set the screen brightness between 0 and 255. Currently %1$s.</string>
+    <string name="pref_device_brightness_summary">Set the screen brightness between 1 and 5. Currently %1$s.</string>
     <string name="pref_device_density_title">Screen Density</string>
     <string name="pref_device_brightness_title">Screen Brightness</string>
     <string name="pref_reset_category">Reset</string>
@@ -260,6 +260,8 @@
     <string name="pref_update_settings">Update</string>
     <string name="pref_update_settings_title">Check for updates</string>
     <string name="pref_update_settings_summary">Checks for updates and install them if available.</string>
+    <string name="pref_rotate_screen_title">Portrait</string>
+    <string name="pref_rotate_screen_description">Display the screen in portrait (the default is landscape).</string>
 
     <string-array name="inactivity_times">
         <item>15 seconds</item>

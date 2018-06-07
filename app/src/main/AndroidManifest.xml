@@ -38,6 +38,8 @@
     <uses-permission android:name="com.google.android.things.permission.CHANGE_TIME" />
     <uses-permission android:name="com.google.android.things.permission.MANAGE_UPDATE_POLICY" />
     <uses-permission android:name="com.google.android.things.permission.PERFORM_UPDATE_NOW" />
+    <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO" />
+    <uses-permission android:name="com.google.android.things.permission.SET_TIME" />
 
     <application
             android:name=".BaseApplication"
@@ -45,11 +47,10 @@
             android:theme="@style/AppTheme"
             android:icon="@mipmap/ic_launcher">
 
-        <uses-library android:name="com.google.android.things" android:required="true"/>
+        <uses-library android:name="com.google.android.things"/>
 
         <activity
                 android:name=".ui.activities.MainActivity"
-                android:screenOrientation="sensorLandscape"
                 android:icon="@mipmap/ic_launcher">
 
             <!-- Launch activity as default from Android Studio -->
@@ -61,13 +62,12 @@
             <!-- Launch activity automatically on boot -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.IOT_LAUNCHER"/>
+                <category android:name="android.intent.category.HOME"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activities.SettingsActivity"
-                  android:screenOrientation="sensorLandscape"/>
+        <activity android:name=".ui.activities.SettingsActivity" />
 
         <!-- Preference Provider -->
         <provider
@@ -79,8 +79,7 @@
         <!-- MQTT Services -->
         <service android:name="org.eclipse.paho.android.service.MqttService"/>
 
-        <activity android:name=".ui.activities.LogActivity"
-                  android:screenOrientation="sensorLandscape"/>
+        <activity android:name=".ui.activities.LogActivity"/>
         <activity android:name=".ui.activities.SupportActivity" />
 
         <!-- Fabric Crashlytics key, the secret is not in repository -->

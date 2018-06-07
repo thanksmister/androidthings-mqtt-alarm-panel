@@ -42,8 +42,8 @@
                 ProgressWheel:contourColor="@color/gray_pressed"
                 ProgressWheel:barLength="54dp"
                 ProgressWheel:barColor="@color/gray_pressed"
-                ProgressWheel:barWidth="10dp"
-                ProgressWheel:rimWidth="10dp"
+                ProgressWheel:barWidth="8dp"
+                ProgressWheel:rimWidth="8dp"
                 ProgressWheel:spinSpeed="3dp"/>
 
         </FrameLayout>

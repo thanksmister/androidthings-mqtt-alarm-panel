@@ -206,7 +206,7 @@
     <string name="pref_time_format_title">Usar formato de 24 horas (16h00)</string>
     <string name="text_dialog_select_time">Seleccione a Hora</string>
     <string name="pref_density_summary">Altere a densidade do ecrã. Actualmente é %1$s dpi.</string>
-    <string name="pref_device_brightness_summary">Configurar o brilho do ecrã entre 0 e 255. Actualmente é %1$s.</string>
+    <string name="pref_device_brightness_summary">Configurar o brilho do ecrã entre 1 e 5. Actualmente é %1$s.</string>
     <string name="pref_device_density_title">Densidade do Ecrã</string>
     <string name="pref_device_brightness_title">Brilho do Ecrã</string>
     <string name="pref_reset_category">Limpar</string>
@@ -265,6 +265,8 @@
     <string name="pref_wifi_settings_summary">Digite o nome da sua rede e senha para conectar o dispositivo ao WiFi.</string>
     <string name="pref_wifi_settings_summary_filled">%1$s Atualmente conectado a %2$s.</string>
     <string name="toast_network_settings_unchanged">Configurações de rede inalteradas…</string>
+    <string name="pref_rotate_screen_title">Portrait</string>
+    <string name="pref_rotate_screen_description">Display the screen in portrait (the default is landscape).</string>
 
     <string-array name="inactivity_times">
         <item>15 segundos</item>

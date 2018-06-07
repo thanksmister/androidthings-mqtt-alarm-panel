@@ -25,6 +25,7 @@ import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.DialogInterface
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -41,7 +42,8 @@ import com.thanksmister.iot.mqtt.alarmpanel.network.model.Daily
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.*
 import timber.log.Timber
 import android.widget.EditText
-
+import com.thanksmister.iot.mqtt.alarmpanel.network.model.Datum
+import com.thanksmister.iot.mqtt.alarmpanel.persistence.DarkSkyDao
 
 
 /**
@@ -236,7 +238,7 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         dialog!!.setOnCancelListener(onCancelListener)
     }
 
-    fun showExtendedForecastDialog(activity: AppCompatActivity, daily: Daily) {
+    fun showExtendedForecastDialog(activity: AppCompatActivity, data: List<Datum>) {
         clearDialogs()
         val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.dialog_extended_forecast, null, false)
@@ -245,13 +247,17 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         window.decorView.getWindowVisibleDisplayFrame(displayRectangle)
         view.minimumWidth = (displayRectangle.width() * 0.7f).toInt()
         val density = activity.resources.displayMetrics.densityDpi
-        if (density == DisplayMetrics.DENSITY_MEDIUM) {
-            view.minimumHeight = (displayRectangle.height() * 0.6f).toInt()
+        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            if (density == DisplayMetrics.DENSITY_MEDIUM) {
+                view.minimumHeight = (displayRectangle.height() * 0.6f).toInt()
+            } else {
+                view.minimumHeight = (displayRectangle.height() * 0.7f).toInt()
+            }
         } else {
-            view.minimumHeight = (displayRectangle.height() * 0.8f).toInt()
+            view.minimumHeight = (displayRectangle.height() * 0.45f).toInt()
         }
         val extendedForecastView = view.findViewById<ExtendedForecastView>(R.id.extendedForecastView)
-        extendedForecastView.setExtendedForecast(daily)
+        extendedForecastView.setExtendedForecast(data)
         dialog = buildImmersiveDialog(activity, true, view, false)
     }
 
@@ -259,21 +265,25 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
      * Show the screen saver only if the alarm isn't triggered. This shouldn't be an issue
      * with the alarm disabled because the disable time will be longer than this.
      */
-    fun showScreenSaver(activity: AppCompatActivity, showPhotoScreenSaver: Boolean,
-                        showClockScreenSaver: Boolean, options: ImageOptions,
-                        listener: ScreenSaverView.ViewListener, onClickListener: View.OnClickListener) {
-
+    fun showScreenSaver(activity: AppCompatActivity, showPhotoScreenSaver: Boolean, options:ImageOptions, screenBrightness: Int,
+                        onClickListener: View.OnClickListener, dataSource: DarkSkyDao, hasWeather: Boolean) {
         if (screenSaverDialog != null && screenSaverDialog!!.isShowing) {
             return
         }
-        clearDialogs()
+        clearDialogs() // clear any alert dialogs
         val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.dialog_screen_saver, null, false)
         val screenSaverView = view.findViewById<ScreenSaverView>(R.id.screenSaverView)
-        screenSaverView.setScreenSaver(showPhotoScreenSaver, showClockScreenSaver, options)
-        screenSaverView.setListener(listener)
+        screenSaverView.setDataSource(dataSource)
+        screenSaverView.setScreenSaver(showPhotoScreenSaver, options, dataSource, hasWeather)
         screenSaverView.setOnClickListener(onClickListener)
         screenSaverDialog = buildImmersiveDialog(activity, true, screenSaverView, true)
+        if (screenSaverDialog != null){
+            val lp: WindowManager.LayoutParams = screenSaverDialog!!.window.attributes;
+            Timber.d("Screensaver Brightness: " + DeviceUtils.getScreenSaverBrightness(screenBrightness))
+            lp.screenBrightness = DeviceUtils.getScreenSaverBrightness(screenBrightness) //.05f;
+            screenSaverDialog!!.window.attributes = lp
+        }
     }
 
     // immersive dialogs without navigation

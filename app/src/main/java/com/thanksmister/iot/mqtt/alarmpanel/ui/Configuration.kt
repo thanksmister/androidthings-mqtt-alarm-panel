@@ -64,17 +64,9 @@ constructor(private val sharedPreferences: DPreference) {
         get() = this.sharedPreferences.getPrefString(PREF_DEVICE_TIME_ZONE, "America/Los_Angeles")
         set(value) = this.sharedPreferences.setPrefString(PREF_DEVICE_TIME_ZONE, value)
 
-    var screenDensity: Int
-        get() = this.sharedPreferences.getPrefInt(PREF_DEVICE_SCREEN_DENSITY, 160)
-        set(value) = this.sharedPreferences.setPrefInt(PREF_DEVICE_SCREEN_DENSITY, value)
-
     var screenBrightness: Int
-        get() = this.sharedPreferences.getPrefInt(PREF_DEVICE_SCREEN_BRIGHTNESS, 200)
+        get() = this.sharedPreferences.getPrefInt(PREF_DEVICE_SCREEN_BRIGHTNESS, 5)
         set(value) = this.sharedPreferences.setPrefInt(PREF_DEVICE_SCREEN_BRIGHTNESS, value)
-
-    var screenTimeout: Long
-        get() = this.sharedPreferences.getPrefLong(PREF_DEVICE_SCREEN_TIMEOUT, 1800000)
-        set(value) = this.sharedPreferences.setPrefLong(PREF_DEVICE_SCREEN_TIMEOUT, value)
 
     var isFirstTime: Boolean
         get() = sharedPreferences.getPrefBoolean(PREF_FIRST_TIME, true)
@@ -249,6 +241,23 @@ constructor(private val sharedPreferences: DPreference) {
         sharedPreferences.setPrefString(PREF_CAMERA_ROTATE, value)
     }
 
+    fun requiresScreenRotate(): Boolean {
+        return sharedPreferences.getPrefBoolean(PREF_REQUIRE_SCREEN_ROTATE, false)
+    }
+
+    fun setRequiresScreenRotate(value: Boolean) {
+        sharedPreferences.setPrefBoolean(PREF_REQUIRE_SCREEN_ROTATE, value) // mark screen dirty change
+    }
+
+    fun isPortraitMode(): Boolean {
+        return sharedPreferences.getPrefBoolean(PREF_DEVICE_SCREEN_POTRAIT, false)
+    }
+
+    fun setPortraitMode(value: Boolean) {
+        this.sharedPreferences.setPrefBoolean(PREF_DEVICE_SCREEN_POTRAIT, value)
+        setRequiresScreenRotate(true)
+    }
+
     /**
      * Reset the `SharedPreferences` and database
      */
@@ -270,13 +279,11 @@ constructor(private val sharedPreferences: DPreference) {
         sharedPreferences.removePreference(PREF_CAMERA_ROTATE)
         sharedPreferences.removePreference(PREF_MODULE_TSS)
         sharedPreferences.removePreference(PREF_MODULE_ALERTS)
-        sharedPreferences.removePreference(PREF_DEVICE_SCREEN_DENSITY)
         sharedPreferences.removePreference(PREF_DEVICE_TIME_ZONE)
         sharedPreferences.removePreference(PREF_DEVICE_TIME)
         sharedPreferences.removePreference(PREF_DEVICE_TIME_FORMAT)
         sharedPreferences.removePreference(PREF_DEVICE_TIME_SERVER)
         sharedPreferences.removePreference(PREF_DEVICE_SCREEN_BRIGHTNESS)
-        sharedPreferences.removePreference(PREF_DEVICE_SCREEN_TIMEOUT)
         sharedPreferences.removePreference(PREF_AWAY_DELAY_TIME)
         sharedPreferences.removePreference(PREF_HOME_DELAY_TIME)
         sharedPreferences.removePreference(PREF_DELAY_TIME)
@@ -329,9 +336,7 @@ constructor(private val sharedPreferences: DPreference) {
         const val PREF_DEVICE_TIME_FORMAT = "pref_device_time_format"
         const val PREF_DEVICE_TIME = "pref_device_time"
         const val PREF_DEVICE_TIME_ZONE = "pref_device_time_zone"
-        const val PREF_DEVICE_SCREEN_DENSITY = "pref_device_screen_density"
-        const val PREF_DEVICE_SCREEN_BRIGHTNESS = "pref_device_brightness"
-        const val PREF_DEVICE_SCREEN_TIMEOUT = "pref_device_timeout"
+        const val PREF_DEVICE_SCREEN_BRIGHTNESS = "pref_screen_brightness"
         const val PREF_PLATFORM_BAR = "pref_platform_bar"
         const val PREF_TELEGRAM_MODULE = "pref_telegram_module"
         const val PREF_TELEGRAM_CHAT_ID = "pref_telegram_chat_id"
@@ -340,5 +345,7 @@ constructor(private val sharedPreferences: DPreference) {
         const val PREF_MQTT_IMAGE_TOPIC = "pref_mqtt_image_topic"
         const val PREF_NETWORK_ID = "pref_network_id"
         const val PREF_NETWORK_PASSWORD = "pref_network_pass"
+        const val PREF_DEVICE_SCREEN_POTRAIT = "pref_screen_portrait"
+        const val PREF_REQUIRE_SCREEN_ROTATE = "pref_screen_rotate_required"
     }
 }

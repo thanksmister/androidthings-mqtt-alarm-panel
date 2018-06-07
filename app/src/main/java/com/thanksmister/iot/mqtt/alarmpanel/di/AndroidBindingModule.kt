@@ -27,6 +27,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.SettingsActivity
 import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.SupportActivity
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.*
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
+import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.WeatherViewModel
 import dagger.Binds
 
 import dagger.Module
@@ -40,6 +41,11 @@ internal abstract class AndroidBindingModule {
     @IntoMap
     @ViewModelKey(MessageViewModel::class)
     abstract fun bindsMessageViewModel(mainViewModel: MessageViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(WeatherViewModel::class)
+    abstract fun bindsWeatherViewModel(mainViewModel: WeatherViewModel): ViewModel
 
     @ContributesAndroidInjector
     internal abstract fun baseActivity(): BaseActivity
