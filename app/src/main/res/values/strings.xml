@@ -147,6 +147,8 @@
 
     <string name="text_arm_home">ARM HOME</string>
     <string name="text_arm_away">ARM AWAY</string>
+    <string name="text_armed_home">ARMED HOME</string>
+    <string name="text_armed_away">ARMED AWAY</string>
     <string name="text_system">SYSTEM</string>
     <string name="text_disarmed">DISARMED</string>
     <string name="dialog_alarm_triggered">ENTER CODE TO DISMISS</string>

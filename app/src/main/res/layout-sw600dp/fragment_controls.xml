@@ -35,14 +35,14 @@
 
         <FrameLayout
             android:id="@+id/alarmButton"
-            android:layout_width="260dp"
-            android:layout_height="wrap_content"
+            android:layout_width="250dp"
+            android:layout_height="190dp"
             android:gravity="center">
 
             <LinearLayout
                 android:id="@+id/alarmButtonBackground"
                 android:layout_width="190dp"
-                android:layout_height="190dp"
+                android:layout_height="171dp"
                 android:padding="34dp"
                 android:orientation="vertical"
                 android:layout_gravity="center"

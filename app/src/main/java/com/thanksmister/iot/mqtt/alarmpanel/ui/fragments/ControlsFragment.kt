@@ -183,13 +183,13 @@ class ControlsFragment : BaseFragment() {
     }
 
     private fun setArmedAwayView() {
-        alarmText.setText(R.string.text_arm_away)
+        alarmText.setText(R.string.text_armed_away)
         alarmText.setTextColor(resources.getColor(R.color.red))
         alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_red))
     }
 
     private fun setArmedHomeView() {
-        alarmText.setText(R.string.text_arm_home)
+        alarmText.setText(R.string.text_armed_home)
         alarmText.setTextColor(resources.getColor(R.color.yellow))
         alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_yellow))
     }
@@ -204,12 +204,12 @@ class ControlsFragment : BaseFragment() {
         viewModel.isArmed(true)
         viewModel.setAlarmMode(mode)
         if (MODE_ARM_HOME_PENDING == mode) {
-            alarmText.setText(R.string.text_arm_home)
+            alarmText.setText(R.string.text_armed_home)
             alarmText.setTextColor(resources.getColor(R.color.yellow))
             alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_yellow))
             showAlarmPendingView(configuration.pendingHomeTime)
         } else if (MODE_ARM_AWAY_PENDING == mode) {
-            alarmText.setText(R.string.text_arm_away)
+            alarmText.setText(R.string.text_armed_away)
             alarmText.setTextColor(resources.getColor(R.color.red))
             alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_red))
             showAlarmPendingView(configuration.pendingAwayTime)

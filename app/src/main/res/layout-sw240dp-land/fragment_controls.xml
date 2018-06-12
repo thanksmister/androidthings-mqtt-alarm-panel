@@ -36,18 +36,19 @@
         <FrameLayout
                 android:id="@+id/alarmButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 android:gravity="center">
 
             <LinearLayout
                     android:id="@+id/alarmButtonBackground"
-                    android:layout_marginLeft="35dp"
-                    android:layout_marginStart="35dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginStart="30dp"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
                     android:padding="28dp"
                     android:orientation="vertical"
                     android:gravity="center"
+                android:layout_gravity="center_vertical"
                     android:background="@drawable/button_round_gray">
 
                 <ImageView
@@ -60,8 +61,8 @@
 
             <FrameLayout
                     android:id="@+id/alarmPendingLayout"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
                     android:visibility="gone"
                     tools:visibility="visible">
 

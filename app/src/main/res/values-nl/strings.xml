@@ -146,6 +146,8 @@
 
     <string name="text_arm_home">ACTIVEER THUIS</string>
     <string name="text_arm_away">ACTIVEER WEG</string>
+    <string name="text_armed_home">ACTIVEER THUIS</string>
+    <string name="text_armed_away">ACTIVEER WEG</string>
     <string name="text_system">SYSTEEM</string>
     <string name="text_disarmed">GEDEACTIVEERD</string>
     <string name="dialog_alarm_triggered">VOER CODE IN</string>
