@@ -24,8 +24,8 @@ apply plugin: 'io.fabric'
 
 def versionMajor = 1
 def versionMinor = 4
-def versionPatch = 8
-def versionBuild = 4 // bump for dog food builds, public betas, etc.
+def versionPatch = 9
+def versionBuild = 0 // bump for dog food builds, public betas, etc.
 
 def ALARM_CODE() {
     Properties properties = new Properties()
@@ -116,7 +116,7 @@ android {
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.thanksmister.iot.mqtt.alarmpanel"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 27
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}"
@@ -188,6 +188,7 @@ configurations.all {
 ext {
     archVersion = '1.1.1'
     archRoomVersion = '1.0.0'
+    workerVersion = '1.0.0-alpha02'
     supporVersion = "27.+"
     dagger = "2.12"
     retrofit = "2.2.0"
@@ -224,6 +225,7 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:${archRoomVersion}"
     kapt "android.arch.persistence.room:compiler:${archRoomVersion}"
     implementation "android.arch.persistence.room:rxjava2:${archRoomVersion}"
+    implementation "android.arch.work:work-runtime:${workerVersion}"
 
     // MQTT
     compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'

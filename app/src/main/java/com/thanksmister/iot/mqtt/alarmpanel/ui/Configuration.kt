@@ -39,6 +39,29 @@ constructor(private val sharedPreferences: DPreference) {
         get() = this.sharedPreferences.getPrefString(PREF_NETWORK_PASSWORD, null)
         set(value) = this.sharedPreferences.setPrefString(PREF_NETWORK_PASSWORD, value)
 
+    var useNightDayMode: Boolean
+        get() = this.sharedPreferences.getPrefBoolean(PREF_DAY_NIGHT_MODE, true)
+        set(value) = this.sharedPreferences.setPrefBoolean(PREF_DAY_NIGHT_MODE, value)
+
+    var dayNightMode: String
+        get() = this.sharedPreferences.getPrefString(DISPLAY_MODE_DAY_NIGHT, DISPLAY_MODE_DAY)
+        set(value) = this.sharedPreferences.setPrefString(DISPLAY_MODE_DAY_NIGHT, value)
+
+    var nightModeChanged: Boolean
+        get() = this.sharedPreferences.getPrefBoolean(DISPLAY_MODE_DAY_NIGHT_CHANGED, false)
+        set(value) = this.sharedPreferences.setPrefBoolean(DISPLAY_MODE_DAY_NIGHT_CHANGED, value)
+
+    var isPortraitMode: Boolean
+        get() = this.sharedPreferences.getPrefBoolean(PREF_DEVICE_SCREEN_POTRAIT, false)
+        set(value) = this.sharedPreferences.setPrefBoolean(PREF_DEVICE_SCREEN_POTRAIT, value)
+
+    var dayNightModeStartTime: String
+        get() = this.sharedPreferences.getPrefString(PREF_MODE_DAY_NIGHT_START, DAY_NIGHT_START_VALUE_DEFAULT)
+        set(value) = this.sharedPreferences.setPrefString(PREF_MODE_DAY_NIGHT_START, value)
+
+    var dayNightModeEndTime: String
+        get() = this.sharedPreferences.getPrefString(PREF_MODE_DAY_NIGHT_END, DAY_NIGHT_END_VALUE_DEFAULT)
+        set(value) = this.sharedPreferences.setPrefString(PREF_MODE_DAY_NIGHT_END, value)
 
     var webUrl: String?
         get() = this.sharedPreferences.getPrefString(PREF_WEB_URL, null)
@@ -241,21 +264,30 @@ constructor(private val sharedPreferences: DPreference) {
         sharedPreferences.setPrefString(PREF_CAMERA_ROTATE, value)
     }
 
-    fun requiresScreenRotate(): Boolean {
-        return sharedPreferences.getPrefBoolean(PREF_REQUIRE_SCREEN_ROTATE, false)
+    fun isAlarmTriggeredMode(): Boolean {
+        return alarmMode == AlarmUtils.MODE_TRIGGERED
+                || alarmMode == AlarmUtils.MODE_HOME_TRIGGERED_PENDING
+                || alarmMode == AlarmUtils.MODE_AWAY_TRIGGERED_PENDING
+                || alarmMode == AlarmUtils.MODE_TRIGGERED_PENDING
     }
 
-    fun setRequiresScreenRotate(value: Boolean) {
-        sharedPreferences.setPrefBoolean(PREF_REQUIRE_SCREEN_ROTATE, value) // mark screen dirty change
+    fun isAlarmPendingMode(): Boolean {
+        return (alarmMode == AlarmUtils.MODE_ARM_AWAY_PENDING
+                || alarmMode == AlarmUtils.MODE_ARM_HOME_PENDING
+                || alarmMode == AlarmUtils.MODE_AWAY_TRIGGERED_PENDING
+                || alarmMode == AlarmUtils.MODE_HOME_TRIGGERED_PENDING)
     }
 
-    fun isPortraitMode(): Boolean {
-        return sharedPreferences.getPrefBoolean(PREF_DEVICE_SCREEN_POTRAIT, false)
+    fun isAlarmDisableMode(): Boolean {
+        return (alarmMode == AlarmUtils.MODE_ARM_HOME
+                || alarmMode == AlarmUtils.MODE_ARM_AWAY
+                || alarmMode == AlarmUtils.MODE_HOME_TRIGGERED_PENDING
+                || alarmMode == AlarmUtils.MODE_AWAY_TRIGGERED_PENDING
+                || alarmMode == AlarmUtils.MODE_TRIGGERED_PENDING)
     }
 
-    fun setPortraitMode(value: Boolean) {
-        this.sharedPreferences.setPrefBoolean(PREF_DEVICE_SCREEN_POTRAIT, value)
-        setRequiresScreenRotate(true)
+    fun hasScreenSaver() : Boolean {
+        return (showPhotoScreenSaver() || showClockScreenSaverModule())
     }
 
     /**
@@ -328,7 +360,7 @@ constructor(private val sharedPreferences: DPreference) {
         const val PREF_IMAGE_CLIENT_ID = "pref_image_client_id"
         const val PREF_MODULE_CAMERA = "pref_module_camera"
         const val PREF_CAMERA_ROTATE = "pref_camera_rotate"
-        const  val PREF_MODULE_WEATHER = "pref_module_weather"
+        const val PREF_MODULE_WEATHER = "pref_module_weather"
         const val PREF_MODULE_WEB = "pref_module_web"
         const val PREF_WEB_URL = "pref_web_url"
         const val PREF_FIRST_TIME = "pref_first_time"
@@ -347,5 +379,14 @@ constructor(private val sharedPreferences: DPreference) {
         const val PREF_NETWORK_PASSWORD = "pref_network_pass"
         const val PREF_DEVICE_SCREEN_POTRAIT = "pref_screen_portrait"
         const val PREF_REQUIRE_SCREEN_ROTATE = "pref_screen_rotate_required"
+        const val PREF_DAY_NIGHT_MODE = "pref_day_night_mode"
+        const val PREF_MODE_DAY_NIGHT_END = "mode_day_night_end"
+        const val PREF_MODE_DAY_NIGHT_START = "mode_day_night_start"
+        private const val DISPLAY_MODE_DAY_NIGHT = "mode_day_night"
+        private const val DISPLAY_MODE_DAY_NIGHT_CHANGED = "mode_day_night_changed"
+        const val DISPLAY_MODE_DAY = "mode_day"
+        const val DISPLAY_MODE_NIGHT = "mode_night"
+        const val DAY_NIGHT_START_VALUE_DEFAULT = "19:00"
+        const val DAY_NIGHT_END_VALUE_DEFAULT = "6:00"
     }
 }

@@ -22,13 +22,10 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
-import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
+import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MainViewModel
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
 
 import dagger.android.support.DaggerFragment
@@ -38,8 +35,8 @@ import javax.inject.Inject
 open class BaseFragment : DaggerFragment() {
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    public lateinit var viewModel: MessageViewModel
-    public val disposable = CompositeDisposable()
+    open lateinit var viewModel: MessageViewModel
+    open val disposable = CompositeDisposable()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)

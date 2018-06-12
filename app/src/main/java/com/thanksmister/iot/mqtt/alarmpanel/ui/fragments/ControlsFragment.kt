@@ -18,9 +18,6 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.fragments
 
-import android.app.Dialog
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -46,9 +43,9 @@ import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_DISA
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_HOME_TRIGGERED_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_TRIGGERED_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
+import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MainViewModel
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_controls.*
 import timber.log.Timber
@@ -148,14 +145,12 @@ class ControlsFragment : BaseFragment() {
                             AlarmUtils.STATE_ARM_AWAY -> {
                                 dialogUtils.clearDialogs()
                                 hideAlarmPendingView()
-                                viewModel.isArmed(true)
                                 viewModel.setAlarmMode(MODE_ARM_AWAY)
                                 setArmedAwayView()
                             }
                             AlarmUtils.STATE_ARM_HOME -> {
                                 dialogUtils.clearDialogs()
                                 hideAlarmPendingView()
-                                viewModel.isArmed(true)
                                 viewModel.setAlarmMode(MODE_ARM_HOME)
                                 setArmedHomeView()
                             }
@@ -166,7 +161,7 @@ class ControlsFragment : BaseFragment() {
                                 setDisarmedView()
                             }
                             AlarmUtils.STATE_PENDING ->
-                                if (viewModel.isAlarmPendingMode()) {
+                                if (configuration.isAlarmPendingMode()) {
                                     if (viewModel.getAlarmMode() == MODE_ARM_HOME_PENDING || viewModel.getAlarmMode() == MODE_HOME_TRIGGERED_PENDING) {
                                         setArmedHomeView()
                                     } else if (viewModel.getAlarmMode() == MODE_ARM_AWAY_PENDING || viewModel.getAlarmMode() == MODE_AWAY_TRIGGERED_PENDING) {

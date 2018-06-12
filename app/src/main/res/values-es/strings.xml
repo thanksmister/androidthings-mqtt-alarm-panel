@@ -265,6 +265,9 @@
     <string name="pref_update_settings_summary">Busca actualizaciones e instálalas si están disponibles.</string>
     <string name="pref_rotate_screen_title">Portrait</string>
     <string name="pref_rotate_screen_description">Display the screen in portrait (the default is landscape).</string>
+    <string name="pref_dark_mode_start_time">Start Time: %1$s</string>
+    <string name="pref_dark_mode_end_time">End Time: %1$s</string>
+    <string name="dialog_select_time">Select Time</string>
 
     <string-array name="inactivity_times">
         <item>15 segundos</item>

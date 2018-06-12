@@ -39,6 +39,22 @@
             android:entries="@array/screen_brightness_array"
             android:entryValues="@array/screen_brightness_array"/>
 
+        <CheckBoxPreference
+            android:key="pref_day_night_mode"
+            android:summary="Dims the display and uses a dark theme based on the start and end time."
+            android:title="Use Night Mode"/>
+
+        <Preference
+            android:key="mode_day_night_start"
+            android:title="Night Mode Start Time"
+            android:summary="19:00"/>
+
+        <Preference
+            android:key="mode_day_night_end"
+            android:title="Night Mode End Time"
+            android:summary="6:00"/>
+
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_time_title">

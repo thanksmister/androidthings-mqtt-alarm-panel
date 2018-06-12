@@ -47,6 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="64sp"
+                android:textColor="@color/white_alpha"
                 tools:text="18°C" />
 
             <Space
@@ -58,7 +59,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_width="84dp"
                 android:layout_height="84dp"
-                android:tint="@color/white"
+                android:tint="@color/white_alpha"
                 tools:src="@drawable/ic_thunderstorm" />
 
         </LinearLayout>
@@ -71,7 +72,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:textSize="48sp"
-            android:textColor="@color/light_gray"
+            android:textColor="@color/white_alpha"
             tools:text="12:00 PM"/>
 
     </LinearLayout>
@@ -113,6 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="42sp"
+                    android:textColor="@color/white_alpha"
                     tools:text="18°C"/>
 
                 <Space
@@ -124,7 +126,7 @@
                     android:layout_marginTop="4dp"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:tint="@color/white"
+                    android:tint="@color/white_alpha"
                     tools:src="@drawable/ic_thunderstorm" />
 
             </LinearLayout>
@@ -137,7 +139,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textSize="28sp"
-                android:textColor="@color/light_gray"
+                android:textColor="@color/white_alpha"
                 tools:text="12:00 PM"/>
 
         </LinearLayout>

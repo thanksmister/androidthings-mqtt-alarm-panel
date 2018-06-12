@@ -34,6 +34,8 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             grid:layout_gravity="center"
             grid:layout_columnWeight="1"
             grid:layout_rowWeight="1">
@@ -64,13 +66,15 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             grid:layout_columnWeight="1"
             grid:layout_gravity="center"
             grid:layout_rowWeight="1">
 
             <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_lock"
                 android:tint="@color/gray" />
@@ -94,13 +98,15 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             grid:layout_columnWeight="1"
             grid:layout_gravity="center"
             grid:layout_rowWeight="1">
 
             <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_cloud"
                 android:tint="@color/gray" />
@@ -126,13 +132,15 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             grid:layout_columnWeight="1"
             grid:layout_gravity="center"
             grid:layout_rowWeight="1">
 
             <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_room_service"
                 android:tint="@color/gray" />
@@ -155,14 +163,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:orientation="vertical"
             grid:layout_columnWeight="1"
             grid:layout_gravity="center"
             grid:layout_rowWeight="1">
 
             <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_photo_camera"
                 android:tint="@color/gray" />
@@ -186,13 +196,15 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             grid:layout_columnWeight="1"
             grid:layout_gravity="center"
             grid:layout_rowWeight="1">
 
             <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_wallpaper"
                 android:tint="@color/gray" />
@@ -216,13 +228,15 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             grid:layout_columnWeight="1"
             grid:layout_gravity="center"
             grid:layout_rowWeight="1">
 
             <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_wb_sunny"
                 android:tint="@color/gray" />
@@ -246,13 +260,15 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             grid:layout_columnWeight="1"
             grid:layout_gravity="center"
             grid:layout_rowWeight="1">
 
             <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_home"
                 android:tint="@color/gray" />
@@ -276,13 +292,15 @@
             android:layout_height="wrap_content"
             android:foreground="?android:attr/selectableItemBackground"
             android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             grid:layout_columnWeight="1"
             grid:layout_gravity="center"
             grid:layout_rowWeight="1">
 
             <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_mister"
                 android:tint="@color/gray" />

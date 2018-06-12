@@ -18,6 +18,9 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.activities
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -35,6 +38,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment
 import com.thanksmister.iot.mqtt.alarmpanel.BuildConfig
 import com.thanksmister.iot.mqtt.alarmpanel.R
+import com.thanksmister.iot.mqtt.alarmpanel.managers.DayNightAlarmLiveData
 import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.ControlsFragment
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.MainFragment
@@ -44,7 +48,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.MQTTModule
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.MotionSensor
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.TextToSpeechModule
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils
-import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.IMAGE_CAPTURE_STATE_TOPIC
+import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MainViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -56,6 +60,8 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         MQTTModule.MQTTListener, CameraModule.CallbackListener, MainFragment.OnMainFragmentListener, PlatformFragment.OnPlatformFragmentListener,
         MotionSensor.MotionListener {
 
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModel: MainViewModel
     @Inject lateinit var mqttOptions: MQTTOptions
 
     private lateinit var pagerAdapter: PagerAdapter
@@ -68,7 +74,10 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     private var motionSensorModule: MotionSensor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
 
         mBackgroundThread = HandlerThread("BackgroundThread")
         mBackgroundThread?.start()
@@ -130,15 +139,12 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                             AlarmUtils.STATE_DISARM,
                             AlarmUtils.STATE_ARM_AWAY,
                             AlarmUtils.STATE_ARM_HOME -> {
-                                setScreenBrightness()
                                 resetInactivityTimer()
                             }
                             AlarmUtils.STATE_TRIGGERED -> {
-                                setScreenBrightness()
                                 awakenDeviceForAction()
                             }
                             AlarmUtils.STATE_PENDING -> {
-                                setScreenBrightness()
                                 awakenDeviceForAction()
                             }
                         }
@@ -148,7 +154,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun onResume() {
         super.onResume()
-        resetInactivityTimer()
+        //resetInactivityTimer()
         mBackgroundHandler!!.post(initializeOnBackground)
         setViewPagerState()
     }
@@ -290,7 +296,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         if(mqttOptions.getNotificationTopic() == topic) {
             this@MainActivity.runOnUiThread({
                 awakenDeviceForAction()
-                setScreenBrightness()
                 if (viewModel.hasAlerts()) {
                     dialogUtils.showAlertDialog(this@MainActivity, payload)
                 }
@@ -351,7 +356,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun onMotionDetected() {
         Timber.d("onMotionDetected")
-        setScreenBrightness()
         stopDisconnectTimer() // stop screen saver mode
     }
 
