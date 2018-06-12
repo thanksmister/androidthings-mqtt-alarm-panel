@@ -26,6 +26,7 @@ import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
+import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
 import timber.log.Timber
 import java.util.*
 
@@ -104,15 +105,8 @@ class DayNightAlarmLiveData(private val context: Context, private val configurat
 
     private fun setNightDayMode() {
         val nowTime = "${Calendar.getInstance().get(Calendar.HOUR_OF_DAY)}.${Calendar.getInstance().get(Calendar.MINUTE)}".toFloat()
-        val startTime = configuration.dayNightModeStartTime.replace(":", ".").toFloat()
-        val endTime =  configuration.dayNightModeEndTime.replace(":", ".").toFloat()
-
-        Timber.d("Now Hour: " + nowTime)
-        Timber.d("Start Hour: " + startTime)
-        Timber.d("End Hour: " + endTime)
-        Timber.d("startTime == endTime: " + (startTime == endTime))
-        Timber.d("endTime < startTime: " + (endTime < startTime))
-        Timber.d("endTime > startTime: " + (startTime == endTime))
+        val startTime = DateUtils.getHourAndMinutesFromTimePicker(configuration.dayNightModeStartTime)
+        val endTime = DateUtils.getHourAndMinutesFromTimePicker(configuration.dayNightModeEndTime)
 
         if(startTime == endTime) {
             Timber.d("Tis forever night")

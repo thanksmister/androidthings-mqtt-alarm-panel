@@ -46,6 +46,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.ImageOptions
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.DarkSkyDao
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
+import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DeviceUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.NetworkUtils
@@ -160,12 +161,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     open fun dayNightModeCheck(dayNightMode:String?) {
         Timber.d("dayNightModeCheck")
         val uiMode = resources.configuration.uiMode and UI_MODE_NIGHT_MASK;
-        Timber.d("dayNightMode: $dayNightMode")
-        Timber.d("currentNightMode: $uiMode")
-        Timber.d("UI_MODE_NIGHT_MASK: $UI_MODE_NIGHT_MASK")
-        Timber.d("UI_MODE_NIGHT_NO: $UI_MODE_NIGHT_NO")
-        Timber.d("UI_MODE_NIGHT_YES: $UI_MODE_NIGHT_YES")
-        Timber.d("UI_MODE_NIGHT_UNDEFINED: $UI_MODE_NIGHT_UNDEFINED")
         if(dayNightMode == Configuration.DISPLAY_MODE_NIGHT && uiMode == UI_MODE_NIGHT_NO) {
             Timber.d("Tis the night!")
             setScreenBrightness()
@@ -182,11 +177,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     private fun dayNightModeChanged() {
         Timber.d("dayNightModeChanged")
         val uiMode = resources.configuration.uiMode and UI_MODE_NIGHT_MASK;
-        Timber.d("currentNightMode: $uiMode")
-        Timber.d("UI_MODE_NIGHT_MASK: $UI_MODE_NIGHT_MASK")
-        Timber.d("UI_MODE_NIGHT_NO: $UI_MODE_NIGHT_NO")
-        Timber.d("UI_MODE_NIGHT_YES: $UI_MODE_NIGHT_YES")
-        Timber.d("UI_MODE_NIGHT_UNDEFINED: $UI_MODE_NIGHT_UNDEFINED")
         if (!configuration.useNightDayMode && uiMode == UI_MODE_NIGHT_YES) {
             Timber.d("Tis the day!")
             setScreenBrightness()
@@ -198,16 +188,27 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     /**
      * Resets the screen brightness to the default or based on time of day
      */
-    // TODO degrade brightness for night mode based on brightness level
-    fun setScreenBrightness() {
-        var brightness = DeviceUtils.getScreenBrightnessBasedOnDayTime(configuration.screenBrightness)
-        if(configuration.useNightDayMode && configuration.dayNightMode == Configuration.DISPLAY_MODE_NIGHT) {
-            brightness = (brightness*.55).toFloat()
-        }
-        Timber.d("setScreenBrightness: $brightness")
+    private fun setScreenBrightness() {
+        val brightness = getScreenBrightness()
+        Timber.d("ScreenBrightness: $brightness")
         val lp: WindowManager.LayoutParams = window.attributes;
         lp.screenBrightness = brightness;
         window.attributes = lp
+    }
+
+    /**
+     * Returns the adjusted screen brightness depending on time of day or night mode.
+     */
+    private fun getScreenBrightness(): Float {
+        val brightness: Float
+        if(configuration.useNightDayMode && configuration.dayNightMode == Configuration.DISPLAY_MODE_NIGHT) {
+            brightness = DeviceUtils.getScreenBrightnessNightMode(configuration.screenBrightness)
+        } else {
+            brightness = DeviceUtils.getScreenBrightnessBasedOnDayTime(configuration.screenBrightness,
+                    DateUtils.getHourAndMinutesFromTimePicker(configuration.dayNightModeStartTime),
+                    DateUtils.getHourAndMinutesFromTimePicker(configuration.dayNightModeEndTime))
+        }
+        return brightness
     }
 
     fun resetInactivityTimer() {
@@ -256,7 +257,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             dialogUtils.showScreenSaver(this@BaseActivity,
                     configuration.showPhotoScreenSaver(),
                     readImageOptions(),
-                    configuration.screenBrightness,
+                    getScreenBrightness(),
                     View.OnClickListener {
                         dialogUtils.hideScreenSaverDialog()
                         resetInactivityTimer()

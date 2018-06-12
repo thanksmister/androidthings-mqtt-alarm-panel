@@ -265,7 +265,7 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
      * Show the screen saver only if the alarm isn't triggered. This shouldn't be an issue
      * with the alarm disabled because the disable time will be longer than this.
      */
-    fun showScreenSaver(activity: AppCompatActivity, showPhotoScreenSaver: Boolean, options:ImageOptions, screenBrightness: Int,
+    fun showScreenSaver(activity: AppCompatActivity, showPhotoScreenSaver: Boolean, options:ImageOptions, screenBrightness: Float,
                         onClickListener: View.OnClickListener, dataSource: DarkSkyDao, hasWeather: Boolean) {
         if (screenSaverDialog != null && screenSaverDialog!!.isShowing) {
             return
@@ -280,11 +280,11 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         screenSaverDialog = buildImmersiveDialog(activity, true, screenSaverView, true)
         if (screenSaverDialog != null){
             val lp: WindowManager.LayoutParams = screenSaverDialog!!.window.attributes;
-            Timber.d("Screensaver Brightness: " + DeviceUtils.getScreenSaverBrightness(screenBrightness))
-            lp.screenBrightness = DeviceUtils.getScreenSaverBrightness(screenBrightness) //.05f;
+            lp.screenBrightness = screenBrightness
             screenSaverDialog!!.window.attributes = lp
         }
     }
+
 
     // immersive dialogs without navigation
     // https://stackoverflow.com/questions/22794049/how-do-i-maintain-the-immersive-mode-in-dialogs

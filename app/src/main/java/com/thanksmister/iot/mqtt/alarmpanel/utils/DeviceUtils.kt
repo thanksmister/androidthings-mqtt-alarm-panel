@@ -47,17 +47,19 @@ object DeviceUtils {
             return md5(deviceId!!)
         }
 
+    private fun convertScreenBrightnessToFloat(currentBrightness: Int): Float {
+        return (currentBrightness.toFloat()/10)
+    }
 
-    fun getScreenSaverBrightness(currentBrightness: Int): Float {
-        val brightness = getScreenBrightnessBasedOnDayTime(currentBrightness)
+    /**
+     * Returns the adjusted brightness depending when its night mode
+     */
+    fun getScreenBrightnessNightMode(currentBrightness: Int): Float {
+        val brightness = convertScreenBrightnessToFloat(currentBrightness)
         if(brightness/2 <= 0f) {
             return .05f
         }
-        return brightness/2;
-    }
-
-    private fun convertScreenBrightnessToFloat(currentBrightness: Int): Float {
-        return (currentBrightness.toFloat()/10)
+        return brightness/2
     }
 
     /**
@@ -65,13 +67,13 @@ object DeviceUtils {
      * @param currentBrightness
      * @return
      */
-    fun getScreenBrightnessBasedOnDayTime(currentBrightness: Int): Float {
+    fun getScreenBrightnessBasedOnDayTime(currentBrightness: Int, startTime: Float, endTime: Float): Float {
         val brightness = convertScreenBrightnessToFloat(currentBrightness)
         if (brightness == 1f) {
             return .05f
         }
         val hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        return if (hourOfDay >= 21 || hourOfDay < 6) {
+        return if (hourOfDay >= startTime || hourOfDay < endTime) {
             brightness/2
         } else  {
             brightness

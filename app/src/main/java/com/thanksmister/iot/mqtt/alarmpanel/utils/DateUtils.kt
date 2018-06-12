@@ -63,6 +63,10 @@ object DateUtils {
         return 0
     }
 
+    fun getHourAndMinutesFromTimePicker(timePickerValue: String): Float {
+        return timePickerValue.replace(":", ".").toFloat()
+    }
+
     fun parseCreatedAtDate(dateString: String?): String? {
         if(TextUtils.isEmpty(dateString)) return dateString
         val fmt = DateTimeFormat.patternForStyle("SS", Locale.getDefault())
