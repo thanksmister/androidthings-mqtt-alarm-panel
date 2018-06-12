@@ -25,26 +25,16 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
-import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
-import kotlinx.android.synthetic.main.fragment_information.*
 import timber.log.Timber
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.time.LocalTime
 import java.util.*
-
-import java.time.ZoneId
-import java.time.ZoneId.systemDefault
-import java.time.ZonedDateTime
 
 
 class DayNightAlarmLiveData(private val context: Context, private val configuration: Configuration) : MutableLiveData<String>() {
 
-    private var pendingIntent: PendingIntent? = null
-    private val intentFilter = IntentFilter(ALARM_ACTION)
-    private val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    //private var pendingIntent: PendingIntent? = null
+    //private val intentFilter = IntentFilter(ALARM_ACTION)
+    //private val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private var timeHandler: Handler? = null
 
     private val timeRunnable = object : Runnable {
@@ -118,8 +108,11 @@ class DayNightAlarmLiveData(private val context: Context, private val configurat
         val endTime =  configuration.dayNightModeEndTime.replace(":", ".").toFloat()
 
         Timber.d("Now Hour: " + nowTime)
-        Timber.d("Start Hour: " + endTime)
+        Timber.d("Start Hour: " + startTime)
         Timber.d("End Hour: " + endTime)
+        Timber.d("startTime == endTime: " + (startTime == endTime))
+        Timber.d("endTime < startTime: " + (endTime < startTime))
+        Timber.d("endTime > startTime: " + (startTime == endTime))
 
         if(startTime == endTime) {
             Timber.d("Tis forever night")

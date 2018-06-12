@@ -67,7 +67,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     private var hasNetwork = AtomicBoolean(true)
     val disposable = CompositeDisposable()
     private var connectionLiveData: ConnectionLiveData? = null
-    private var alarmLiveData: DayNightAlarmLiveData? = null
     private var wifiManager: WifiManager? = null
 
     abstract fun getLayoutId(): Int
@@ -85,11 +84,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         if( !TextUtils.isEmpty(configuration.networkId) && !TextUtils.isEmpty(configuration.networkPassword)) {
             NetworkUtils.connectNetwork(this@BaseActivity, configuration.networkId, configuration.networkPassword )
         }
-
-        /*if(configuration.dayNightMode == Configuration.DISPLAY_MODE_NIGHT) {
-            setScreenBrightness()
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }*/
     }
 
     override fun onStart(){
@@ -108,9 +102,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             configuration.nightModeChanged = false // reset
             dayNightModeChanged() // reset screen brightness if day/night mode inactive
         }
+
         val orientation = resources.configuration.orientation
-        Timber.d("current orientation $orientation")
-        Timber.d("isPortraitMode ${configuration.isPortraitMode}")
         if(configuration.isPortraitMode && orientation == ORIENTATION_LANDSCAPE) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         } else if (!configuration.isPortraitMode && orientation == ORIENTATION_PORTRAIT) {
@@ -162,15 +155,10 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                 handleNetworkDisconnect()
             }
         })
-
-        alarmLiveData = DayNightAlarmLiveData(this@BaseActivity, configuration)
-        alarmLiveData?.observe(this, Observer { dayNightMode ->
-            setDayNightModeCheck(dayNightMode)
-        })
     }
 
-    open fun setDayNightModeCheck(dayNightMode:String?) {
-        Timber.d("setDayNightModeCheck")
+    open fun dayNightModeCheck(dayNightMode:String?) {
+        Timber.d("dayNightModeCheck")
         val uiMode = resources.configuration.uiMode and UI_MODE_NIGHT_MASK;
         Timber.d("dayNightMode: $dayNightMode")
         Timber.d("currentNightMode: $uiMode")

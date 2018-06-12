@@ -72,6 +72,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     private var cameraModule: CameraModule? = null
     private var alertDialog: AlertDialog? = null
     private var motionSensorModule: MotionSensor? = null
+    private var alarmLiveData: DayNightAlarmLiveData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -123,6 +124,11 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                     })
                     .show()
         }
+
+        alarmLiveData = DayNightAlarmLiveData(this@MainActivity, configuration)
+        alarmLiveData?.observe(this, Observer { dayNightMode ->
+            dayNightModeCheck(dayNightMode)
+        })
     }
 
     public override fun onStart() {
