@@ -19,14 +19,17 @@ To use the application with Home Assistant, you need to use the [Home Assistant'
 For issues, feature requests, comments or questions, use the [Github issues tracker](https://github.com/thanksmister/androidthings-mqtt-alarm-panel/issues).  For HASS specific questions, you can join the [Home Assistant Community Dsicussion](https://community.home-assistant.io/t/mqtt-alarm-control-panel-for-raspberry-pi-and-android/26484/94) page which already has a lot information from the community. 
 
 ## Features
+- Night mode based on set times to turn the screen dark.
+- Supports portrait or landscape modes.
 - Externally powered speaker for sound and notificaitons.
 - Camera support for capturing and emailing images when alarm disabled (requires Mailgun api key).
 - Google Text-to-Speech support to speak MQTT notification messages.
 - Screen timout and brightness control with optional clock screensaver mode. 
 - 7 day Weather forecast (requires Darksky api key).
 - Home Automation Platform webpage support for viewing your home automation website.
-- Capture images on demand using MQTT message
-- Support for PIR sensor to wake screen on motion detection (see Fritzing diagram below)
+- Capture images on demand using MQTT message.
+- Support for PIR sensor to wake screen on motion detection (see Fritzing diagram below).
+- Dutch, Spanish, Portuguese translations.
 
 ## Supported Command and Publish States
 
