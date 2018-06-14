@@ -146,6 +146,8 @@
 
     <string name="text_arm_home">ACTIVEER THUIS</string>
     <string name="text_arm_away">ACTIVEER WEG</string>
+    <string name="text_armed_home">ACTIVEER THUIS</string>
+    <string name="text_armed_away">ACTIVEER WEG</string>
     <string name="text_system">SYSTEEM</string>
     <string name="text_disarmed">GEDEACTIVEERD</string>
     <string name="dialog_alarm_triggered">VOER CODE IN</string>
@@ -207,7 +209,7 @@
     <string name="pref_time_format_title">Gebruik het 24-uurs formaat</string>
     <string name="text_dialog_select_time">Selecteer tijd</string>
     <string name="pref_density_summary">Verander de scherm dichtheid. Momenteel %1$s dpi.</string>
-    <string name="pref_device_brightness_summary">Zet de schermhelderheid tussen de 0 en 255. Momenteel %1$s.</string>
+    <string name="pref_device_brightness_summary">Zet de schermhelderheid tussen de 1 en 5. Momenteel %1$s.</string>
     <string name="pref_device_density_title">Scherm dichtheid</string>
     <string name="pref_device_brightness_title">Scherm helderheid</string>
     <string name="pref_reset_category">Herstellen</string>
@@ -263,6 +265,11 @@
     <string name="pref_update_settings">Bijwerken</string>
     <string name="pref_update_settings_title">Controleer op updates</string>
     <string name="pref_update_settings_summary">Controleert op updates en installeert ze indien beschikbaar.</string>
+    <string name="pref_rotate_screen_title">Portret</string>
+    <string name="pref_rotate_screen_description">Geef het scherm in portret weer (de standaardinstelling is landscape).</string>
+    <string name="pref_dark_mode_start_time">Starttijd: %1$s</string>
+    <string name="pref_dark_mode_end_time">Eindtijd: %1$s</string>
+    <string name="dialog_select_time">Selecteer Tijd</string>
 
     <string-array name="inactivity_times">
         <item>15 seconden</item>

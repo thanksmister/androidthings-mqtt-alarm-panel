@@ -27,26 +27,33 @@
 
     <PreferenceCategory android:title="@string/pref_display_settings">
 
+        <CheckBoxPreference
+            android:key="pref_screen_portrait"
+            android:summary="@string/pref_rotate_screen_description"
+            android:title="@string/pref_rotate_screen_title"/>
+
         <ListPreference
-            android:key="pref_device_timeout"
-            android:title="@string/pref_device_timeout_title"
-            android:summary="@string/pref_device_timeout_minutes_summary"
-            android:entries="@array/timeout_times"
-            android:entryValues="@array/timeout_values"/>
-
-        <EditTextPreference
-            android:key="pref_device_screen_density"
-            android:title="@string/pref_device_density_title"
-            android:summary="@string/pref_density_summary"
-            android:negativeButtonText="@android:string/cancel"
-            android:positiveButtonText="@android:string/ok"/>
-
-        <EditTextPreference
-            android:key="pref_device_brightness"
+            android:key="pref_screen_brightness"
             android:title="@string/pref_device_brightness_title"
             android:summary="@string/pref_device_brightness_summary"
-            android:negativeButtonText="@android:string/cancel"
-            android:positiveButtonText="@android:string/ok"/>
+            android:entries="@array/screen_brightness_array"
+            android:entryValues="@array/screen_brightness_array"/>
+
+        <CheckBoxPreference
+            android:key="pref_day_night_mode"
+            android:summary="Dims the display and uses a dark theme based on the start and end time."
+            android:title="Use Night Mode"/>
+
+        <Preference
+            android:key="mode_day_night_start"
+            android:title="Night Mode Start Time"
+            android:summary="19:00"/>
+
+        <Preference
+            android:key="mode_day_night_end"
+            android:title="Night Mode End Time"
+            android:summary="6:00"/>
+
 
     </PreferenceCategory>
 

@@ -140,7 +140,7 @@
         <item id="Asia/Dubai">Dubai</item>
         <item id="Asia/Kabul">Kabul</item>
         <item id="Asia/Karachi">Islamabad, Karachi</item>
-        <item id="Asia/Oral">Ural'sk</item>
+        <item id="Asia/Oral">Ural\'sk</item>
         <item id="Asia/Yekaterinburg">Yekaterinburg</item>
         <item id="Asia/Calcutta">Kolkata</item>
         <item id="Asia/Colombo">Sri Lanka</item>
@@ -258,6 +258,14 @@
         <item id="Pacific/Auckland">Pacific/Auckland</item>
         <item id="Pacific/Fiji">Pacific/Fiji</item>
         <item id="Pacific/Tongatapu">Pacific/Tongatapu</item>
+    </string-array>
+
+    <string-array name="screen_brightness_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
     </string-array>
 
 </resources>

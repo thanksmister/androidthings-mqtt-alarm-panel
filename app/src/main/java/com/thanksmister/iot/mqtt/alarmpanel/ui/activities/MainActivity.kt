@@ -18,6 +18,9 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.activities
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -35,6 +38,8 @@ import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment
 import com.thanksmister.iot.mqtt.alarmpanel.BuildConfig
 import com.thanksmister.iot.mqtt.alarmpanel.R
+import com.thanksmister.iot.mqtt.alarmpanel.managers.DayNightAlarmLiveData
+import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.ControlsFragment
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.MainFragment
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.PlatformFragment
@@ -43,30 +48,37 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.MQTTModule
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.MotionSensor
 import com.thanksmister.iot.mqtt.alarmpanel.ui.modules.TextToSpeechModule
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils
-import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.IMAGE_CAPTURE_STATE_TOPIC
-import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.NOTIFICATION_STATE_TOPIC
+import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MainViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
+import javax.inject.Inject
 
 
 class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFragment.OnControlsFragmentListener,
         MQTTModule.MQTTListener, CameraModule.CallbackListener, MainFragment.OnMainFragmentListener, PlatformFragment.OnPlatformFragmentListener,
         MotionSensor.MotionListener {
 
-    private lateinit var pagerAdapter: PagerAdapter
+    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModel: MainViewModel
+    @Inject lateinit var mqttOptions: MQTTOptions
 
-    private var textToSpeechModule: TextToSpeechModule? = null
+    private lateinit var pagerAdapter: PagerAdapter
     private var mqttModule: MQTTModule? = null
+    private var textToSpeechModule: TextToSpeechModule? = null
     private var mBackgroundThread: HandlerThread? = null
     private var mBackgroundHandler: Handler? = null
     private var cameraModule: CameraModule? = null
     private var alertDialog: AlertDialog? = null
     private var motionSensorModule: MotionSensor? = null
+    private var alarmLiveData: DayNightAlarmLiveData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
 
         mBackgroundThread = HandlerThread("BackgroundThread")
         mBackgroundThread?.start()
@@ -82,7 +94,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
             readWeatherOptions().darkSkyKey = BuildConfig.DARK_SKY_KEY
             readWeatherOptions().setLat(BuildConfig.LATITUDE)
             readWeatherOptions().setLon(BuildConfig.LONGITUDE)
-            readMqttOptions().setBroker(BuildConfig.BROKER)
+            mqttOptions.setBroker(BuildConfig.BROKER)
             configuration.webUrl = BuildConfig.HASS_URL
             configuration.setMailFrom(BuildConfig.MAIL_FROM)
             configuration.setMailGunApiKey(BuildConfig.MAIL_GUN_KEY)
@@ -112,6 +124,11 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                     })
                     .show()
         }
+
+        alarmLiveData = DayNightAlarmLiveData(this@MainActivity, configuration)
+        alarmLiveData?.observe(this, Observer { dayNightMode ->
+            dayNightModeCheck(dayNightMode)
+        })
     }
 
     public override fun onStart() {
@@ -128,15 +145,12 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                             AlarmUtils.STATE_DISARM,
                             AlarmUtils.STATE_ARM_AWAY,
                             AlarmUtils.STATE_ARM_HOME -> {
-                                setScreenDefaults()
                                 resetInactivityTimer()
                             }
                             AlarmUtils.STATE_TRIGGERED -> {
-                                setScreenTriggered()
                                 awakenDeviceForAction()
                             }
                             AlarmUtils.STATE_PENDING -> {
-                                setScreenDefaults()
                                 awakenDeviceForAction()
                             }
                         }
@@ -146,7 +160,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun onResume() {
         super.onResume()
-        resetInactivityTimer()
+        //resetInactivityTimer()
         mBackgroundHandler!!.post(initializeOnBackground)
         setViewPagerState()
     }
@@ -158,8 +172,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         } catch (t: Throwable) {
             // close quietly
         }
-        mBackgroundThread = null
-        mBackgroundHandler = null
         if(alertDialog != null) {
             alertDialog?.dismiss()
             alertDialog = null
@@ -227,14 +239,14 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
             })
         }
 
-        if (mqttModule == null && readMqttOptions().isValid) {
-            mqttModule = MQTTModule(this@MainActivity.applicationContext, readMqttOptions(),this@MainActivity)
+        if (mqttModule == null && mqttOptions.isValid) {
+            mqttModule = MQTTModule(this@MainActivity.applicationContext, mqttOptions,this@MainActivity)
             runOnUiThread({
                 lifecycle.addObserver(mqttModule!!)
             })
         }
 
-        if (cameraModule == null && viewModel.hasCamera()) {
+        if (cameraModule == null && viewModel.hasCamera() && mBackgroundHandler != null) {
             cameraModule = CameraModule(this@MainActivity, mBackgroundHandler!!,this@MainActivity)
             runOnUiThread({
                 lifecycle.addObserver(cameraModule!!)
@@ -287,10 +299,9 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     override fun onMQTTMessage(id: String, topic: String, payload: String) {
-        if(NOTIFICATION_STATE_TOPIC == topic) {
+        if(mqttOptions.getNotificationTopic() == topic) {
             this@MainActivity.runOnUiThread({
                 awakenDeviceForAction()
-                setScreenDefaults()
                 if (viewModel.hasAlerts()) {
                     dialogUtils.showAlertDialog(this@MainActivity, payload)
                 }
@@ -298,7 +309,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                     textToSpeechModule!!.speakText(payload)
                 }
             })
-        } else if(IMAGE_CAPTURE_STATE_TOPIC == topic) {
+        } else if(mqttOptions.getCameraTopic() == topic) {
             this@MainActivity.runOnUiThread({
                 captureImage()
             })
@@ -351,7 +362,6 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun onMotionDetected() {
         Timber.d("onMotionDetected")
-        setScreenDefaults()
         stopDisconnectTimer() // stop screen saver mode
     }
 

@@ -24,9 +24,6 @@ import android.content.ContextWrapper
 import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTService
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils
-import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.ALARM_STATE_TOPIC
-import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.IMAGE_CAPTURE_STATE_TOPIC
-import com.thanksmister.iot.mqtt.alarmpanel.utils.ComponentUtils.NOTIFICATION_STATE_TOPIC
 import org.eclipse.paho.client.mqttv3.MqttException
 import timber.log.Timber
 
@@ -108,9 +105,9 @@ class MQTTModule (base: Context?, var mqttOptions: MQTTOptions, private val list
 
     override fun subscriptionMessage(id: String, topic: String, payload: String) {
         Timber.d("topic: " + topic)
-        if (NOTIFICATION_STATE_TOPIC == topic
-                || IMAGE_CAPTURE_STATE_TOPIC == topic
-                || (ALARM_STATE_TOPIC == topic && AlarmUtils.hasSupportedStates(payload))) {
+        if (mqttOptions.getNotificationTopic() == topic
+                || mqttOptions.getCameraTopic() == topic
+                || (mqttOptions.getStateTopic() == topic && AlarmUtils.hasSupportedStates(payload))) {
             listener.onMQTTMessage(id, topic, payload)
         } else {
             Timber.e("We received some bad info: topic: $topic payload: $payload");

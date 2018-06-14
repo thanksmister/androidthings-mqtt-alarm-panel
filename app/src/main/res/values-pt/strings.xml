@@ -145,6 +145,8 @@
 
     <string name="text_arm_home">ARMADO CASA</string>
     <string name="text_arm_away">ARMADO FORA</string>
+    <string name="text_armed_home">ARMADO CASA</string>
+    <string name="text_armed_away">ARMADO FORA</string>
     <string name="text_system">SISTEMA</string>
     <string name="text_disarmed">DESARMADO</string>
     <string name="dialog_alarm_triggered">INTRODUZA CÓDIGO PARA SAIR</string>
@@ -206,7 +208,7 @@
     <string name="pref_time_format_title">Usar formato de 24 horas (16h00)</string>
     <string name="text_dialog_select_time">Seleccione a Hora</string>
     <string name="pref_density_summary">Altere a densidade do ecrã. Actualmente é %1$s dpi.</string>
-    <string name="pref_device_brightness_summary">Configurar o brilho do ecrã entre 0 e 255. Actualmente é %1$s.</string>
+    <string name="pref_device_brightness_summary">Configurar o brilho do ecrã entre 1 e 5. Actualmente é %1$s.</string>
     <string name="pref_device_density_title">Densidade do Ecrã</string>
     <string name="pref_device_brightness_title">Brilho do Ecrã</string>
     <string name="pref_reset_category">Limpar</string>
@@ -265,6 +267,11 @@
     <string name="pref_wifi_settings_summary">Digite o nome da sua rede e senha para conectar o dispositivo ao WiFi.</string>
     <string name="pref_wifi_settings_summary_filled">%1$s Atualmente conectado a %2$s.</string>
     <string name="toast_network_settings_unchanged">Configurações de rede inalteradas…</string>
+    <string name="pref_rotate_screen_title">Retrato</string>
+    <string name="pref_rotate_screen_description">Exibe a tela em retrato (o padrão é paisagem).</string>
+    <string name="pref_dark_mode_start_time">Hora de início: %1$s</string>
+    <string name="pref_dark_mode_end_time">Fim do tempo: %1$s</string>
+    <string name="dialog_select_time">Selecione o horário</string>
 
     <string-array name="inactivity_times">
         <item>15 segundos</item>

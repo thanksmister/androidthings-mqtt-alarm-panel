@@ -30,24 +30,25 @@ class MQTTOptions constructor(private val sharedPreferences: DPreference) {
                 getStateTopics().isNotEmpty() &&
                 !TextUtils.isEmpty(getCommandTopic())
 
-    fun getBroker(): String {
-        val broker = sharedPreferences.getPrefString(PREF_BROKER, "")
-        if (!TextUtils.isEmpty(broker)) {
-            if (broker!!.contains("http://") || broker.contains("https://")) {
-                return String.format(Locale.getDefault(), HTTP_BROKER_URL_FORMAT, broker, getPort())
+    val brokerUrl: String
+        get() = if (!TextUtils.isEmpty(getBroker())) {
+            if (getBroker().contains("http://") || getBroker().contains("https://")) {
+                String.format(Locale.getDefault(), HTTP_BROKER_URL_FORMAT, getBroker(), getPort())
             } else if (getTlsConnection()) {
-                return String.format(Locale.getDefault(), SSL_BROKER_URL_FORMAT, broker, getPort())
+                String.format(Locale.getDefault(), SSL_BROKER_URL_FORMAT, getBroker(), getPort())
             } else {
-                return String.format(Locale.getDefault(), TCP_BROKER_URL_FORMAT, broker, getPort())
+                String.format(Locale.getDefault(), TCP_BROKER_URL_FORMAT, getBroker(), getPort())
             }
-        }
-        return ""
+        } else ""
+
+    fun getBroker(): String {
+        return sharedPreferences.getPrefString(PREF_BROKER, "")
     }
 
     fun getClientId(): String {
         var clientId = sharedPreferences.getPrefString(PREF_CLIENT_ID, null)
         if (TextUtils.isEmpty(clientId)) {
-            clientId = DeviceUtils.getUuIdHash()
+            clientId = DeviceUtils.uuIdHash
         }
         return clientId
     }

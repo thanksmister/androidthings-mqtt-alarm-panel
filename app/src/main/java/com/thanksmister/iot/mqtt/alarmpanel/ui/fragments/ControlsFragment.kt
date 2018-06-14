@@ -18,9 +18,6 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.fragments
 
-import android.app.Dialog
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -30,6 +27,7 @@ import android.widget.Toast
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment
 import com.thanksmister.iot.mqtt.alarmpanel.R
+import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmDisableView
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmPendingView
@@ -45,9 +43,9 @@ import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_DISA
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_HOME_TRIGGERED_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.MODE_TRIGGERED_PENDING
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
+import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MainViewModel
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_controls.*
 import timber.log.Timber
@@ -55,6 +53,7 @@ import javax.inject.Inject
 
 class ControlsFragment : BaseFragment() {
 
+    @Inject lateinit var mqttOptions: MQTTOptions
     @Inject lateinit var dialogUtils: DialogUtils
     @Inject lateinit var configuration: Configuration
     private var alarmPendingView: AlarmPendingView? = null
@@ -115,7 +114,7 @@ class ControlsFragment : BaseFragment() {
             if (!hasNetworkConnectivity()) {
                 // we can't change the alarm state without network connection.
                 handleNetworkDisconnect()
-            } else if (readMqttOptions().isValid) {
+            } else if (mqttOptions.isValid) {
                 if (viewModel.getAlarmMode() == MODE_DISARM) {
                     showArmOptionsDialog()
                 } else {
@@ -146,14 +145,12 @@ class ControlsFragment : BaseFragment() {
                             AlarmUtils.STATE_ARM_AWAY -> {
                                 dialogUtils.clearDialogs()
                                 hideAlarmPendingView()
-                                viewModel.isArmed(true)
                                 viewModel.setAlarmMode(MODE_ARM_AWAY)
                                 setArmedAwayView()
                             }
                             AlarmUtils.STATE_ARM_HOME -> {
                                 dialogUtils.clearDialogs()
                                 hideAlarmPendingView()
-                                viewModel.isArmed(true)
                                 viewModel.setAlarmMode(MODE_ARM_HOME)
                                 setArmedHomeView()
                             }
@@ -164,7 +161,7 @@ class ControlsFragment : BaseFragment() {
                                 setDisarmedView()
                             }
                             AlarmUtils.STATE_PENDING ->
-                                if (viewModel.isAlarmPendingMode()) {
+                                if (configuration.isAlarmPendingMode()) {
                                     if (viewModel.getAlarmMode() == MODE_ARM_HOME_PENDING || viewModel.getAlarmMode() == MODE_HOME_TRIGGERED_PENDING) {
                                         setArmedHomeView()
                                     } else if (viewModel.getAlarmMode() == MODE_ARM_AWAY_PENDING || viewModel.getAlarmMode() == MODE_AWAY_TRIGGERED_PENDING) {
@@ -186,13 +183,13 @@ class ControlsFragment : BaseFragment() {
     }
 
     private fun setArmedAwayView() {
-        alarmText.setText(R.string.text_arm_away)
+        alarmText.setText(R.string.text_armed_away)
         alarmText.setTextColor(resources.getColor(R.color.red))
         alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_red))
     }
 
     private fun setArmedHomeView() {
-        alarmText.setText(R.string.text_arm_home)
+        alarmText.setText(R.string.text_armed_home)
         alarmText.setTextColor(resources.getColor(R.color.yellow))
         alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_yellow))
     }
@@ -207,12 +204,12 @@ class ControlsFragment : BaseFragment() {
         viewModel.isArmed(true)
         viewModel.setAlarmMode(mode)
         if (MODE_ARM_HOME_PENDING == mode) {
-            alarmText.setText(R.string.text_arm_home)
+            alarmText.setText(R.string.text_armed_home)
             alarmText.setTextColor(resources.getColor(R.color.yellow))
             alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_yellow))
             showAlarmPendingView(configuration.pendingHomeTime)
         } else if (MODE_ARM_AWAY_PENDING == mode) {
-            alarmText.setText(R.string.text_arm_away)
+            alarmText.setText(R.string.text_armed_away)
             alarmText.setTextColor(resources.getColor(R.color.red))
             alarmButtonBackground.setBackgroundDrawable(resources.getDrawable(R.drawable.button_round_red))
             showAlarmPendingView(configuration.pendingAwayTime)

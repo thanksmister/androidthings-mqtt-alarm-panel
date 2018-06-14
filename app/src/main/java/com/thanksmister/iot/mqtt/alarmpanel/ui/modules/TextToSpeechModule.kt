@@ -46,7 +46,7 @@ class TextToSpeechModule( base: Context?, private val configuration: Configurati
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun start() {
-        if(configuration.hasTssModule()) {
+        if(configuration.hasTssModule() && textToSpeech != null) {
             textToSpeech = TextToSpeech(baseContext, this)
         }
     }
@@ -85,6 +85,15 @@ class TextToSpeechModule( base: Context?, private val configuration: Configurati
                 Timber.d("Speak this: " + message)
                 textToSpeech?.speak(message, TextToSpeech.QUEUE_ADD, null, UTTERANCE_ID)
             }
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun pause() {
+        if(textToSpeech != null) {
+            textToSpeech?.stop()
+            textToSpeech?.shutdown()
+            textToSpeech = null
         }
     }
 

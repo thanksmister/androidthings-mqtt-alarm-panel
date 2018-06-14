@@ -39,8 +39,7 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
 
     @Inject lateinit var configuration: Configuration
     @Inject lateinit var dialogUtils: DialogUtils
-
-    private var mqttOptions: MQTTOptions? = null
+    @Inject lateinit var mqttOptions: MQTTOptions
 
     private var tolPreference: EditTextPreference? = null
     private var fromPreference: EditTextPreference? = null
@@ -85,10 +84,6 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
-
-        if (isAdded && activity != null) {
-            mqttOptions = (activity as BaseActivity).readMqttOptions()
-        }
 
         mqttImagePreference = findPreference(Configuration.PREF_MQTT_IMAGE) as CheckBoxPreference
         mqttImageTopicPreference = findPreference(Configuration.PREF_MQTT_IMAGE_TOPIC) as EditTextPreference

@@ -19,6 +19,7 @@
 package com.thanksmister.iot.mqtt.alarmpanel.network
 
 import com.thanksmister.iot.mqtt.alarmpanel.network.model.DarkSkyResponse
+import io.reactivex.Observable
 
 import retrofit2.Call
 import retrofit2.http.GET
@@ -42,7 +43,7 @@ interface DarkSkyRequest {
                             @Query("exclude") exclude: String,
                             @Query("extended") extended: String,
                             @Query("units") units: String,
-                            @Query("lang") language: String): Call<DarkSkyResponse>
+                            @Query("lang") language: String): Observable<DarkSkyResponse>
 
     companion object {
 

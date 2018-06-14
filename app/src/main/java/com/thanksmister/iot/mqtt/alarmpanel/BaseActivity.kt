@@ -19,44 +19,41 @@
 package com.thanksmister.iot.mqtt.alarmpanel
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.wifi.WifiConfiguration
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration.*
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
-import android.os.PowerManager
+import android.support.v7.app.AppCompatDelegate
 import android.text.TextUtils
-import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
-import com.google.android.things.device.ScreenManager
 import com.google.android.things.device.TimeManager
 import com.google.android.things.update.StatusListener
 import com.google.android.things.update.UpdateManager
-import com.google.android.things.update.UpdateManager.POLICY_APPLY_AND_REBOOT
 import com.google.android.things.update.UpdateManagerStatus
-import com.google.android.things.update.UpdatePolicy
+import com.google.android.things.update.UpdatePolicy.POLICY_APPLY_AND_REBOOT
 import com.thanksmister.iot.mqtt.alarmpanel.managers.ConnectionLiveData
+import com.thanksmister.iot.mqtt.alarmpanel.managers.DayNightAlarmLiveData
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.ImageOptions
-import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
+import com.thanksmister.iot.mqtt.alarmpanel.persistence.DarkSkyDao
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
-import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ScreenSaverView
+import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
+import com.thanksmister.iot.mqtt.alarmpanel.utils.DeviceUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.NetworkUtils
-import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
 import dagger.android.support.DaggerAppCompatActivity
 import dpreference.DPreference
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -65,30 +62,25 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     @Inject lateinit var configuration: Configuration
     @Inject lateinit var preferences: DPreference
     @Inject lateinit var dialogUtils: DialogUtils
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    lateinit var viewModel: MessageViewModel
-    private var wakeLock: PowerManager.WakeLock? = null
-    private var inactivityHandler: Handler? = Handler()
+    @Inject lateinit var darkSkyDataSource: DarkSkyDao
+
+    private var inactivityHandler: Handler = Handler()
     private var hasNetwork = AtomicBoolean(true)
     val disposable = CompositeDisposable()
     private var connectionLiveData: ConnectionLiveData? = null
     private var wifiManager: WifiManager? = null
 
-
     abstract fun getLayoutId(): Int
 
     private val inactivityCallback = Runnable {
-        dialogUtils.hideScreenSaverDialog()
         showScreenSaver()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(getLayoutId())
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MessageViewModel::class.java)
 
-        Timber.d("Network SSID: " + configuration.networkId)
-        Timber.d("Network Password: " + configuration.networkPassword)
+        super.onCreate(savedInstanceState)
+
+        setContentView(getLayoutId())
 
         if( !TextUtils.isEmpty(configuration.networkId) && !TextUtils.isEmpty(configuration.networkPassword)) {
             NetworkUtils.connectNetwork(this@BaseActivity, configuration.networkId, configuration.networkPassword )
@@ -103,13 +95,23 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         application.registerReceiver(wifiConnectionReceiver, intentFilterForWifiConnectionReceiver)
     }
 
-    public override fun onStop() {
-        super.onStop()
-        application.unregisterReceiver(wifiConnectionReceiver)
-    }
-
     public override fun onResume() {
         super.onResume()
+        Timber.d("onResume")
+
+        if(configuration.nightModeChanged) {
+            configuration.nightModeChanged = false // reset
+            dayNightModeChanged() // reset screen brightness if day/night mode inactive
+        }
+
+        val orientation = resources.configuration.orientation
+        if(configuration.isPortraitMode && orientation == ORIENTATION_LANDSCAPE) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        } else if (!configuration.isPortraitMode && orientation == ORIENTATION_PORTRAIT) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        }
+
+        setScreenBrightness() // reset screen brightness if changed
     }
 
     public override fun onPause() {
@@ -118,22 +120,16 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (inactivityHandler != null) {
-            inactivityHandler!!.removeCallbacks(inactivityCallback)
-            inactivityHandler = null
-        }
+        inactivityHandler.removeCallbacks(inactivityCallback)
+        application.unregisterReceiver(wifiConnectionReceiver)
         disposable.dispose()
     }
 
     // These are Android Things specific settings for setting the time, display, and update manager
     private fun setSystemInformation() {
         try {
-            ScreenManager(Display.DEFAULT_DISPLAY).setBrightnessMode(ScreenManager.BRIGHTNESS_MODE_MANUAL);
-            ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
-            ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-            ScreenManager(Display.DEFAULT_DISPLAY).setDisplayDensity(configuration.screenDensity);
-            TimeManager().setTimeZone(configuration.timeZone)
-            UpdateManager().addStatusListener(object: StatusListener {
+            TimeManager.getInstance().setTimeZone(configuration.timeZone)
+            UpdateManager.getInstance().addStatusListener(object: StatusListener {
                 override fun onStatusUpdate(status: UpdateManagerStatus?) {
                     when (status?.currentState) {
                         UpdateManagerStatus.STATE_UPDATE_AVAILABLE -> {
@@ -147,7 +143,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                     }
                 }
             });
-            UpdateManager().performUpdateNow(POLICY_APPLY_AND_REBOOT) // always apply update and reboot
+            UpdateManager.getInstance().performUpdateNow(POLICY_APPLY_AND_REBOOT) // always apply update and reboot
         } catch (e:IllegalStateException) {
             Timber.e(e.message)
         }
@@ -162,52 +158,75 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         })
     }
 
-    /**
-     * Resets the screen timeout and brightness to the default (or user set) settings
-     */
-    fun setScreenDefaults() {
-        Timber.d("setScreenDefaults")
-        Timber.d("screenBirghness: " + configuration.screenBrightness)
-        Timber.d("setScreenOffTimeout: " + configuration.screenTimeout)
-        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+    open fun dayNightModeCheck(dayNightMode:String?) {
+        Timber.d("dayNightModeCheck")
+        val uiMode = resources.configuration.uiMode and UI_MODE_NIGHT_MASK;
+        if(dayNightMode == Configuration.DISPLAY_MODE_NIGHT && uiMode == UI_MODE_NIGHT_NO) {
+            Timber.d("Tis the night!")
+            setScreenBrightness()
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            recreate()
+        } else if (dayNightMode == Configuration.DISPLAY_MODE_DAY && uiMode == UI_MODE_NIGHT_YES) {
+            Timber.d("Tis the day!")
+            setScreenBrightness()
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            recreate()
+        }
+    }
+
+    private fun dayNightModeChanged() {
+        Timber.d("dayNightModeChanged")
+        val uiMode = resources.configuration.uiMode and UI_MODE_NIGHT_MASK;
+        if (!configuration.useNightDayMode && uiMode == UI_MODE_NIGHT_YES) {
+            Timber.d("Tis the day!")
+            setScreenBrightness()
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            recreate()
+        }
     }
 
     /**
-     * Keeps the screen on extra long time if the alarm is triggered.
+     * Resets the screen brightness to the default or based on time of day
      */
-    fun setScreenTriggered() {
-        Timber.d("setScreenTriggered")
-        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(configuration.screenBrightness);
-        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(3, TimeUnit.HOURS); // 3 hours
+    private fun setScreenBrightness() {
+        val brightness = getScreenBrightness()
+        Timber.d("ScreenBrightness: $brightness")
+        val lp: WindowManager.LayoutParams = window.attributes;
+        lp.screenBrightness = brightness;
+        window.attributes = lp
     }
 
-    private fun setScreenBrightness(brightness: Int) {
-        ScreenManager(Display.DEFAULT_DISPLAY).setBrightness(brightness);
-        ScreenManager(Display.DEFAULT_DISPLAY).setScreenOffTimeout(configuration.screenTimeout, TimeUnit.MILLISECONDS);
+    /**
+     * Returns the adjusted screen brightness depending on time of day or night mode.
+     */
+    private fun getScreenBrightness(): Float {
+        val brightness: Float
+        if(configuration.useNightDayMode && configuration.dayNightMode == Configuration.DISPLAY_MODE_NIGHT) {
+            brightness = DeviceUtils.getScreenBrightnessNightMode(configuration.screenBrightness)
+        } else {
+            brightness = DeviceUtils.getScreenBrightnessBasedOnDayTime(configuration.screenBrightness,
+                    DateUtils.getHourAndMinutesFromTimePicker(configuration.dayNightModeStartTime),
+                    DateUtils.getHourAndMinutesFromTimePicker(configuration.dayNightModeEndTime))
+        }
+        return brightness
     }
 
     fun resetInactivityTimer() {
         Timber.d("resetInactivityTimer")
         dialogUtils.hideScreenSaverDialog()
-        inactivityHandler?.removeCallbacks(inactivityCallback)
-        inactivityHandler?.postDelayed(inactivityCallback, configuration.inactivityTime)
+        inactivityHandler.removeCallbacks(inactivityCallback)
+        inactivityHandler.postDelayed(inactivityCallback, configuration.inactivityTime)
     }
 
     fun stopDisconnectTimer() {
         Timber.d("stopDisconnectTimer")
         dialogUtils.hideScreenSaverDialog()
-        inactivityHandler!!.removeCallbacks(inactivityCallback)
+        inactivityHandler.removeCallbacks(inactivityCallback)
     }
 
     override fun onUserInteraction() {
         Timber.d("onUserInteraction")
         resetInactivityTimer()
-        setScreenDefaults()
-    }
-
-    fun readMqttOptions(): MQTTOptions {
-        return MQTTOptions(preferences)
     }
 
     fun readWeatherOptions(): DarkSkyOptions {
@@ -232,26 +251,17 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      */
     open fun showScreenSaver() {
         Timber.d("showScreenSaver")
-        if (!viewModel.isAlarmTriggeredMode() && viewModel.hasScreenSaver()) {
-            inactivityHandler!!.removeCallbacks(inactivityCallback)
-            if(configuration.showClockScreenSaverModule()) {
-                setScreenBrightness(40);
-            } else if (configuration.showPhotoScreenSaver()) {
-                setScreenBrightness(80);
-            }
+        if (!configuration.isAlarmTriggeredMode() && configuration.hasScreenSaver()) {
+            inactivityHandler.removeCallbacks(inactivityCallback)
+            val hasWeather = (configuration.showWeatherModule() && readWeatherOptions().isValid)
             dialogUtils.showScreenSaver(this@BaseActivity,
-                    configuration.showPhotoScreenSaver(), configuration.showClockScreenSaverModule(),
-                    readImageOptions(), object : ScreenSaverView.ViewListener {
-                override fun onMotion() {
-                    resetInactivityTimer()
-                    setScreenDefaults()
-                }
-            }, View.OnClickListener {
-                resetInactivityTimer()
-                setScreenDefaults()
-            })
-        } else if (!viewModel.isAlarmTriggeredMode()) {
-            setScreenBrightness(0);
+                    configuration.showPhotoScreenSaver(),
+                    readImageOptions(),
+                    getScreenBrightness(),
+                    View.OnClickListener {
+                        dialogUtils.hideScreenSaverDialog()
+                        resetInactivityTimer()
+                    }, darkSkyDataSource, hasWeather)
         }
     }
 
@@ -289,7 +299,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             return randomIntentFilter
         }
 
-    private val wifiConnectionReceiver = object : BroadcastReceiver() {
+    private val wifiConnectionReceiver: BroadcastReceiver = object: BroadcastReceiver()  {
         override fun onReceive(c: Context, intent: Intent) {
             val action = intent.action
             if (!TextUtils.isEmpty(action)) {
@@ -299,12 +309,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                         val wifiInfo = wifiManager?.connectionInfo
                         var wirelessNetworkName = wifiInfo?.ssid
                         wirelessNetworkName = wirelessNetworkName?.replace("\"", "");
-                        if(configuration.networkId == wirelessNetworkName) {
-                            Timber.d("WiFi connected to " + configuration.networkId)
-                            Toast.makeText(this@BaseActivity, getString(R.string.toast_connecting_network), Toast.LENGTH_LONG).show()
-                        } else {
-                            Timber.d("WiFi not connected to " + configuration.networkId)
-                        }
+                        Timber.d("networkId: $wirelessNetworkName")
                     }
                 }
             }

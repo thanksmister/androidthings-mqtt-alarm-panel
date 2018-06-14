@@ -18,8 +18,6 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.fragments
 
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -31,13 +29,12 @@ import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.Message
 import com.thanksmister.iot.mqtt.alarmpanel.ui.adapters.MessageAdapter
+import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MainViewModel
 import com.thanksmister.iot.mqtt.alarmpanel.viewmodel.MessageViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_logs.*
 import timber.log.Timber
-import javax.inject.Inject
 
 class LogFragment : BaseFragment() {
 

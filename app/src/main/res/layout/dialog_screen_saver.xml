@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~
   ~   ~ Copyright (c) 2017. ThanksMister LLC
   ~   ~
@@ -18,33 +17,129 @@
   -->
 
 <com.thanksmister.iot.mqtt.alarmpanel.ui.views.ScreenSaverView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:background="@color/black"
-        android:id="@+id/screenSaverView"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/screenSaverView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/black">
+
+    <LinearLayout
+        android:id="@+id/screenSaverClockLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/screenSaverWeatherLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/temperatureText"
+                style="@style/TextAppearance.Clock.Temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="18°C" />
+
+            <Space
+                android:layout_width="24dp"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:id="@+id/conditionImage"
+                android:layout_marginTop="8dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:tint="@color/white_alpha"
+                tools:src="@drawable/ic_thunderstorm" />
+
+        </LinearLayout>
 
         <TextView
-                android:id="@+id/screenSaverClock"
+            android:id="@+id/screenSaverClock"
+            style="@style/TextAppearance.Clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="36sp"
+            android:textColor="@color/white_alpha"
+            tools:text="12:00 PM"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/screenSaverImageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/screenSaverImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/screenSaverWeatherSmallLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/temperatureTextSmall"
+                    style="@style/TextAppearance.Clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white_alpha"
+                    android:textSize="38sp"
+                    tools:text="18°C"/>
+
+                <Space
+                    android:layout_width="16dp"
+                    android:layout_height="wrap_content"/>
+
+                <ImageView
+                    android:id="@+id/conditionImageSmall"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:tint="@color/white_alpha"
+                    tools:src="@drawable/ic_thunderstorm" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/screenSaverClockSmall"
                 style="@style/TextAppearance.Clock"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_centerInParent="true"
-                android:textColor="@color/light_gray"
-                tools:visibility="visible"
-                android:visibility="gone"/>
-    
-        <ImageView
-                android:id="@+id/screenSaverImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                tools:visibility="visible"
-                android:visibility="visible"/>
-        
+                android:textSize="26sp"
+                android:textColor="@color/white_alpha"
+                tools:text="12:00 PM"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
 </com.thanksmister.iot.mqtt.alarmpanel.ui.views.ScreenSaverView>

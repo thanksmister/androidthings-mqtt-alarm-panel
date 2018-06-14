@@ -22,7 +22,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.ui.fragments.LogFragment
@@ -45,7 +44,7 @@ class LogActivity : BaseActivity() {
             supportFragmentManager.beginTransaction().replace(R.id.contentFrame, LogFragment.newInstance(), LOGS_FRAGMENT).commit()
         }
 
-        resetInactivityTimer()
+        //resetInactivityTimer()
     }
 
     override fun getLayoutId(): Int {
