@@ -9,12 +9,14 @@ import com.thanksmister.iot.mqtt.alarmpanel.utils.DeviceUtils
 import dpreference.DPreference
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 /**
  * For original implementation see https://github.com/androidthings/sensorhub-cloud-iot.
  */
-class MQTTOptions constructor(private val sharedPreferences: DPreference) {
+class MQTTOptions @Inject
+constructor(private val sharedPreferences: DPreference) {
 
     val isValid: Boolean
         get() = if (getTlsConnection()) {
