@@ -77,6 +77,7 @@ class MQTTModule (base: Context?, var mqttOptions: MQTTOptions, private val list
         start()
     }
 
+    //@OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun pause() {
         Timber.d("pause")
         stop()
@@ -89,6 +90,7 @@ class MQTTModule (base: Context?, var mqttOptions: MQTTOptions, private val list
         }
     }
 
+    @Deprecated("No longer needed because restarting on lifecycle events")
     fun resetMQttOptions(mqttOptions: MQTTOptions) {
         this.mqttOptions = mqttOptions
         if (mqttService != null && mqttOptions.hasUpdates()) {

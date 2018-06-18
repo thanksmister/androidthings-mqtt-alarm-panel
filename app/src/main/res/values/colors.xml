@@ -23,7 +23,7 @@
     <color name="blue_pressed">#4170c4</color>
 
     <color name="black">#000000</color>
-    <color name="screen_saver_black">#232323</color>
+    <color name="screen_saver_black">#000000</color>
     <color name="white">#f9ffffff</color>
     <color name="white_alpha">#beffffff</color>
     <color name="light_gray">#c8efefef</color>
