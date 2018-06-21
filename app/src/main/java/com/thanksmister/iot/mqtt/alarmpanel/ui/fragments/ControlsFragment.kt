@@ -20,6 +20,7 @@ package com.thanksmister.iot.mqtt.alarmpanel.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment
 import com.thanksmister.iot.mqtt.alarmpanel.R
 import com.thanksmister.iot.mqtt.alarmpanel.network.MQTTOptions
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
+import com.thanksmister.iot.mqtt.alarmpanel.ui.activities.SettingsActivity
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmDisableView
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.AlarmPendingView
 import com.thanksmister.iot.mqtt.alarmpanel.ui.views.ArmOptionsView
@@ -140,7 +142,7 @@ class ControlsFragment : BaseFragment() {
                 .subscribe({ state ->
                     Timber.d("Alarm state: " + state)
                     Timber.d("Alarm mode: " + viewModel.getAlarmMode())
-                    activity?.runOnUiThread(java.lang.Runnable {
+                    activity?.runOnUiThread {
                         when (state) {
                             AlarmUtils.STATE_ARM_AWAY -> {
                                 dialogUtils.clearDialogs()
@@ -178,7 +180,7 @@ class ControlsFragment : BaseFragment() {
                                 setDisarmedView()
                             }
                         }
-                    })
+                    }
                 }, { error -> Timber.e("Unable to get message: " + error) }))
     }
 

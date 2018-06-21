@@ -28,6 +28,7 @@ import android.content.res.Configuration.*
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatDelegate
 import android.text.TextUtils
 import android.view.Menu

@@ -92,8 +92,8 @@
             <FrameLayout
                     android:id="@+id/armStayButton"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:padding="34dp"
                     android:background="@drawable/button_round_yellow">
 
@@ -138,8 +138,8 @@
             <FrameLayout
                     android:id="@+id/armAwayButton"
                     android:foreground="?android:attr/selectableItemBackground"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:padding="34dp"
                     android:background="@drawable/button_round_red">
 

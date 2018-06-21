@@ -1,6 +1,7 @@
 package com.thanksmister.iot.mqtt.alarmpanel.network
 
 import android.text.TextUtils
+import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.ALARM_COMMAND_TOPIC
 import com.thanksmister.iot.mqtt.alarmpanel.utils.AlarmUtils.Companion.ALARM_STATE_TOPIC
@@ -153,6 +154,21 @@ constructor(private val sharedPreferences: DPreference) {
         val updates = sharedPreferences.getPrefBoolean(MQTT_OPTIONS_UPDATED, false)
         Timber.d("Updates: " + updates)
         return updates
+    }
+
+    fun reset() {
+        sharedPreferences.removePreference(PREF_STATE_TOPIC)
+        sharedPreferences.removePreference(PREF_NOTIFICATION_TOPIC)
+        sharedPreferences.removePreference(PREF_CAPTURE_TOPIC)
+        sharedPreferences.removePreference(PREF_USERNAME)
+        sharedPreferences.removePreference(PREF_COMMAND_TOPIC)
+        sharedPreferences.removePreference(PREF_TLS_CONNECTION)
+        sharedPreferences.removePreference(PREF_PASSWORD)
+        sharedPreferences.removePreference(PREF_PORT)
+        sharedPreferences.removePreference(PREF_CLIENT_ID)
+        sharedPreferences.removePreference(PREF_PASSWORD)
+        sharedPreferences.removePreference(PREF_BROKER)
+        sharedPreferences.removePreference(MQTT_OPTIONS_UPDATED)
     }
 
     companion object {

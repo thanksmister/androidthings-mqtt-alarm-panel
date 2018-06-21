@@ -40,7 +40,7 @@ constructor(private val sharedPreferences: DPreference) {
         set(value) = this.sharedPreferences.setPrefString(PREF_NETWORK_PASSWORD, value)
 
     var useNightDayMode: Boolean
-        get() = this.sharedPreferences.getPrefBoolean(PREF_DAY_NIGHT_MODE, true)
+        get() = this.sharedPreferences.getPrefBoolean(PREF_DAY_NIGHT_MODE, false)
         set(value) = this.sharedPreferences.setPrefBoolean(PREF_DAY_NIGHT_MODE, value)
 
     var dayNightMode: String

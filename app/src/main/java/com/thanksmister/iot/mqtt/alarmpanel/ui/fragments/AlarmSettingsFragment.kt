@@ -117,11 +117,6 @@ class AlarmSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSh
         delayPreference!!.summary = getString(R.string.pref_delay_summary, configuration.delayTime.toString())
         delayHomePreference!!.summary = getString(R.string.pref_home_delay_summary, configuration.delayHomeTime.toString())
         delayAwayPreference!!.summary = getString(R.string.pref_away_delay_summary, configuration.delayAwayTime.toString())
-
-        // the first time we need to set the alarm code
-        if(configuration.isFirstTime) {
-            showAlarmCodeDialog();
-        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {

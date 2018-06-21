@@ -262,17 +262,19 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                     // na-da
                 }
                 override fun onComplete(id: String, pass: String) {
-                    if(!TextUtils.isEmpty(id) && !TextUtils.isEmpty(pass) ) {
-                        if(networkId.equals(id) && networkPass.equals(pass) ) {
-                            Toast.makeText(activity, getString(R.string.toast_network_settings_unchanged), Toast.LENGTH_LONG).show()
+                    activity?.runOnUiThread {
+                        if(!TextUtils.isEmpty(id) && !TextUtils.isEmpty(pass) ) {
+                            if(networkId.equals(id) && networkPass.equals(pass) ) {
+                                Toast.makeText(activity, getString(R.string.toast_network_settings_unchanged), Toast.LENGTH_LONG).show()
+                            } else {
+                                configuration.networkId = id
+                                configuration.networkPassword = pass
+                                NetworkUtils.connectNetwork(context!!, configuration.networkId, configuration.networkPassword)
+                                Toast.makeText(activity, getString(R.string.toast_connecting_network), Toast.LENGTH_LONG).show()
+                            }
                         } else {
-                            configuration.networkId = id
-                            configuration.networkPassword = pass
-                            NetworkUtils.connectNetwork(context!!, configuration.networkId, configuration.networkPassword)
-                            Toast.makeText(activity, getString(R.string.toast_connecting_network), Toast.LENGTH_LONG).show()
+                            Toast.makeText(activity, R.string.text_error_blank_entry, Toast.LENGTH_LONG).show()
                         }
-                    } else {
-                        Toast.makeText(activity, R.string.text_error_blank_entry, Toast.LENGTH_LONG).show()
                     }
                 }
             })

@@ -33,6 +33,7 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatDelegate
 import android.view.ViewGroup
 import com.thanksmister.iot.mqtt.alarmpanel.BaseActivity
 import com.thanksmister.iot.mqtt.alarmpanel.BaseFragment
@@ -117,11 +118,11 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
         if (configuration.isFirstTime) {
             alertDialog = AlertDialog.Builder(this@MainActivity, R.style.CustomAlertDialog)
                     .setMessage(getString(R.string.dialog_first_time))
-                    .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { _, _ ->
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
                         configuration.isFirstTime = false;
                         val intent = SettingsActivity.createStartIntent(this@MainActivity)
                         startActivity(intent)
-                    })
+                    }
                     .show()
         }
 
@@ -140,7 +141,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                 .subscribe({ state ->
                     Timber.d("Alarm state: " + state)
                     Timber.d("Alarm mode: " + viewModel.getAlarmMode())
-                    this@MainActivity.runOnUiThread({
+                    this@MainActivity.runOnUiThread {
                         when (state) {
                             AlarmUtils.STATE_DISARM,
                             AlarmUtils.STATE_ARM_AWAY,
@@ -154,13 +155,13 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                                 awakenDeviceForAction()
                             }
                         }
-                    })
+                    }
                 }, { error -> Timber.e("Unable to get message: " + error)}))
     }
 
     override fun onResume() {
         super.onResume()
-        //resetInactivityTimer()
+        resetInactivityTimer()
         mBackgroundHandler!!.post(initializeOnBackground)
         setViewPagerState()
     }
@@ -234,23 +235,23 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
         if (textToSpeechModule == null && viewModel.hasTss()) {
             textToSpeechModule = TextToSpeechModule(this@MainActivity, configuration)
-            runOnUiThread({
+            runOnUiThread {
                 lifecycle.addObserver(textToSpeechModule!!)
-            })
+            }
         }
 
         if (mqttModule == null && mqttOptions.isValid) {
             mqttModule = MQTTModule(this@MainActivity.applicationContext, mqttOptions,this@MainActivity)
-            runOnUiThread({
+            runOnUiThread {
                 lifecycle.addObserver(mqttModule!!)
-            })
+            }
         }
 
         if (cameraModule == null && viewModel.hasCamera() && mBackgroundHandler != null) {
             cameraModule = CameraModule(this@MainActivity, mBackgroundHandler!!,this@MainActivity)
-            runOnUiThread({
+            runOnUiThread {
                 lifecycle.addObserver(cameraModule!!)
-            })
+            }
         }
 
         if (motionSensorModule == null) {
@@ -300,7 +301,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun onMQTTMessage(id: String, topic: String, payload: String) {
         if(mqttOptions.getNotificationTopic() == topic) {
-            this@MainActivity.runOnUiThread({
+            this@MainActivity.runOnUiThread {
                 awakenDeviceForAction()
                 if (viewModel.hasAlerts()) {
                     dialogUtils.showAlertDialog(this@MainActivity, payload)
@@ -308,11 +309,11 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
                 if (textToSpeechModule != null && viewModel.hasTss()) {
                     textToSpeechModule!!.speakText(payload)
                 }
-            })
+            }
         } else if(mqttOptions.getCameraTopic() == topic) {
-            this@MainActivity.runOnUiThread({
+            this@MainActivity.runOnUiThread {
                 captureImage()
-            })
+            }
         }
         disposable.add(viewModel.insertMessage(id, topic, payload)
                 .subscribeOn(Schedulers.io())
@@ -323,17 +324,21 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
 
     override fun onMQTTException(message: String) {
         this@MainActivity.runOnUiThread {
-            dialogUtils.showAlertDialog(this@MainActivity, message)
+            if(hasNetworkConnectivity() ) {
+                dialogUtils.showAlertDialog(this@MainActivity, message)
+            }
         }
     }
 
     override fun onMQTTDisconnect() {
         this@MainActivity.runOnUiThread {
-            dialogUtils.showAlertDialog(this@MainActivity, getString(R.string.error_mqtt_connection), DialogInterface.OnClickListener { _, _ ->
-                if (mqttModule != null) {
-                    mqttModule!!.restart()
-                }
-            })
+            if(hasNetworkConnectivity() ) {
+                dialogUtils.showAlertDialog(this@MainActivity, getString(R.string.error_mqtt_connection), DialogInterface.OnClickListener { _, _ ->
+                    if (mqttModule != null) {
+                        mqttModule!!.restart()
+                    }
+                })
+            }
         }
     }
 
