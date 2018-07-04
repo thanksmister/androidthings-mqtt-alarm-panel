@@ -123,13 +123,13 @@ constructor(application: Application, private val dataSource: MessageDao, privat
     /**
      * Insert new message into the database.
      */
-    fun insertMessage(messageId: String, topic: String, payload: String): Completable {
+    fun insertMessage(messageId: String, topic: String, payload: String) {
         val type = when (topic) {
             mqttOptions.getCameraTopic() -> IMAGE_CAPTURE_TYPE
             mqttOptions.getNotificationTopic() -> NOTIFICATION_TYPE
             else -> ALARM_TYPE
         }
-        return Completable.fromAction {
+        disposable.add(Completable.fromAction {
             val createdAt = DateUtils.generateCreatedAtDate()
             val message = Message()
             message.type = type
@@ -138,7 +138,10 @@ constructor(application: Application, private val dataSource: MessageDao, privat
             message.messageId = messageId
             message.createdAt = createdAt
             dataSource.insertMessage(message)
-        }
+        } .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                }, { error -> Timber.e("Database error" + error.message) }))
     }
 
     fun sendCapturedImage(bitmap: Bitmap) {

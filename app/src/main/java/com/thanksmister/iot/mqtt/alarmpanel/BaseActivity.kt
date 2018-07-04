@@ -19,18 +19,11 @@
 package com.thanksmister.iot.mqtt.alarmpanel
 
 import android.arch.lifecycle.Observer
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration.*
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatDelegate
-import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -42,7 +35,6 @@ import com.google.android.things.update.UpdateManager
 import com.google.android.things.update.UpdateManagerStatus
 import com.google.android.things.update.UpdatePolicy.POLICY_APPLY_AND_REBOOT
 import com.thanksmister.iot.mqtt.alarmpanel.managers.ConnectionLiveData
-import com.thanksmister.iot.mqtt.alarmpanel.managers.DayNightAlarmLiveData
 import com.thanksmister.iot.mqtt.alarmpanel.network.DarkSkyOptions
 import com.thanksmister.iot.mqtt.alarmpanel.network.ImageOptions
 import com.thanksmister.iot.mqtt.alarmpanel.persistence.DarkSkyDao
@@ -50,7 +42,6 @@ import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DeviceUtils
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DialogUtils
-import com.thanksmister.iot.mqtt.alarmpanel.utils.NetworkUtils
 import dagger.android.support.DaggerAppCompatActivity
 import dpreference.DPreference
 import io.reactivex.disposables.CompositeDisposable
@@ -69,7 +60,6 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     private var hasNetwork = AtomicBoolean(true)
     val disposable = CompositeDisposable()
     private var connectionLiveData: ConnectionLiveData? = null
-    private var wifiManager: WifiManager? = null
 
     abstract fun getLayoutId(): Int
 
@@ -78,31 +68,21 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
         setContentView(getLayoutId())
-
-        if( !TextUtils.isEmpty(configuration.networkId) && !TextUtils.isEmpty(configuration.networkPassword)) {
-            NetworkUtils.connectNetwork(this@BaseActivity, configuration.networkId, configuration.networkPassword )
-        }
     }
 
     override fun onStart(){
         super.onStart()
-        // These are Android Things specific settings for setting the time, display, and update manager
-        val handler = Handler()
-        handler.postDelayed({ setSystemInformation() }, 1000)
-        application.registerReceiver(wifiConnectionReceiver, intentFilterForWifiConnectionReceiver)
+        setSystemInformation()
     }
 
     public override fun onResume() {
         super.onResume()
-        Timber.d("onResume")
-
         if(configuration.nightModeChanged) {
             configuration.nightModeChanged = false // reset
-            dayNightModeChanged() // reset screen brightness if day/night mode inactive
+            val handler = Handler()
+            handler.postDelayed({ dayNightModeChanged() }, 1000)
         }
 
         val orientation = resources.configuration.orientation
@@ -112,7 +92,8 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
         }
 
-        setScreenBrightness() // reset screen brightness if changed
+        val handler = Handler()
+        handler.postDelayed({ setScreenBrightness() }, 1000)
     }
 
     public override fun onPause() {
@@ -122,11 +103,9 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         inactivityHandler.removeCallbacks(inactivityCallback)
-        application.unregisterReceiver(wifiConnectionReceiver)
         disposable.dispose()
     }
 
-    // These are Android Things specific settings for setting the time, display, and update manager
     private fun setSystemInformation() {
         try {
             TimeManager.getInstance().setTimeZone(configuration.timeZone)
@@ -190,11 +169,15 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * Resets the screen brightness to the default or based on time of day
      */
     private fun setScreenBrightness() {
-        val brightness = getScreenBrightness()
-        Timber.d("ScreenBrightness: $brightness")
-        val lp: WindowManager.LayoutParams = window.attributes;
-        lp.screenBrightness = brightness;
-        window.attributes = lp
+        try {
+            val brightness = getScreenBrightness()
+            Timber.d("ScreenBrightness: $brightness")
+            val lp: WindowManager.LayoutParams = window.attributes;
+            lp.screenBrightness = brightness;
+            window.attributes = lp
+        } catch (e: IllegalStateException) {
+            Timber.e("setScreenBrightness ${e.message}")
+        }
     }
 
     /**
@@ -290,30 +273,5 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
 
     open fun hasNetworkConnectivity(): Boolean {
         return hasNetwork.get()
-    }
-
-    private val intentFilterForWifiConnectionReceiver: IntentFilter
-        get() {
-            val randomIntentFilter = IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION)
-            randomIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
-            randomIntentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)
-            return randomIntentFilter
-        }
-
-    private val wifiConnectionReceiver: BroadcastReceiver = object: BroadcastReceiver()  {
-        override fun onReceive(c: Context, intent: Intent) {
-            val action = intent.action
-            if (!TextUtils.isEmpty(action)) {
-                when (action) {
-                    WifiManager.WIFI_STATE_CHANGED_ACTION,
-                    WifiManager.SUPPLICANT_STATE_CHANGED_ACTION -> {
-                        val wifiInfo = wifiManager?.connectionInfo
-                        var wirelessNetworkName = wifiInfo?.ssid
-                        wirelessNetworkName = wirelessNetworkName?.replace("\"", "");
-                        Timber.d("networkId: $wirelessNetworkName")
-                    }
-                }
-            }
-        }
     }
 }

@@ -132,6 +132,10 @@ constructor(application: Application, private val dataSource: DarkSkyDao, privat
             return
         }
         Timber.d("getDarkSkyHourlyForecast")
+        Timber.d("lat $lat")
+        Timber.d("lon $lon")
+        Timber.d("key $key")
+
         val api = DarkSkyApi()
         val fetcher = DarkSkyFetcher(api)
         disposable.add(Observable.interval(LOAD_INTERVAL, TimeUnit.MINUTES)
@@ -150,7 +154,7 @@ constructor(application: Application, private val dataSource: DarkSkyDao, privat
                             }
                 }
                 .flatMap { _ -> fetcher.getExtendedFeedData(key, units, lat, lon) }
-                .doOnNext({ darkSkyResponse ->
+                .doOnNext { darkSkyResponse ->
                     Timber.d("response received")
                     var umbrella = false
                     var icon = ""
@@ -175,14 +179,16 @@ constructor(application: Application, private val dataSource: DarkSkyDao, privat
                     }
 
                     insertNetworkResponse(icon, temperature, precipitation, units, summary, data, umbrella)
-                })
-                .doOnComplete({
+                }
+                .doOnComplete {
                     Timber.d("complete")
-                })
+                }
                 .distinct()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                }, { error -> Timber.e("Dark Sky error" + error.message) }))
+                }, { error ->
+                    Timber.e("Dark Sky error" + error.message)
+                }))
     }
 
     /**

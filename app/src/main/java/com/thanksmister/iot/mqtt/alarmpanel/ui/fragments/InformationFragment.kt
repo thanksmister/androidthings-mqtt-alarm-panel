@@ -79,11 +79,11 @@ class InformationFragment : BaseFragment() {
         timeHandler = Handler(getMainLooper())
         timeHandler!!.postDelayed(timeRunnable, 1000)
         weatherLayout.visibility = View.VISIBLE
-        weatherLayout.setOnClickListener({
+        weatherLayout.setOnClickListener {
             if (!forecastList.isEmpty()) {
                 dialogUtils.showExtendedForecastDialog(activity as BaseActivity, forecastList)
             }
-        })
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -126,7 +126,7 @@ class InformationFragment : BaseFragment() {
                 viewModel.getLatestItem()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ item ->
+                        .subscribe { item ->
                             if(item != null) {
                                 (activity as BaseActivity).runOnUiThread {
                                     weatherLayout.visibility = View.VISIBLE
@@ -141,7 +141,7 @@ class InformationFragment : BaseFragment() {
                                     }
                                 }
                             }
-                        })
+                        }
         )
     }
 

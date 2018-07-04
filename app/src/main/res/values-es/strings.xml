@@ -271,6 +271,9 @@
     <string name="pref_dark_mode_end_time">Hora de finalización: %1$s</string>
     <string name="dialog_select_time">Seleccionar tiempo</string>
 
+    <string name="dialog_clear_logs">¿Quieres borrar los registros?</string>
+    <string name="menu_item_clear_logs">Borrar registros</string>
+
     <string-array name="inactivity_times">
         <item>15 segundos</item>
         <item>30 segundos</item>

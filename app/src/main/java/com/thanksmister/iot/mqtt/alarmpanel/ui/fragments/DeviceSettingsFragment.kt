@@ -16,8 +16,6 @@
 
 package com.thanksmister.iot.mqtt.alarmpanel.ui.fragments
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v14.preference.SwitchPreference
 import android.support.v7.preference.CheckBoxPreference
@@ -48,12 +46,18 @@ import dagger.android.support.AndroidSupportInjection
 import timber.log.Timber
 import javax.inject.Inject
 import android.app.TimePickerDialog
+import android.content.*
+import android.net.ConnectivityManager
+import android.net.wifi.WifiManager
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.DAY_NIGHT_END_VALUE_DEFAULT
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.DAY_NIGHT_START_VALUE_DEFAULT
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_MODE_DAY_NIGHT_END
 import com.thanksmister.iot.mqtt.alarmpanel.ui.Configuration.Companion.PREF_MODE_DAY_NIGHT_START
 import com.thanksmister.iot.mqtt.alarmpanel.utils.DateUtils
 import java.util.*
+import android.net.NetworkInfo
+
+
 
 
 class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -73,6 +77,8 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
     private var brightnessPreference: ListPreference? = null
     private var timeZonePreference: ListPreference? = null
     private val timeManager = TimeManager.getInstance()
+    private var notConnectedMessageShown = false
+    private var receiverRegistered = false
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -91,6 +97,13 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
     override fun onPause() {
         super.onPause()
         preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        /*if(receiverRegistered) {
+            try {
+                activity?.unregisterReceiver(wifiConnectionReceiver)
+            } catch (e: IllegalArgumentException) {
+                Timber.e(e.message)
+            }
+        }*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -267,10 +280,13 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                             if(networkId.equals(id) && networkPass.equals(pass) ) {
                                 Toast.makeText(activity, getString(R.string.toast_network_settings_unchanged), Toast.LENGTH_LONG).show()
                             } else {
+                                //activity?.registerReceiver(wifiConnectionReceiver, intentFilterForWifiConnectionReceiver)
+                                receiverRegistered = true
                                 configuration.networkId = id
                                 configuration.networkPassword = pass
                                 NetworkUtils.connectNetwork(context!!, configuration.networkId, configuration.networkPassword)
-                                Toast.makeText(activity, getString(R.string.toast_connecting_network), Toast.LENGTH_LONG).show()
+                                notConnectedMessageShown = false
+                                Toast.makeText(activity, getString(R.string.toast_connecting_network), Toast.LENGTH_SHORT).show()
                             }
                         } else {
                             Toast.makeText(activity, R.string.text_error_blank_entry, Toast.LENGTH_LONG).show()
@@ -296,4 +312,41 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         };
         UpdateManager.getInstance().performUpdateNow(POLICY_APPLY_AND_REBOOT) // always apply update and reboot
     }
+
+    /*private val intentFilterForWifiConnectionReceiver: IntentFilter
+        get() {
+            val randomIntentFilter = IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION)
+            randomIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
+            randomIntentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)
+            return randomIntentFilter
+        }*/
+
+    /*private val wifiConnectionReceiver: BroadcastReceiver = object: BroadcastReceiver()  {
+        override fun onReceive(c: Context, intent: Intent) {
+            val action = intent.action
+            if (!TextUtils.isEmpty(action)) {
+                when (action) {
+                    WifiManager.NETWORK_STATE_CHANGED_ACTION -> {
+                        val netInfo : NetworkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO)
+                        if (ConnectivityManager.TYPE_WIFI == netInfo.type) {
+                            val wifiManager = activity?.getSystemService (Context.WIFI_SERVICE) as WifiManager
+                            val wifiInfo = wifiManager.connectionInfo
+                            var wirelessNetworkName = wifiInfo?.ssid
+                            wirelessNetworkName = wirelessNetworkName?.replace("\"", "");
+                            Timber.d("Network Name $wirelessNetworkName")
+                            val  connManager = activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                            val mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                            Timber.d("Network connected ${mWifi.isConnected}")
+                            if (mWifi.isConnected && !TextUtils.isEmpty(wirelessNetworkName)) {
+                                Toast.makeText(activity, "Connected to $wirelessNetworkName", Toast.LENGTH_SHORT).show()
+                            } else if (!mWifi.isConnectedOrConnecting && !notConnectedMessageShown) {
+                                notConnectedMessageShown = true
+                                Toast.makeText(activity, "Connection failed, check credentials and try again.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }*/
 }

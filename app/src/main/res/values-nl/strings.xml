@@ -271,6 +271,9 @@
     <string name="pref_dark_mode_end_time">Eindtijd: %1$s</string>
     <string name="dialog_select_time">Selecteer Tijd</string>
 
+    <string name="dialog_clear_logs">Wilt u de logboeken wissen?</string>
+    <string name="menu_item_clear_logs">Logboeken wissen</string>
+
     <string-array name="inactivity_times">
         <item>15 seconden</item>
         <item>30 seconden</item>

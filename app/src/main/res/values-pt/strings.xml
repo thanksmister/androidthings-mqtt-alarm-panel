@@ -273,6 +273,9 @@
     <string name="pref_dark_mode_end_time">Fim do tempo: %1$s</string>
     <string name="dialog_select_time">Selecione o horário</string>
 
+    <string name="dialog_clear_logs">Você quer limpar os logs?</string>
+    <string name="menu_item_clear_logs">Limpar logs</string>
+
     <string-array name="inactivity_times">
         <item>15 segundos</item>
         <item>30 segundos</item>

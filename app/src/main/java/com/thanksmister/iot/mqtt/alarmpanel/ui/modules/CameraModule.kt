@@ -97,6 +97,7 @@ class CameraModule(base: Context?, private var backgroundHandler: Handler, priva
         }
     }
 
+    // TODO this had to be moved to background thread
     private fun getBitmapFromByteArray(imageBytes: ByteArray): Bitmap {
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         val matrix = Matrix()

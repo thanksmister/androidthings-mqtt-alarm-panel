@@ -62,7 +62,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MessageViewModel @Inject
-constructor(application: Application, private val dataSource: MessageDao, private val configuration: Configuration) : AndroidViewModel(application) {
+constructor(application: Application, private val messageDataSource: MessageDao,
+            private val dataSource: MessageDao, private val configuration: Configuration) : AndroidViewModel(application) {
 
     private var armed: Boolean = false
     private val disposable = CompositeDisposable()
@@ -122,6 +123,12 @@ constructor(application: Application, private val dataSource: MessageDao, privat
 
     fun isArmed(): Boolean {
         return armed
+    }
+
+    fun clearMessages():Completable {
+        return Completable.fromAction {
+            messageDataSource.deleteAllMessages()
+        }
     }
 
     /**
