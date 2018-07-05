@@ -97,13 +97,13 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
     override fun onPause() {
         super.onPause()
         preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        /*if(receiverRegistered) {
+        if(receiverRegistered) {
             try {
                 activity?.unregisterReceiver(wifiConnectionReceiver)
             } catch (e: IllegalArgumentException) {
                 Timber.e(e.message)
             }
-        }*/
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -280,7 +280,7 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
                             if(networkId.equals(id) && networkPass.equals(pass) ) {
                                 Toast.makeText(activity, getString(R.string.toast_network_settings_unchanged), Toast.LENGTH_LONG).show()
                             } else {
-                                //activity?.registerReceiver(wifiConnectionReceiver, intentFilterForWifiConnectionReceiver)
+                                activity?.registerReceiver(wifiConnectionReceiver, intentFilterForWifiConnectionReceiver)
                                 receiverRegistered = true
                                 configuration.networkId = id
                                 configuration.networkPassword = pass
@@ -313,40 +313,35 @@ class DeviceSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
         UpdateManager.getInstance().performUpdateNow(POLICY_APPLY_AND_REBOOT) // always apply update and reboot
     }
 
-    /*private val intentFilterForWifiConnectionReceiver: IntentFilter
+    private val intentFilterForWifiConnectionReceiver: IntentFilter
         get() {
             val randomIntentFilter = IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION)
             randomIntentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
             randomIntentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)
             return randomIntentFilter
-        }*/
+        }
 
-    /*private val wifiConnectionReceiver: BroadcastReceiver = object: BroadcastReceiver()  {
+    private val wifiConnectionReceiver: BroadcastReceiver = object: BroadcastReceiver()  {
         override fun onReceive(c: Context, intent: Intent) {
             val action = intent.action
             if (!TextUtils.isEmpty(action)) {
                 when (action) {
                     WifiManager.NETWORK_STATE_CHANGED_ACTION -> {
                         val netInfo : NetworkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO)
-                        if (ConnectivityManager.TYPE_WIFI == netInfo.type) {
-                            val wifiManager = activity?.getSystemService (Context.WIFI_SERVICE) as WifiManager
-                            val wifiInfo = wifiManager.connectionInfo
-                            var wirelessNetworkName = wifiInfo?.ssid
-                            wirelessNetworkName = wirelessNetworkName?.replace("\"", "");
-                            Timber.d("Network Name $wirelessNetworkName")
-                            val  connManager = activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                            val mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                            Timber.d("Network connected ${mWifi.isConnected}")
-                            if (mWifi.isConnected && !TextUtils.isEmpty(wirelessNetworkName)) {
-                                Toast.makeText(activity, "Connected to $wirelessNetworkName", Toast.LENGTH_SHORT).show()
-                            } else if (!mWifi.isConnectedOrConnecting && !notConnectedMessageShown) {
-                                notConnectedMessageShown = true
-                                Toast.makeText(activity, "Connection failed, check credentials and try again.", Toast.LENGTH_SHORT).show()
-                            }
+                        val wifiManager = activity?.getSystemService (Context.WIFI_SERVICE) as WifiManager
+                        val wifiInfo = wifiManager.connectionInfo
+                        var wirelessNetworkName = wifiInfo?.ssid
+                        wirelessNetworkName = wirelessNetworkName?.replace("\"", "");
+                        Timber.d("Network Name $wirelessNetworkName")
+                        val  connManager = activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                        val mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                        Timber.d("Network connected ${mWifi.isConnected}")
+                        if (mWifi.isConnected && !TextUtils.isEmpty(wirelessNetworkName)) {
+                            Toast.makeText(activity, getString(R.string.toast_connected_network, wirelessNetworkName), Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
         }
-    }*/
+    }
 }

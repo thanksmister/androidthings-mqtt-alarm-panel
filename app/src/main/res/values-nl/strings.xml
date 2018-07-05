@@ -273,6 +273,8 @@
 
     <string name="dialog_clear_logs">Wilt u de logboeken wissen?</string>
     <string name="menu_item_clear_logs">Logboeken wissen</string>
+    <string name="toast_connection_failed">Connection failed, check credentials and try again.</string>
+    <string name="toast_connected_network">Verbonden met %1$s</string>
 
     <string-array name="inactivity_times">
         <item>15 seconden</item>

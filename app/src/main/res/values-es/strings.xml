@@ -273,6 +273,8 @@
 
     <string name="dialog_clear_logs">¿Quieres borrar los registros?</string>
     <string name="menu_item_clear_logs">Borrar registros</string>
+    <string name="toast_connection_failed">Connection failed, check credentials and try again.</string>
+    <string name="toast_connected_network">Conectado a %1$s</string>
 
     <string-array name="inactivity_times">
         <item>15 segundos</item>
