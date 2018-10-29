@@ -156,7 +156,7 @@ class ScreenSaverView : RelativeLayout {
                     }
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ item ->
+                    .subscribe { item ->
                         if (item != null) {
                             val displayUnits = if (item.units == DarkSkyRequest.UNITS_US) saverContext!!.getString(R.string.text_f) else saverContext!!.getString(R.string.text_c)
                             try {
@@ -189,7 +189,7 @@ class ScreenSaverView : RelativeLayout {
                                 Timber.e(e.message)
                             }
                         }
-                    })
+                    }
         }
     }
 

@@ -64,7 +64,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
     abstract fun getLayoutId(): Int
 
     private val inactivityCallback = Runnable {
-        showScreenSaver()
+        showScreenSaver(false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -233,9 +233,9 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
      * Show the screen saver only if the alarm isn't triggered. This shouldn't be an issue
      * with the alarm disabled because the disable time will be longer than this.
      */
-    open fun showScreenSaver() {
-        Timber.d("showScreenSaver")
+    open fun showScreenSaver(manuallySet: Boolean) {
         if (!configuration.isAlarmTriggeredMode() && configuration.hasScreenSaver()) {
+            Timber.d("showScreenSaver")
             inactivityHandler.removeCallbacks(inactivityCallback)
             val hasWeather = (configuration.showWeatherModule() && readWeatherOptions().isValid)
             dialogUtils.showScreenSaver(this@BaseActivity,
@@ -243,9 +243,17 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
                     readImageOptions(),
                     getScreenBrightness(),
                     View.OnClickListener {
-                        dialogUtils.hideScreenSaverDialog()
                         resetInactivityTimer()
+                        setScreenBrightness()
                     }, darkSkyDataSource, hasWeather)
+        } else if (manuallySet) {
+            Timber.d("showBlackScreenSaver")
+            dialogUtils.showBlackScreenSaver(this@BaseActivity,
+                    View.OnClickListener {
+                        Timber.d("Black Screen Clicked")
+                        resetInactivityTimer()
+                        setScreenBrightness()
+                    })
         }
     }
 

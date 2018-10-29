@@ -106,7 +106,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
             readWeatherOptions().setIsCelsius(true)
             configuration.isFirstTime = false
             configuration.setHasNotifications(true)
-            configuration.setClockScreenSaverModule(true)
+            configuration.setClockScreenSaverModule(false)
             configuration.setHasCamera(true)
             configuration.setWebModule(true)
             configuration.setShowWeatherModule(true)
@@ -356,7 +356,7 @@ class MainActivity : BaseActivity(), ViewPager.OnPageChangeListener, ControlsFra
     }
 
     override fun manuallyLaunchScreenSaver() {
-        showScreenSaver()
+        showScreenSaver(true)
     }
 
     override fun onMotionDetected() {

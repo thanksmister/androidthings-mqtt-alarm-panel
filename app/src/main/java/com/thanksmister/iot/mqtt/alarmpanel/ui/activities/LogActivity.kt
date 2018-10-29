@@ -63,8 +63,8 @@ class LogActivity : BaseActivity() {
     /**
      * We should close this view if we have no more user activity.
      */
-    override fun showScreenSaver() {
-        super.showScreenSaver()
+    override fun showScreenSaver(manuallySet: Boolean) {
+        super.showScreenSaver(manuallySet)
         this.finish()
     }
 

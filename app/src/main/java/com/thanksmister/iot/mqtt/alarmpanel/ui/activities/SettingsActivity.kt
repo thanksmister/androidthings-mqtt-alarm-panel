@@ -140,7 +140,7 @@ class SettingsActivity : BaseActivity(), ViewPager.OnPageChangeListener, Setting
     /**
      * We don't show screen saver on this screen
      */
-    override fun showScreenSaver() {
+    override fun showScreenSaver(manuallySet: Boolean) {
         //na-da
     }
 

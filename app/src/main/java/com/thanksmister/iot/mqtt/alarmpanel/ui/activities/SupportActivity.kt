@@ -95,7 +95,7 @@ class SupportActivity : BaseActivity() {
     /**
      * We should close this view if we have no more user activity.
      */
-    override fun showScreenSaver() {
+    override fun showScreenSaver(manuallySet: Boolean) {
         //na-da
     }
     companion object {

@@ -295,6 +295,21 @@ class DialogUtils(base: Context?) : ContextWrapper(base), LifecycleObserver {
         }
     }
 
+    fun showBlackScreenSaver(activity: AppCompatActivity, onClickListener: View.OnClickListener) {
+        if (screenSaverDialog != null && screenSaverDialog!!.isShowing) {
+            return
+        }
+        clearDialogs() // clear any alert dialogs
+        val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val view = inflater.inflate(R.layout.dialog_screen_saver_black, null, false)
+        view.setOnClickListener(onClickListener)
+        screenSaverDialog = buildImmersiveDialog(activity, true, view, true)
+        if (screenSaverDialog != null){
+            val lp: WindowManager.LayoutParams = screenSaverDialog!!.window.attributes;
+            lp.screenBrightness = 0F
+            screenSaverDialog!!.window.attributes = lp
+        }
+    }
 
     // immersive dialogs without navigation
     // https://stackoverflow.com/questions/22794049/how-do-i-maintain-the-immersive-mode-in-dialogs

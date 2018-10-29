@@ -130,14 +130,23 @@ class CameraSettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnS
             telegramTokenPreference!!.summary = configuration.telegramToken
         }
 
-        if (!TextUtils.isEmpty(mqttOptions!!.getCameraTopic())) {
-            mqttImageTopicPreference!!.text = mqttOptions!!.getCameraTopic()
-            mqttImageTopicPreference!!.summary = mqttOptions!!.getCameraTopic()
+        if (!TextUtils.isEmpty(mqttOptions.getCameraTopic())) {
+            mqttImageTopicPreference!!.text = mqttOptions.getCameraTopic()
+            mqttImageTopicPreference!!.summary = mqttOptions.getCameraTopic()
         }
 
         mqttImagePreference!!.isChecked = configuration.mqttImage
         rotatePreference!!.setDefaultValue(configuration.getCameraRotate())
         rotatePreference!!.value = configuration.getCameraRotate().toString()
+        if(configuration.getCameraRotate() == 0f) {
+            rotatePreference!!.setValueIndex(0)
+        } else if (configuration.getCameraRotate() == -90f) {
+            rotatePreference!!.setValueIndex(1)
+        } else if (configuration.getCameraRotate() == 90f) {
+            rotatePreference!!.setValueIndex(2)
+        } else if (configuration.getCameraRotate() == 180f) {
+            rotatePreference!!.setValueIndex(3)
+        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
