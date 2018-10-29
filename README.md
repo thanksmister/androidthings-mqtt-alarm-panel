@@ -1,6 +1,6 @@
 # Android Things Alarm Panel for Home Assistant
 
-NOTE:  This project is no longer being supported for the RPi.  Google has decided not to officially support the RPi for Android Things. Android Things also does not support the new RPi 3 B+ and will only work on RPi 3 devices for prototyping.  Google has also shifted away from Android Things to Chrome OS, which runs on their new Google Home tablet devices.  This project will continue to work for RPi 3 devices but will no longer be updated.
+NOTE:  This project is no longer being developed.  Google has decided not to support the RPi for Android Things. Android Things no longer works on the new RPi 3 B+ and will only work on RPi 3 devices.  Google has also shifted away from Android Things to Chrome OS, which they use for their new Google Home tablet devices.  However, this project will continue to work for the older RPi 3 devices.
 
 --------------------------------------------------------------------
 
