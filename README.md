@@ -1,5 +1,9 @@
 # Android Things Alarm Panel for Home Assistant
 
+NOTE:  This project is no longer being supported for the RPi.  Google has decided not to officially support the RPi for Android Things. Android Things also does not support the new RPi 3 B+ and will only work on RPi 3 devices for prototyping.  Google has also shifted away from Android Things to Chrome OS, which runs on their new Google Home tablet devices.  This project will continue to work for RPi 3 devices but will no longer be updated.
+
+--------------------------------------------------------------------
+
 This project is a MQTT Alarm Control Panel for use with [Home Assistant's Manual Alarm Control Panel](https://home-assistant.io/components/alarm_control_panel.manual_mqtt/) component. However, the application can be used with any home automation platform that supports the MQTT messaging protocol such as OpenHab, Node-RED, or cloud-based MQTT services. This project was built using a Raspberry Pi 3 and a 7" Touchscreen display running Android Things.
 
 - [Alarm Panel Video](https://youtu.be/xspCZoRIBNQ)
@@ -40,7 +44,7 @@ For issues, feature requests, comments or questions, use the [Github issues trac
 
 ## Hardware
 
-- Raspberry Pi 3 and SD Card.
+- Raspberry Pi 3 and SD Card (will not work on RPi 3 B+ models!!!!).
 - [7" Touchscreen Display for display](https://www.adafruit.com/product/2718).
 - (Optional) Externally powered speaker for sound.
 - (Optional) [Raspberry Pi Camera Module v2](https://www.raspberrypi.org/products/camera-module-v2/)
